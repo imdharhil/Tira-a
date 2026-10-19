@@ -70,7 +70,7 @@ if(impactNotice){
  ctx.restore();if(n.life<=0)impactNotice=null;
 }
 
-if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*2,(Math.random()-.5)*shake*2);shake=Math.max(0,shake-dt*1.9)}const difficulty=goal===5?1:goal===7?1.12:1.25;
+if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.random()-.5)*shake*7);shake=Math.max(0,shake-dt*1.9)}const difficulty=goal===5?1:goal===7?1.12:1.25;
  const progress=Math.min(1,Math.abs(g.pos)/goal);
  // Fast, high-frequency tremors with very small displacement.
  // The Core stays centered while the membrane visibly struggles to stabilize.
@@ -84,7 +84,7 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*2,(Math.rand
  // Actual instability always tracks current Core count / victory target.
  const urgency=Math.pow(progress,1.45);
  const f=clock*1.70;
- const amp=(1.35+urgency*3.35)*(100/55);
+ const amp=(.1+urgency*3.2)*(100/55);
  const jitterX=amp*Math.sin(f*69);
  const jitterY=amp*.75*Math.sin(f*47+.7);
  const squishX=1, squishY=1;
