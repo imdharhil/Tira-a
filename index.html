@@ -70,12 +70,8 @@ if(impactNotice){
  ctx.restore();if(n.life<=0)impactNotice=null;
 }
 
-if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.random()-.5)*shake*7);shake=Math.max(0,shake-dt*1.9)}const difficulty=goal===5?1:goal===7?1.12:1.25;
- const progress=Math.min(1,Math.abs(g.pos)/goal);
- // Fast, high-frequency tremors with very small displacement.
- // The Core stays centered while the membrane visibly struggles to stabilize.
- const stress=Math.min(1,Math.pow(progress,1.12)*difficulty);
- const panic=Math.max(0,Math.min(1,(progress-.50)/.42))*stress;
+if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.random()-.5)*shake*7);shake=Math.max(0,shake-dt*1.9)}const progress=Math.min(1,Math.abs(g.pos)/goal);
+ // Original v0.28 micro-tremor; position changes, not the progress number.
  const winning=!!g.ended;
  if(winning)winTime+=dt;
  const tension=winning? Math.max(0,1-winTime/.76):1;
@@ -87,12 +83,11 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.rand
  const amp=(.1+urgency*3.2)*(100/55);
  const jitterX=amp*Math.sin(f*69);
  const jitterY=amp*.75*Math.sin(f*47+.7);
- const squishX=1, squishY=1;
  const throb=1+.005*urgency*Math.sin(clock*5);
  const overloadScale=winning?(winTime<.7?1+Math.sin(winTime*48)*.068:Math.max(0,1-(winTime-.7)/.32)):1;
  const rr=r*throb*overloadScale;
  let core=ctx.createRadialGradient(-rr*.28,-rr*.29,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(1,'#0b2137');
- if(!winning||winTime<1.02){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);ctx.scale(squishX,squishY);
+ if(!winning||winTime<1.02){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
  // The membrane stays intact: organic shape instability replaces stress cracks.
  circle(0,0,rr,core);
  ctx.globalAlpha*=.18;circle(0,0,rr*.77,'#071b29');ctx.globalAlpha=tension;
