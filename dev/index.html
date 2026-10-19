@@ -14,5 +14,50 @@ function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active
 musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){menuMusic.pause();musicStatus.textContent='';musicUI();return}musicStatus.textContent='Loading Doodle Menu…';try{await menuMusic.play();musicStatus.textContent='Doodle Menu · soft / 92% speed'}catch(e){musicStatus.textContent='Music unavailable from external source: '+e.message}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Doodle Menu source unavailable. Music cannot play.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
-const hall=document.getElementById('hall'),hc=hall.getContext('2d');let dots=[],w=0,h=0,prev=0;function resizeHall(){const d=Math.min(2,devicePixelRatio||1);w=document.documentElement.clientWidth;h=window.innerHeight;hall.width=Math.round(w*d);hall.height=Math.round(h*d);hc.setTransform(d,0,0,d,0,0);const count=Math.min(22,Math.max(12,Math.round(w*h/25000)));dots=Array.from({length:count},(_,i)=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,r:2+Math.random()*6}))}resizeHall();window.addEventListener('resize',resizeHall);function drawHall(t){const dt=Math.min(.05,(t-prev)/1000||.016);prev=t;hc.clearRect(0,0,w,h);hc.strokeStyle='rgba(81,160,206,.11)';for(let i=1;i<=4;i++){hc.strokeRect(i*w*.035,i*h*.025,w*(1-i*.07),h*(1-i*.05))}for(const p of dots){p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<p.r||p.x>w-p.r)p.vx*=-1;if(p.y<p.r||p.y>h-p.r)p.vy*=-1;p.x=Math.max(p.r,Math.min(w-p.r,p.x));p.y=Math.max(p.r,Math.min(h-p.r,p.y));hc.beginPath();hc.arc(p.x,p.y,p.r,0,Math.PI*2);hc.fillStyle='rgba(101,207,255,.30)';hc.shadowBlur=14;hc.shadowColor='#5bb8ef';hc.fill()}hc.shadowBlur=0;requestAnimationFrame(drawHall)}if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(drawHall);function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
+// Six zero-gravity Core copies, gently bouncing within the viewport.
+// Replaces the old particles and rectangular corridor lines (Dev Home only).
+const hall=document.getElementById('hall'),hc=hall.getContext('2d');
+let orbitCores=[],w=0,h=0,prev=0;
+function resizeHall(){
+ const d=Math.min(2,devicePixelRatio||1);
+ const oldW=w,oldH=h;w=document.documentElement.clientWidth;h=window.innerHeight;
+ hall.width=Math.round(w*d);hall.height=Math.round(h*d);hc.setTransform(d,0,0,d,0,0);
+ const radius=Math.max(19,Math.min(45,w*.055));
+ if(!orbitCores.length){
+  orbitCores=Array.from({length:6},(_,i)=>{
+   const angle=Math.PI*2*i/6+.37;
+   return {x:radius+(w-radius*2)*((i%3+.55)/3),y:radius+(h-radius*2)*((Math.floor(i/3)+.5)/2),
+    vx:Math.cos(angle)*(16+i*2),vy:Math.sin(angle)*(14+i*2),r:radius*(.8+(i%3)*.12),phase:i*.8};
+  });
+ }else for(const c of orbitCores){c.x=Math.max(c.r,Math.min(w-c.r,c.x*(w/(oldW||w))));c.y=Math.max(c.r,Math.min(h-c.r,c.y*(h/(oldH||h))));c.r=Math.max(16,Math.min(45,radius))}
+}
+resizeHall();window.addEventListener('resize',resizeHall);
+function drawHall(t){
+ const dt=Math.min(.05,(t-prev)/1000||.016);prev=t;hc.clearRect(0,0,w,h);
+ for(const c of orbitCores){
+  c.x+=c.vx*dt;c.y+=c.vy*dt;c.phase+=dt;
+  if(c.x-c.r<0){c.x=c.r;c.vx=Math.abs(c.vx)}
+  if(c.x+c.r>w){c.x=w-c.r;c.vx=-Math.abs(c.vx)}
+  if(c.y-c.r<0){c.y=c.r;c.vy=Math.abs(c.vy)}
+  if(c.y+c.r>h){c.y=h-c.r;c.vy=-Math.abs(c.vy)}
+  // Elastic collisions: each Core stays in motion, with no gravity.
+  for(const other of orbitCores){
+   if(other===c)break;const dx=c.x-other.x,dy=c.y-other.y,dist=Math.hypot(dx,dy)||1,min=c.r+other.r;
+   if(dist<min){const nx=dx/dist,ny=dy/dist,overlap=(min-dist)/2;c.x+=nx*overlap;c.y+=ny*overlap;other.x-=nx*overlap;other.y-=ny*overlap;
+    const rel=(c.vx-other.vx)*nx+(c.vy-other.vy)*ny;
+    if(rel<0){c.vx-=rel*nx;c.vy-=rel*ny;other.vx+=rel*nx;other.vy+=rel*ny}
+   }
+  }
+  const r=c.r*(1+.015*Math.sin(c.phase*1.7));
+  const grad=hc.createRadialGradient(c.x-r*.28,c.y-r*.3,r*.04,c.x,c.y,r);
+  grad.addColorStop(0,'rgba(222,250,255,.62)');grad.addColorStop(.33,'rgba(70,183,239,.54)');
+  grad.addColorStop(.8,'rgba(19,79,143,.55)');grad.addColorStop(1,'rgba(5,22,49,.43)');
+  hc.beginPath();hc.arc(c.x,c.y,r,0,Math.PI*2);hc.fillStyle=grad;hc.shadowColor='#4bbcff';hc.shadowBlur=16;hc.fill();hc.shadowBlur=0;
+  hc.font='900 '+Math.round(r*.52)+'px system-ui';hc.fillStyle='rgba(239,251,255,.62)';
+  hc.textAlign='center';hc.textBaseline='middle';hc.fillText('0',c.x,c.y);
+ }
+ requestAnimationFrame(drawHall);
+}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(drawHall);
+function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
 </main></body></html>
