@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CORBIT — Dev Home</title><style>
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#030c17;color:#e8f6ff}*{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 25%,#173a54,#081927 52%,#030c17 90%)}main{width:min(450px,100%)}h1{text-align:center;font-size:clamp(54px,13vw,82px);letter-spacing:.09em;margin:18px 0 10px;text-shadow:0 0 25px #298bd977}.tagline{text-align:center;color:#b7d6e9;font-size:15px;margin:0 0 55px}.group,.options{display:grid;gap:12px}button,a.link{display:block;width:100%;padding:16px 12px;border:1px solid #3a6884;border-radius:13px;background:#132d43;color:#e7f6ff;text-decoration:none;text-align:center;font-size:15px;font-weight:800;cursor:pointer}button.primary,.link.primary{background:#126f9e;border-color:#6bc4ea}button:disabled{opacity:.46;cursor:not-allowed}.back{background:transparent;text-align:left;border:none;padding:7px;color:#b8d9ea}.hidden{display:none!important}h2{text-align:center;font-size:23px;margin:0 0 22px}.subtitle{text-align:center;color:#98b7cc;font-size:12px;margin:10px 0 20px}.tiny{display:block;color:#acc8d8;font-size:11px;font-weight:500;margin-top:5px}.panel{min-height:300px}.small{font-size:12px;padding:11px}.lab-list{display:grid;gap:12px}button:focus-visible,a:focus-visible{outline:2px solid #a9e8ff;outline-offset:3px}
-body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hall{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.7}main{position:relative;z-index:1;min-width:0}@media(max-width:600px){body{padding:clamp(14px,5vw,22px);align-items:center}main{width:min(450px,100%)}h1{font-size:clamp(48px,14vw,72px);line-height:1.12;letter-spacing:.065em;overflow-wrap:normal}.tagline{font-size:clamp(12px,3.6vw,15px);line-height:1.5;margin-bottom:clamp(28px,6vh,55px)}.panel{min-height:0}button,a.link{padding:15px 11px}h2{margin-bottom:18px}}@media(prefers-reduced-motion:reduce){#hall{display:none}}#musicToggle{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:16px;width:auto;min-width:114px;z-index:5;padding:11px 13px;font-size:12px;background:#123247cc;backdrop-filter:blur(10px)}#musicToggle[aria-pressed=true]{border-color:#80d6f4}#musicStatus{position:fixed;bottom:65px;right:16px;z-index:5;font-size:11px;color:#cce6f4;max-width:min(280px,75vw);text-align:right;pointer-events:none}</style></head><body><canvas id="hall" aria-hidden="true"></canvas><button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span><main>
+body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hall{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.86}main{position:relative;z-index:1;min-width:0}@media(max-width:600px){body{padding:clamp(14px,5vw,22px);align-items:center}main{width:min(450px,100%)}h1{font-size:clamp(48px,14vw,72px);line-height:1.12;letter-spacing:.065em;overflow-wrap:normal}.tagline{font-size:clamp(12px,3.6vw,15px);line-height:1.5;margin-bottom:clamp(28px,6vh,55px)}.panel{min-height:0}button,a.link{padding:15px 11px}h2{margin-bottom:18px}}@media(prefers-reduced-motion:reduce){#hall{display:none}}#musicToggle{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:16px;width:auto;min-width:114px;z-index:5;padding:11px 13px;font-size:12px;background:#123247cc;backdrop-filter:blur(10px)}#musicToggle[aria-pressed=true]{border-color:#80d6f4}#musicStatus{position:fixed;bottom:65px;right:16px;z-index:5;font-size:11px;color:#cce6f4;max-width:min(280px,75vw);text-align:right;pointer-events:none}</style></head><body><canvas id="hall" aria-hidden="true"></canvas><button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span><main>
 <section class="panel" id="home"><h1>CORBIT</h1><p class="tagline">Don't Be the Dumbest. Outplay the Smartest!</p><nav class="group" aria-label="Main menu"><button class="primary" data-open="modes">▶ PLAY</button><a class="link" href="./play.html?screen=settings">SETTINGS &amp; RULES</a><button data-open="labs">LABS <span class="tiny">Sound · Visuals</span></button></nav></section>
 <section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><div class="options"><a class="link primary" href="./play.html?goal=6">CLASSIC<span class="tiny">Play the current Classic prototype</span></a><button disabled>RANKED<span class="tiny">Coming later</span></button><button disabled>ARCADE<span class="tiny">Coming later</span></button><button data-open="custom">CUSTOM<span class="tiny">Includes Practice against the computer</span></button></div></section>
 <section class="panel hidden" id="custom"><button class="back" data-back="modes">← PLAY</button><h2>CUSTOM</h2><button class="primary" data-open="practice">PRACTICE<span class="tiny">Play against the computer</span></button><p class="subtitle">Friend lobbies and additional custom rules are not implemented yet.</p></section>
@@ -22,14 +22,14 @@ function resizeHall(){
  const d=Math.min(2,devicePixelRatio||1);
  const oldW=w,oldH=h;w=document.documentElement.clientWidth;h=window.innerHeight;
  hall.width=Math.round(w*d);hall.height=Math.round(h*d);hc.setTransform(d,0,0,d,0,0);
- const radius=Math.max(19,Math.min(45,w*.055));
+ const radius=Math.max(24,Math.min(49,w*.064));
  if(!orbitCores.length){
   orbitCores=Array.from({length:6},(_,i)=>{
    const angle=Math.PI*2*i/6+.37;
    return {x:radius+(w-radius*2)*((i%3+.55)/3),y:radius+(h-radius*2)*((Math.floor(i/3)+.5)/2),
     vx:Math.cos(angle)*(16+i*2),vy:Math.sin(angle)*(14+i*2),r:radius*(.8+(i%3)*.12),phase:i*.8};
   });
- }else for(const c of orbitCores){c.x=Math.max(c.r,Math.min(w-c.r,c.x*(w/(oldW||w))));c.y=Math.max(c.r,Math.min(h-c.r,c.y*(h/(oldH||h))));c.r=Math.max(16,Math.min(45,radius))}
+ }else for(const c of orbitCores){c.x=Math.max(c.r,Math.min(w-c.r,c.x*(w/(oldW||w))));c.y=Math.max(c.r,Math.min(h-c.r,c.y*(h/(oldH||h))));c.r=Math.max(16,Math.min(49,radius))}
 }
 resizeHall();window.addEventListener('resize',resizeHall);
 function drawHall(t){
@@ -50,9 +50,9 @@ function drawHall(t){
   }
   const r=c.r*(1+.015*Math.sin(c.phase*1.7));
   const grad=hc.createRadialGradient(c.x-r*.28,c.y-r*.3,r*.04,c.x,c.y,r);
-  grad.addColorStop(0,'rgba(222,250,255,.62)');grad.addColorStop(.33,'rgba(70,183,239,.54)');
-  grad.addColorStop(.8,'rgba(19,79,143,.55)');grad.addColorStop(1,'rgba(5,22,49,.43)');
-  hc.beginPath();hc.arc(c.x,c.y,r,0,Math.PI*2);hc.fillStyle=grad;hc.shadowColor='#4bbcff';hc.shadowBlur=16;hc.fill();hc.shadowBlur=0;
+  grad.addColorStop(0,'rgba(225,251,255,.78)');grad.addColorStop(.33,'rgba(88,199,247,.68)');
+  grad.addColorStop(.8,'rgba(27,99,160,.67)');grad.addColorStop(1,'rgba(8,34,65,.53)');
+  hc.beginPath();hc.arc(c.x,c.y,r,0,Math.PI*2);hc.fillStyle=grad;hc.shadowColor='#4bbcff';hc.shadowBlur=22;hc.fill();hc.shadowBlur=0;
  }
  requestAnimationFrame(drawHall);
 }
