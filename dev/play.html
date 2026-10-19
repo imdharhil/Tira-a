@@ -10,9 +10,9 @@
 <div class="modalBack hidden" id="resultModal"><div class="dialog"><h1 id="resultTitle">VICTORY</h1><p id="resultText"></p><button class="menuBtn primary" id="again">PLAY AGAIN</button><button class="menuBtn" id="toMenu">MAIN MENU</button></div></div>
 <script>
 (()=>{'use strict';const sourceMarkup=document.documentElement.outerHTML; if(window.crypto&&crypto.subtle){crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceMarkup)).then(hash=>{const hex=Array.from(new Uint8Array(hash)).map(x=>x.toString(16).padStart(2,'0')).join('');const el=document.getElementById('buildFingerprint');if(el)el.textContent=hex.slice(0,16)}).catch(()=>{const el=document.getElementById('buildFingerprint');if(el)el.textContent='unavailable'})} const $=id=>document.getElementById(id),cv=$('arena'),ctx=cv.getContext('2d');let goal=6,g,phase='menu',sel=0,bonus=0,shot=null,particles=[],pulse=0,shake=0,boom=0,winTime=0,clock=0,last=0,ticket=0,tasks=[],events=[],impactNotice=null,record={wins:0,losses:0};try{Object.assign(record,JSON.parse(localStorage.getItem('cellcore-record-v04')||'{}'))}catch{};function save(){try{localStorage.setItem('cellcore-record-v04',JSON.stringify(record))}catch{}}const standardOdds=[28,34,33,5],lateEasyOdds=[24,36,35,5];function drawCard(){const odds=goal===6&&g&&g.turn>=15?lateEasyOdds:standardOdds;let n=Math.random()*100;for(let i=0;i<4;i++){n-=odds[i];if(n<0)return i+1}return 4}const state=(pos)=>!pos?'NEUTRAL 0':`${pos>0?'BLUE':'RED'} ${Math.abs(pos)}`;function log(msg){events.push(`Turn ${g?.turn||1} · ${msg}`);$('debugText').value=events.join('\n')}function armReset(){for(const timer of tasks)clearTimeout(timer);tasks=[];ticket++}function later(f,ms){const t=ticket;tasks.push(setTimeout(()=>{if(t===ticket)f()},ms))}function show(id){if(id==='menu')$('continueGame').hidden=!(g&&!g.ended);for(const name of ['menu','modesScreen','levelsScreen','settingsScreen','debugScreen'])$(name).classList.toggle('hidden',name!==id)}// Critical Warning: Dev-only gameplay sound; visual shake is unchanged.
-const coreSoundSpeeds=[0,11.50,5.45,8.20,9.25,6.90,12.00],coreSoundSoftness=[1,1,1,1,1,1,1];
-const coreSoundEQ={low:1,mid:-11,high:-3,boost:3};
-const coreMix={a:5,b:4,va:.70,vb:.40};
+const coreSoundSpeeds=[0,2.40,4.50,7.20,4.85,3.40,8.95],coreSoundSoftness=[.90,.90,.90,.90,.90,.90,.90];
+const coreSoundEQ={low:-2,mid:-9,high:-7,boost:4};
+const coreMix={a:42,b:42,va:1,vb:0}; // Lab #43 Spring Boing (zero-based index 42)
 // Quiet Doodle Menu background track, independent from Core and combat SFX.
 // iOS Safari requires an explicit user interaction before playback.
 const bgMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
@@ -28,36 +28,26 @@ document.addEventListener('keydown',()=>{if(musicEnabled)startMusic()});
 window.addEventListener('pagehide',()=>bgMusic.pause());
 function syncGameMusic(){if(!g||g.ended){bgMusic.pause()}musicLabel()}
 musicLabel();
-const coreAudio=new Audio();coreAudio.loop=true;coreAudio.preload='auto';let coreVolume=25;try{const v=Number(localStorage.getItem('corbit-dev-core-volume-v3'));if(localStorage.getItem('corbit-dev-core-volume-v3')!==null&&Number.isFinite(v))coreVolume=Math.max(0,Math.min(100,v))}catch{}coreAudio.volume=coreVolume/100;$('coreVolume').value=coreVolume;$('coreVolumeValue').textContent=coreVolume+'%';$('coreVolume').addEventListener('input',e=>{coreVolume=Number(e.target.value);coreAudio.volume=coreVolume/100;$('coreVolumeValue').textContent=coreVolume+'%';try{localStorage.setItem('corbit-dev-core-volume-v3',String(coreVolume))}catch{}});
+const coreAudio=new Audio();coreAudio.loop=true;coreAudio.preload='auto';let coreVolume=45;try{const v=Number(localStorage.getItem('corbit-dev-core-volume-spring-v1'));if(localStorage.getItem('corbit-dev-core-volume-spring-v1')!==null&&Number.isFinite(v))coreVolume=Math.max(0,Math.min(100,v))}catch{}coreAudio.volume=coreVolume/100;$('coreVolume').value=coreVolume;$('coreVolumeValue').textContent=coreVolume+'%';$('coreVolume').addEventListener('input',e=>{coreVolume=Number(e.target.value);coreAudio.volume=coreVolume/100;$('coreVolumeValue').textContent=coreVolume+'%';try{localStorage.setItem('corbit-dev-core-volume-spring-v1',String(coreVolume))}catch{}});
 let coreSoundURL=null,coreSoundCharge=-1,coreSoundReady=true;let audioAttempt=0;const audioStart=document.createElement('button');audioStart.textContent='♪ ENABLE CORE SOUND';audioStart.type='button';audioStart.style.cssText='position:fixed;top:58px;right:12px;z-index:9999;padding:9px 11px;border:1px solid #72bbde;border-radius:10px;background:#12374b;color:#eaf8ff;font:bold 11px system-ui;display:none';document.body.append(audioStart);audioStart.onclick=()=>{coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()};
-function coreLayerSample(i,t,c,d){
- const p=Math.PI*2,soft=coreSoundSoftness[c];
- if(c===0){
-  const base=i===5?142:125,fade=Math.max(0,Math.min(1,t/.15,(d-t)/.15));
-  const warmth=.52*Math.sin(p*base*t)+.19*Math.sin(p*base*.5*t+.4);
-  const shimmer=(1-soft*.9)*.055*Math.sin(p*base*2*t);
-  return (warmth+shimmer)*(.13+.055*(1-soft))*fade;
- }
- const u=c/6,bass=i===5?220:196,scale=i===5?.95:1.4;
- const rate=Math.max(.14,Math.min(5.3,coreSoundSpeeds[c]*scale));
- const depth=(.025+.115*u)*(1-soft*.43);
- const pitchSway=(bass*depth/rate)*(1-Math.cos(p*rate*t));
- const slowerRate=rate*.37;
- const secondarySway=(bass*depth*.37/slowerRate)*(1-Math.cos(p*slowerRate*t+.3));
- const phase=p*bass*t+pitchSway+secondarySway;
- const energySwell=.78+.15*Math.sin(p*(.23+.07*u)*t+.45);
- const movement=.82+.13*Math.sin(p*rate*t+.9);
- const body=Math.sin(phase)+.27*Math.sin(phase*.5+.7);
- const shimmer=(1-soft*.84)*(.10+.13*u)*Math.sin(2*phase+.35*Math.sin(p*rate*.43*t));
- const unstable=(.035+.085*u)*Math.sin(p*(bass*1.006)*t+Math.sin(p*rate*.28*t));
- const gain=(.17+.55*u)*energySwell*movement;
- return Math.max(-1,Math.min(1,(body*.65+shimmer+unstable)*gain));
+// Spring Boing #43 from Shake Lab; use the lab synthesis model at 90% softness.
+function springBoingSample(t,c,d){
+ const p=2*Math.PI,u=c/6,soft=.90,hz=185,v=2;
+ const wobble=4.8*(.55+.75*u),bend=.31*(1-.48*soft),spring=.65;
+ const phase=p*hz*t+p*hz*bend/(p*wobble)*(1-Math.cos(p*wobble*t));
+ const motion=Math.sin(p*wobble*t);
+ const pulses=Math.pow(.5+.5*Math.cos(p*wobble*.65*t),5);
+ const bounce=Math.exp(-(t%(.45+v*.047))/(.12+.018*(v%4)));
+ const body=Math.sin(phase)+(.22+.12*spring)*Math.sin(phase*.5+.5);
+ const rubber=Math.sin(phase*(1.3+.07*(v%3))+.5*motion);
+ const texture=(1-soft*.7)*.14*rubber;
+ const swelling=.67+.2*motion+spring*.25*pulses;
+ const decay=1-spring*.32+spring*.32*bounce;
+ const entry=Math.min(1,Math.max(0,t)/.055);
+ const power=(.18+.38*u)*.8;
+ return Math.max(-.9,Math.min(.9,(body*.56+texture)*swelling*decay*power*entry));
 }
-function criticalSample(t,c,d){
- const a=coreLayerSample(coreMix.a,t,c,d)*coreMix.va;
- const b=coreLayerSample(coreMix.b,t,c,d)*coreMix.vb;
- return Math.tanh((a+b)*1.1);
-}
+function criticalSample(t,c,d){return springBoingSample(t,c,d)}
 function coreWav(c){
  const rate=22050,duration=8,n=rate*duration,buffer=new ArrayBuffer(44+n*2),v=new DataView(buffer);let off=0;
  const str=x=>{for(let i=0;i<x.length;i++)v.setUint8(off++,x.charCodeAt(i))};
@@ -128,7 +118,7 @@ main.onclick=()=>{if(protect){playerProtect();return;}sel=i;render()};b.appendCh
 if(numeric&&!empty){const action=document.createElement('button');action.type='button';action.className='card-top-action';action.textContent='↻';action.title='Convert this Cell Card to Cell Pieces';action.setAttribute('aria-label','Convert Cell '+(i+1)+' to '+g.you.hand[i]+' Cell Pieces');action.disabled=!can;action.onclick=()=>playerConvert(i);b.appendChild(action)}
 if(gold||protect){const action=document.createElement('button');action.type='button';action.className='card-top-action'+(gold?' gold-action':'');action.textContent=gold?'10':'12';action.title=gold?'Spend 10 Cell Pieces to fire Gold +4':'Spend 12 Cell Pieces to restore Protect';action.setAttribute('aria-label',action.title);action.disabled=!can||(gold?g.you.pieces<10:g.you.shields>=3||g.you.pieces<12);action.onclick=gold?()=>{sel=3;playerFire()}:playerRestoreProtect;b.appendChild(action)}
 $('cards').appendChild(b)}$('record').textContent=`Wins ${record.wins||0} · Losses ${record.losses||0}`}
-function announce(label,color){impactNotice={label,color,life:1.75,full:1.75}}function process(s,name){let count=0;while(s.pieces>=12&&s.shields<3){s.pieces-=12;s.shields++;count++}if(count)log(`${name} automatically processed pieces → +${count} Protect (stored ${s.shields})`)}function apply(who,cp){const attacker=g[who],defender=g[who==='you'?'ai':'you'],a=who==='you'?1:-1,old=g.pos,before=defender.shields;let blocked=0;if(defender.armed){defender.armed=false;blocked=cp;log(`${who==='you'?'RED':'BLUE'} armed Protect stopped the entire +${cp} shot`)}playEffect(blocked?'blocked':'impact');announce(blocked?'BLOCKED':String(cp),blocked?'#d2ecfa':who==='you'?'#80dcff':'#ff9bab');const applied=cp-blocked,removed=old*a<0?Math.min(Math.abs(old),applied):0;g.pos=old+a*applied;updateCoreSound();if(Math.floor(Math.abs(g.pos)/2)>Math.floor(Math.abs(old)/2)&&Math.abs(g.pos)<goal)haptic('charge');if(removed>0)attacker.pieces+=removed;log(`${who==='you'?'BLUE':'RED'} fires +${cp} | ${state(old)} → ${state(g.pos)} | Blocked ${blocked} | Applied ${applied} | Destroyed ${removed} | Pieces earned ${removed} | Opponent Protect ${before}→${defender.shields}`);pulse=1;shake=.6;if(Math.abs(g.pos)>=goal){g.ended=true;phase='over';coreAudio.pause();bgMusic.pause();musicLabel();playEffect('explosion');boom=.001;winTime=0;particles=[];const won=g.pos>0;record[won?'wins':'losses']=(record[won?'wins':'losses']||0)+1;save();log(won?'BLUE victory':'RED victory');$('resultTitle').textContent=won?'BLUE WINS!':'RED WINS!';$('resultText').textContent=`Core reached ${Math.abs(g.pos)} cells (winning target: ${goal}).`;later(()=>$('resultModal').classList.remove('hidden'),2100);render();return}if(who==='you'){phase='ai';render();later(aiMove,650)}else{g.turn++;phase='human';render()}}
+function announce(label,color){impactNotice={label,color,life:1.75,full:1.75}}function process(s,name){let count=0;while(s.pieces>=12&&s.shields<3){s.pieces-=12;s.shields++;count++}if(count)log(`${name} automatically processed pieces → +${count} Protect (stored ${s.shields})`)}function apply(who,cp){const attacker=g[who],defender=g[who==='you'?'ai':'you'],a=who==='you'?1:-1,old=g.pos,before=defender.shields;let blocked=0;if(defender.armed){defender.armed=false;blocked=cp;log(`${who==='you'?'RED':'BLUE'} armed Protect stopped the entire +${cp} shot`)}playEffect(blocked?'blocked':'impact');announce(blocked?'BLOCKED':String(cp),blocked?'#d2ecfa':who==='you'?'#80dcff':'#ff9bab');const applied=cp-blocked,removed=old*a<0?Math.min(Math.abs(old),applied):0;g.pos=old+a*applied;updateCoreSound();if(Math.floor(Math.abs(g.pos)/2)>Math.floor(Math.abs(old)/2)&&Math.abs(g.pos)<goal)haptic('charge');if(removed>0)attacker.pieces+=removed;log(`${who==='you'?'BLUE':'RED'} fires +${cp} | ${state(old)} → ${state(g.pos)} | Blocked ${blocked} | Applied ${applied} | Destroyed ${removed} | Pieces earned ${removed} | Opponent Protect ${before}→${defender.shields}`);pulse=1;shake=.6;if(Math.abs(g.pos)>=goal){g.ended=true;phase='over';coreAudio.pause();bgMusic.pause();musicLabel();boom=.001;winTime=0;later(()=>playEffect('explosion'),950);particles=[];const won=g.pos>0;record[won?'wins':'losses']=(record[won?'wins':'losses']||0)+1;save();log(won?'BLUE victory':'RED victory');$('resultTitle').textContent=won?'BLUE WINS!':'RED WINS!';$('resultText').textContent=`Core reached ${Math.abs(g.pos)} cells (winning target: ${goal}).`;later(()=>$('resultModal').classList.remove('hidden'),3050);render();return}if(who==='you'){phase='ai';render();later(aiMove,650)}else{g.turn++;phase='human';render()}}
 function fire(who,cp){playEffect('fire');phase='shot';shot={who,cp,t:0};render()}function mediumDecision(pos,hand,shields,armed,target,blueArmed){
   const sorted=[...hand].sort((a,b)=>b-a),highest=sorted[0];
   const protectedShot=blueArmed;
@@ -193,7 +183,7 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.rand
  // Original v0.28 micro-tremor; position changes, not the progress number.
  const winning=!!g.ended;
  if(winning)winTime+=dt;
- const tension=winning? Math.max(0,1-winTime/.76):1;
+ const tension=winning? (winTime<.95?1:Math.max(0,1-(winTime-.95)/.76)):1;
  // Default visual style: Shake Lab #1 Micro Tremor.
  // Reference tuning: 1.70x tremor speed, 100% movement at 87% charge.
  // Actual instability always tracks current Core count / victory target.
@@ -204,15 +194,15 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.rand
  const jitterX=amp*Math.sin(clock*37);
  const jitterY=amp*.75*Math.sin(clock*29+.7);
  const throb=1+.005*urgency*Math.sin(clock*5);
- const overloadScale=winning?(winTime<.7?1+Math.sin(winTime*48)*.068:Math.max(0,1-(winTime-.7)/.32)):1;
+ const burstTime=winTime-.95;const overloadScale=winning?(burstTime<0?1+.025*Math.sin(winTime*19):burstTime<.7?1+Math.sin(burstTime*48)*.068:Math.max(0,1-(burstTime-.7)/.32)):1;
  const rr=r*throb*overloadScale;
  let core=ctx.createRadialGradient(-rr*.28,-rr*.29,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(1,'#0b2137');
- if(!winning||winTime<1.02){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
+ if(!winning||winTime<1.97){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
  // The membrane stays intact: organic shape instability replaces stress cracks.
  circle(0,0,rr,core);
  ctx.globalAlpha*=.18;circle(0,0,rr*.77,'#071b29');ctx.globalAlpha=tension;
  if(!winning&&(g.you.armed||g.ai.armed)){const col=g.you.armed?'#50c0fa':'#ff748a',count=g.you.armed&&g.ai.armed?2:1;for(let m=0;m<count;m++)for(let i=0;i<12;i++){let a=i*Math.PI/6+clock*.04;const dist=rr*(1.13+m*.2),xx=Math.cos(a)*dist,yy=Math.sin(a)*dist,s=rr*.10;ctx.beginPath();for(let k=0;k<6;k++){let ang=k*Math.PI/3,px=xx+Math.cos(ang)*s,py=yy+Math.sin(ang)*s;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fillStyle=col+'35';ctx.fill()}}ctx.restore();ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f0faff';ctx.font=`900 ${Math.round(rr*.47)}px system-ui`;ctx.fillText(Math.abs(g.pos),x+Math.round(jitterX*.28),y+Math.round(jitterY*.28));ctx.restore()}ctx.restore();if(shot){shot.t=Math.min(1,shot.t+dt*1.42);const k=1-Math.pow(1-shot.t,2),startX=shot.who==='you'?w*.17:w*.83,startY=h*.91,sx=startX+(x-startX)*k,sy=startY+(y-startY)*k,color=shot.who==='you'?'#49c9ff':'#ff6883',size=20*(1-k)+7;ctx.beginPath();ctx.moveTo(startX,startY);ctx.lineTo(sx,sy);ctx.strokeStyle=color+'80';ctx.lineWidth=3;ctx.stroke();circle(sx,sy,size,color);ctx.fillStyle='#071b2b';ctx.font=`800 ${size}px system-ui`;ctx.fillText(shot.cp,sx,sy);if(shot.t===1){const s=shot;shot=null;for(let i=0;i<8;i++){const a=i*Math.PI/4;particles.push({x,y,vx:Math.cos(a)*(25+Math.random()*55),vy:Math.sin(a)*(25+Math.random()*55),life:.18,color,size:2})}apply(s.who,s.cp)}}for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;ctx.globalAlpha=Math.max(0,p.life*2);circle(p.x,p.y,p.size||2.7,p.color);if(p.life<=0)particles.splice(i,1)}ctx.globalAlpha=1;if(pulse>0){ctx.globalAlpha=pulse*.16;circle(x,y,r*1.05,'#d3f7ff');ctx.globalAlpha=1;pulse=Math.max(0,pulse-dt*2.3)}if(boom>0){
- const t=winTime;
+ const t=winTime-.95;
  if(t>.67&&t<1.17){ctx.save();const v=(t-.67)/.5,alpha=Math.pow(1-v,1.3),rad=r*(.2+v*2.9);
  const grad=ctx.createRadialGradient(x,y,0,x,y,rad);grad.addColorStop(0,`rgba(255,255,255,${alpha})`);grad.addColorStop(.27,`rgba(255,230,165,${alpha*.8})`);grad.addColorStop(.7,`rgba(105,206,255,${alpha*.23})`);grad.addColorStop(1,'rgba(0,0,0,0)');circle(x,y,rad,grad);
  ctx.strokeStyle=`rgba(255,245,218,${alpha*.95})`;ctx.lineWidth=12+v*15;ctx.beginPath();ctx.arc(x,y,rad*.92,0,Math.PI*2);ctx.stroke();ctx.restore()}
