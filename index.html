@@ -83,11 +83,10 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*2,(Math.rand
  // Reference tuning: 1.70x tremor speed, 100% movement at 87% charge.
  // Actual instability always tracks current Core count / victory target.
  const urgency=Math.pow(progress,1.45);
- const f=clock;
- // Screen-visible circular Core displacement, scaled to its radius; keep text anchored separately.
- const amp=Math.min(r*.085, r*(.012+urgency*.065));
- const jitterX=amp*(.72*Math.sin(f*24)+.28*Math.sin(f*39));
- const jitterY=amp*(.72*Math.sin(f*29+.7)+.28*Math.sin(f*43));
+ const f=clock*1.70;
+ const amp=(.1+urgency*3.2)*(100/55);
+ const jitterX=amp*Math.sin(f*69);
+ const jitterY=amp*.75*Math.sin(f*47+.7);
  const squishX=1, squishY=1;
  const throb=1+.005*urgency*Math.sin(clock*5);
  const overloadScale=winning?(winTime<.7?1+Math.sin(winTime*48)*.068:Math.max(0,1-(winTime-.7)/.32)):1;
