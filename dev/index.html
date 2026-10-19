@@ -53,8 +53,6 @@ function drawHall(t){
   grad.addColorStop(0,'rgba(222,250,255,.62)');grad.addColorStop(.33,'rgba(70,183,239,.54)');
   grad.addColorStop(.8,'rgba(19,79,143,.55)');grad.addColorStop(1,'rgba(5,22,49,.43)');
   hc.beginPath();hc.arc(c.x,c.y,r,0,Math.PI*2);hc.fillStyle=grad;hc.shadowColor='#4bbcff';hc.shadowBlur=16;hc.fill();hc.shadowBlur=0;
-  hc.font='900 '+Math.round(r*.52)+'px system-ui';hc.fillStyle='rgba(239,251,255,.62)';
-  hc.textAlign='center';hc.textBaseline='middle';hc.fillText('0',c.x,c.y);
  }
  requestAnimationFrame(drawHall);
 }
