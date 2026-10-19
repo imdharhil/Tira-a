@@ -117,7 +117,7 @@ function play(item){
  try{
   const id=item.category+'-'+item.index;
   // Looping sounds toggle off; one-shot Fire/Impact always RESTART, never stack.
-  if(currentId===id&&!player.paused&&(item.category==='Shake'||item.category==='Home')){
+  if(currentId===id&&!player.paused&&(item.category==='Shake'||item.category==='Home'||item.category==='Mix')){
    stopPreview();status('Stopped: '+item.name);render();return;
   }
   stopPreview();
