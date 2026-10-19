@@ -84,7 +84,7 @@ if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*2,(Math.rand
  // Actual instability always tracks current Core count / victory target.
  const urgency=Math.pow(progress,1.45);
  const f=clock*1.70;
- const amp=(.1+urgency*3.2)*(100/55);
+ const amp=(1.35+urgency*3.35)*(100/55);
  const jitterX=amp*Math.sin(f*69);
  const jitterY=amp*.75*Math.sin(f*47+.7);
  const squishX=1, squishY=1;
