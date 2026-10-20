@@ -71,64 +71,27 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame
 // Opening-only title treatment. Base TIRA never moves; the smaller ! reserves a fixed slot.
 // Subtle synthesized neon-transformer flicker: no external media or downloads.
 const flickerAudioButton=document.getElementById('flickerAudioToggle');
-let neonContext=null,neonEnabled=false,neonActive=null;
-function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · '+(neonContext?'OFF':'TAP TO ENABLE');flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled))}
-function silenceNeon(){
- if(!neonActive)return;
- const stop=neonActive;neonActive=null;
- try{stop()}catch{}
+// User-created WAV recordings from the Dev audio folder.
+// Browser audio starts only after the user enables it by tapping the control.
+const flickerShort=new Audio('./assets/audio/tira-one-short-light-flick.wav');
+const flickerLong=new Audio('./assets/audio/tira-longer-multiple-light-flick.wav');
+for(const sound of [flickerShort,flickerLong]){sound.preload='auto';sound.volume=.42}
+let neonEnabled=false;
+function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF / ENABLE';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled))}
+function silenceNeon(){for(const sound of [flickerShort,flickerLong]){sound.pause();try{sound.currentTime=0}catch{}}}
+function playFlicker(sound){
+ if(!neonEnabled||document.hidden)return;
+ try{sound.pause();sound.currentTime=0;const result=sound.play();if(result&&result.catch)result.catch(()=>{flickerAudioButton.title='Playback was blocked; tap sound button again.'})}catch{}
 }
-// Neon fixture sound candidate: short relay spark, erratic electrical sizzle,
-// then a quiet 120Hz ballast hum. No deep pitch drop or metallic resonator.
-function neonFlick(on,hold=160){
- if(!neonEnabled||!neonContext||neonContext.state!=='running'||document.hidden)return;
- silenceNeon();
- const ac=neonContext,now=ac.currentTime;
+function neonFlick(on,hold=160,first=false){
  if(!on)return;
- const duration=Math.min(1.06,Math.max(.08,hold/1000));
- const attack=Math.min(.028,duration*.22);
- const release=Math.min(.065,duration*.25);
- const n=Math.ceil(ac.sampleRate*duration);
- const buffer=ac.createBuffer(1,n,ac.sampleRate),data=buffer.getChannelData(0);
- // Band-limited electric discharge texture, with sporadic ignition sparks.
- let filtered=0,prev=0;
- const sparks=[.006,.024,.053,.103].filter(v=>v<duration*.8);
- for(let i=0;i<n;i++){
-  const t=i/ac.sampleRate,noise=Math.random()*2-1;
-  filtered=.83*filtered+.17*noise;
-  const hiss=noise-filtered;
-  let ticks=0;
-  for(const spark of sparks){const delta=t-spark;if(delta>=0&&delta<.013)ticks+=Math.exp(-delta*350)*(Math.random()*2-1)}
-  const flutter=.82+.18*Math.sin(2*Math.PI*31*t);
-  const fade=Math.min(1,t/attack,(duration-t)/release);
-  data[i]=(hiss*.13*flutter+ticks*.23)*Math.max(0,fade);
-  prev=hiss;
- }
- const crackle=ac.createBufferSource();crackle.buffer=buffer;
- const filter=ac.createBiquadFilter();filter.type='bandpass';filter.frequency.value=1950;filter.Q.value=1.15;
- const fizz=ac.createGain();fizz.gain.value=.105;
- crackle.connect(filter);filter.connect(fizz);fizz.connect(ac.destination);
- crackle.start(now);crackle.stop(now+duration);
- // Subdued fluorescent ballast hum emerges after the initial ignition.
- const hum=ac.createOscillator(),humGain=ac.createGain();
- hum.type='sine';hum.frequency.value=120;
- humGain.gain.setValueAtTime(0,now);
- humGain.gain.linearRampToValueAtTime(.0085,now+Math.min(.12,duration*.55));
- humGain.gain.setValueAtTime(.0085,now+Math.max(.12,duration-.08));
- humGain.gain.linearRampToValueAtTime(0,now+duration);
- hum.connect(humGain);humGain.connect(ac.destination);
- hum.start(now);hum.stop(now+duration+.015);
- neonActive=()=>{const t=ac.currentTime;humGain.gain.cancelScheduledValues(t);humGain.gain.setTargetAtTime(0,t,.01);fizz.gain.setTargetAtTime(0,t,.01)};
+ if(first)playFlicker(flickerLong);
+ else playFlicker(flickerShort);
 }
-flickerAudioButton.addEventListener('click',async()=>{
- if(neonEnabled){neonEnabled=false;silenceNeon();neonStatus();return}
- try{
-  const Ctx=window.AudioContext||window.webkitAudioContext;
-  if(!Ctx){flickerAudioButton.textContent='⚡ AUDIO UNSUPPORTED';return}
-  neonContext=neonContext||new Ctx();await neonContext.resume();
-  neonEnabled=neonContext.state==='running';neonStatus();
-  if(neonEnabled)neonFlick(true,160);
- }catch{flickerAudioButton.textContent='⚡ TAP AGAIN TO ENABLE'}
+flickerAudioButton.addEventListener('click',()=>{
+ neonEnabled=!neonEnabled;silenceNeon();neonStatus();
+ // Explicit user gesture unlocks the clips for subsequent animated playback.
+ if(neonEnabled)playFlicker(flickerShort);
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden)silenceNeon()});
 const introButton=document.getElementById('introToggle');
@@ -169,9 +132,10 @@ async function animateIntro(){
   if(token!==introToken)return;
   suffix.textContent=word;
   // Faulty sign rhythm: brief spark, rest, second irregular burst, hold, then fade off.
+  let firstFlash=true;
   for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
    if(token!==introToken)return;
-   suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms);
+   suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms,firstFlash);if(on)firstFlash=false;
    await introDelay(ms);
   }
   introReset();silenceNeon();await introDelay(320);
