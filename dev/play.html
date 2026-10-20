@@ -63,7 +63,7 @@ $('effects').value=animationMode;document.documentElement.dataset.motion=animati
 $('effects').addEventListener('change',()=>{animationMode=$('effects').value;document.documentElement.dataset.motion=animationMode;particles=[];pulse=0;shake=0;try{localStorage.setItem('corbit-dev-animation-v1',animationMode)}catch{}});
 let coreShakeEnabled=true;try{coreShakeEnabled=localStorage.getItem('corbit-dev-core-shake-enabled-v1')!=='off'}catch{}
 const coreShakeControl=$('coreShakeEnabled');coreShakeControl.checked=coreShakeEnabled;coreShakeControl.addEventListener('change',()=>{coreShakeEnabled=coreShakeControl.checked;try{localStorage.setItem('corbit-dev-core-shake-enabled-v1',coreShakeEnabled?'on':'off')}catch{}});
-function musicLabel(){musicToggle.textContent=musicError?'♪ ERROR':!musicEnabled?'♪ OFF':bgMusic.paused?'♪ START':'♪ ON';musicToggle.setAttribute('aria-pressed',String(musicEnabled&&!bgMusic.paused))}
+function musicLabel(){musicToggle.textContent=musicError?'♪ ERROR':musicEnabled?'♪ ON':'♪ OFF';musicToggle.setAttribute('aria-pressed',String(musicEnabled))}
 function startMusic(){if(!musicEnabled||!g||g.ended||!document.getElementById('game')?.offsetParent)return;if(!bgMusic.paused)return;const p=bgMusic.play();if(p&&p.catch)p.then(()=>{musicError=false;musicLabel()}).catch(()=>{musicLabel()})}
 musicToggle.addEventListener('click',()=>{musicEnabled=!musicEnabled;musicError=false;try{localStorage.setItem(sharedMusicKey,musicEnabled?'on':'off');const legacy=JSON.parse(localStorage.getItem('tira-dev-audio-mix-v3')||'{}');legacy.music=musicEnabled;localStorage.setItem('tira-dev-audio-mix-v3',JSON.stringify(legacy))}catch{}if(!musicEnabled)bgMusic.pause();else startMusic();musicLabel()});
 bgMusic.addEventListener('error',()=>{musicError=true;musicLabel()});
@@ -112,7 +112,8 @@ function updateCoreSound(){
  const old=coreSoundURL;coreSoundURL=URL.createObjectURL(coreWav(charge));coreAudio.src=coreSoundURL;coreAudio.load();if(old)URL.revokeObjectURL(old);
  coreAudio.play().then(()=>{if(attempt===audioAttempt)audioStart.style.display='none'}).catch(()=>{if(attempt===audioAttempt){coreSoundReady=false;audioStart.style.display='block'}});
 }
-document.addEventListener('pointerdown',e=>{if(coreSoundEnabled&&g&&!g.ended&&!coreSoundReady&&!audioStart.contains(e.target)){coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()}},{passive:true});
+document.addEventListener('pointerdown',e=>{if(coreSoundEnabled&&g&&!g.ended&&!audioStart.contains(e.target)&&(coreAudio.paused||!coreSoundReady)){coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()}},{passive:true});
+document.addEventListener('keydown',()=>{if(coreSoundEnabled&&g&&!g.ended&&(coreAudio.paused||!coreSoundReady)){coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()}});
 const coreSoundControl=$('coreSoundEnabled');coreSoundControl.checked=coreSoundEnabled;
 coreSoundControl.addEventListener('change',()=>{coreSoundEnabled=coreSoundControl.checked;audioAttempt++;coreAudio.muted=!coreSoundEnabled;audioStart.style.display='none';try{localStorage.setItem('corbit-dev-core-sound-enabled-v1',coreSoundEnabled?'on':'off')}catch{}if(coreSoundEnabled){coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()}else coreAudio.pause()});
 coreAudio.muted=!coreSoundEnabled;
