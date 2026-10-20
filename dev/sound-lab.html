@@ -19,6 +19,18 @@
 <div class="actions"><button id="scSave" type="button">SAVE LOCALLY</button><button id="scReset" type="button">RESET STARTER</button></div>
 <div style="margin-top:14px"><b>My saved sounds</b><div id="scSaved" style="display:grid;gap:8px;margin-top:9px"></div></div>
 <p id="scStatus" role="status" aria-live="polite" style="font-size:12px;margin:9px 0 0">Ready. Settings are saved only when you press SAVE LOCALLY.</p>
+</section><section class="note" id="scWaveEditor" aria-labelledby="scWaveHeading">
+<h2 id="scWaveHeading">MY SOUND LIBRARY · WAVEFORM EDITOR</h2>
+<p>Import WAV audio, visualize its peaks, drag across the waveform to select a cut, and trim. Import works locally; clips are stored in this browser with IndexedDB.</p>
+<label style="display:block;padding:12px;border:1px dashed #6396b4;border-radius:10px">IMPORT WAV <input id="weFile" type="file" accept=".wav,audio/wav,audio/x-wav,audio/wave" style="display:block;margin-top:8px;max-width:100%"></label>
+<div id="weDrop" tabindex="0" style="border:1px dashed #37617e;padding:12px;text-align:center;margin:10px 0;border-radius:10px">Or drop a WAV file here</div>
+<canvas id="weCanvas" width="860" height="200" role="img" aria-label="Imported audio waveform. Drag to select an area to keep." style="display:block;width:100%;height:200px;background:#051421;border-radius:10px;touch-action:none;cursor:crosshair"></canvas>
+<div style="display:flex;justify-content:space-between;color:#9abbcf;font-size:12px"><span id="weLength">No audio selected</span><span id="weSelection">Drag to select</span></div>
+<div class="grid" style="margin-top:12px"><label>Cut start (seconds)<input id="weStart" type="number" min="0" step=".01" value="0" style="display:block;width:100%;padding:8px;background:#051421;color:#effaff;border:1px solid #426982"></label><label>Cut end (seconds)<input id="weEnd" type="number" min="0" step=".01" value="0" style="display:block;width:100%;padding:8px;background:#051421;color:#effaff;border:1px solid #426982"></label></div>
+<div class="actions" style="flex-wrap:wrap"><button id="wePlay">▶ PLAY SELECTION</button><button id="weTrim">✂ TRIM TO SELECTION</button><button id="weAdd">+ ADD CUT TO MIX</button><button id="weSave">SAVE CUT</button><button id="weExport">↓ EXPORT CUT WAV</button></div>
+<label style="display:block;margin-top:10px">Clip name <input id="weName" maxlength="60" value="Imported Sound" style="display:block;width:100%;padding:9px;background:#051421;color:#effaff;border:1px solid #426982;border-radius:7px"></label>
+<h3>Saved WAV clips</h3><div id="weLibrary" style="display:grid;gap:8px"></div>
+<p id="weStatus" role="status" aria-live="polite" style="font-size:12px">Import a WAV file to start editing.</p>
 </section><section class="note" id="scMixPanel"><h2>LOGO FLICKER · MIX &amp; TIMING</h2><p>Layer saved sounds, set their start times, speed/pitch and volume, then preview or export the combined WAV.</p><div class="actions" style="flex-wrap:wrap"><button id="scAdd">+ ADD CURRENT</button><button id="scPlayMix">▶ PLAY MIX</button><button id="scExportMix">↓ EXPORT MIX</button><button id="scClearMix">CLEAR</button></div><div id="scTracks" style="display:grid;gap:10px;margin:12px 0"></div><h3>MASTER EQ · ALL LOGO SOUND</h3><p style="font-size:12px">Low, mid, high and output EQ applies to individual previews/exports and all mixed clips. Independent of the legacy Sound Lab EQ.</p><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><label>LOW <output id="scLowV">0 dB</output><input type="range" id="scLow" min="-12" max="12" value="0" style="width:100%"></label><label>MID <output id="scMidV">0 dB</output><input type="range" id="scMid" min="-12" max="12" value="0" style="width:100%"></label><label>HIGH <output id="scHighV">0 dB</output><input type="range" id="scHigh" min="-12" max="12" value="0" style="width:100%"></label><label>OUTPUT <output id="scOutputV">0 dB</output><input type="range" id="scOutput" min="-12" max="6" value="0" style="width:100%"></label></div><button id="scResetEQ">RESET EQ</button><p id="scMixInfo" role="status" aria-live="polite" style="font-size:12px"></p></section><div class="note" id="presetPanel"><b>Sound Preset & Notes</b><p style="font-size:12px;margin:7px 0">Tap SAVE on a sound to store its settings and your notes. Then COPY to share the exact choice here.</p><label for="presetNotes">My notes</label><textarea id="presetNotes" placeholder="What I liked, what I want changed..." rows="3" style="width:100%;display:block;margin:7px 0 9px;border-radius:9px;background:#061827;color:#eaf7ff;border:1px solid #426982;padding:10px;font:inherit"></textarea><div id="savedPresets" style="display:grid;gap:8px"></div><p id="presetStatus" aria-live="polite" style="font-size:12px"></p></div><div id="counts" style="color:#9fb7c9;margin:10px 0"></div><div class="grid" id="grid"></div>
 <h2>CC0 libraries worth auditioning</h2>
 <div class="source"><b><a href="https://opengameart.org/content/sci-fi-sounds" target="_blank" rel="noopener">Kenney Sci-Fi Sounds</a></b><p>70 science-fiction sounds, including lasers, engines and explosions; CC0. A strong starting point for fire, impact and shake.</p></div>
@@ -93,13 +105,13 @@
  function encode(a){const buffer=new ArrayBuffer(44+a.length*2),v=new DataView(buffer);const text=(i,t)=>{for(let j=0;j<t.length;j++)v.setUint8(i+j,t.charCodeAt(j))};text(0,'RIFF');v.setUint32(4,36+a.length*2,true);text(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,SR,true);v.setUint32(28,SR*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);text(36,'data');v.setUint32(40,a.length*2,true);for(let i=0;i<a.length;i++)v.setInt16(44+i*2,Math.round(Math.max(-1,Math.min(1,a[i]))*32767),true);return new Blob([buffer],{type:'audio/wav'})}
  function processEQ(a){let lo=0,midLo=0;const out=new Float32Array(a.length),l=Math.pow(10,masterEQ.low/20),m=Math.pow(10,masterEQ.mid/20),h=Math.pow(10,masterEQ.high/20),g=Math.pow(10,masterEQ.output/20),alpha=1-Math.exp(-2*Math.PI*230/SR),beta=1-Math.exp(-2*Math.PI*2600/SR);for(let i=0;i<a.length;i++){const x=a[i];lo+=alpha*(x-lo);midLo+=beta*(x-midLo);out[i]=Math.max(-1,Math.min(1,(lo*l+(midLo-lo)*m+(x-midLo)*h)*g))}return out}
  async function currentWav(){return encode(processEQ(await samples(get())))}
- async function mixWav(){if(!tracks.length)throw Error('Add a sound first.');const length=Math.ceil(Math.max(...tracks.map(t=>t.start+t.settings.duration/t.rate))*SR);if(length>SR*60)throw Error('Maximum mix length is 60 seconds.');const out=new Float32Array(length);for(const t of tracks){const a=await samples(t.settings),start=Math.round(t.start*SR),len=Math.ceil(a.length/t.rate);for(let i=0;i<len&&start+i<length;i++){const pos=i*t.rate,j=Math.floor(pos),frac=pos-j;out[start+i]+=((a[j]||0)*(1-frac)+(a[j+1]||0)*frac)*t.volume/100}}let peak=0;for(const x of out)peak=Math.max(peak,Math.abs(x));if(peak>1)for(let i=0;i<out.length;i++)out[i]/=peak;return encode(processEQ(out))}
+ async function mixWav(){if(!tracks.length)throw Error('Add a sound first.');const length=Math.ceil(Math.max(...tracks.map(t=>t.start+(t.audioId?t.clipDuration:t.settings.duration)/t.rate))*SR);if(length>SR*60)throw Error('Maximum mix length is 60 seconds.');const out=new Float32Array(length);for(const t of tracks){const a=t.audioId?await readClipSamples(t.audioId):await samples(t.settings),start=Math.round(t.start*SR),len=Math.ceil(a.length/t.rate);for(let i=0;i<len&&start+i<length;i++){const pos=i*t.rate,j=Math.floor(pos),frac=pos-j;out[start+i]+=((a[j]||0)*(1-frac)+(a[j+1]||0)*frac)*t.volume/100}}let peak=0;for(const x of out)peak=Math.max(peak,Math.abs(x));if(peak>1)for(let i=0;i<out.length;i++)out[i]/=peak;return encode(processEQ(out))}
  function downloadWav(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),12000)}
  function persistTracks(){try{localStorage.setItem(trackKey,JSON.stringify(tracks));return true}catch{return false}}
  function addTrack(name,settings){if(tracks.length>=30){$sc('scMixInfo').textContent='Maximum 30 tracks.';return}tracks.push({name,settings:normalize(settings),start:tracks.length?Math.max(...tracks.map(t=>t.start+t.settings.duration/t.rate)):0,volume:100,rate:1});persistTracks();renderTracks()}
  function renderTracks(){const root=$sc('scTracks');root.replaceChildren();if(!tracks.length){root.textContent='No clips yet. Use ADD CURRENT or ADD TO MIX on a saved sound.';return}tracks.forEach((t,i)=>{const row=document.createElement('div');row.className='sound';const label=document.createElement('b');label.textContent=(i+1)+'. '+t.name;row.append(label);for(const [key,title,min,max,step] of [['start','Start (sec)',0,59,.05],['volume','Volume (%)',0,150,5],['rate','Pitch / speed',.5,2,.05]]){const l=document.createElement('label');l.textContent=title+' ';l.style.cssText='display:inline-block;margin:9px';const input=document.createElement('input');input.type='number';input.min=min;input.max=max;input.step=step;input.value=t[key];input.style.cssText='width:75px;background:#061827;color:white;border:1px solid #426982;padding:6px';input.onchange=()=>{const n=Number(input.value);if(Number.isFinite(n))t[key]=Math.max(min,Math.min(max,n));input.value=t[key];persistTracks()};l.append(input);row.append(l)}const del=document.createElement('button');del.textContent='REMOVE';del.onclick=()=>{tracks.splice(i,1);persistTracks();renderTracks()};row.append(del);root.append(row)})}
  async function playMix(){stop();try{activeUrl=URL.createObjectURL(await mixWav());const sound=new Audio(activeUrl);active=sound;sound.volume=.65;sound.onended=()=>{if(active===sound)stop()};await sound.play();$sc('scMixInfo').textContent='Playing the mixed clips.'}catch(e){$sc('scMixInfo').textContent=e.message;stop()}}
- try{const a=JSON.parse(localStorage.getItem(trackKey)||'[]');if(Array.isArray(a))tracks=a.slice(0,30).filter(t=>t&&t.settings).map(t=>({name:String(t.name||'Sound').slice(0,60),settings:normalize(t.settings),start:Math.max(0,Math.min(59,Number(t.start)||0)),volume:Math.max(0,Math.min(150,Number(t.volume)??100)),rate:Math.max(.5,Math.min(2,Number(t.rate)||1))}))}catch{}
+ try{const a=JSON.parse(localStorage.getItem(trackKey)||'[]');if(Array.isArray(a))tracks=a.slice(0,30).filter(t=>t&&(t.settings||t.audioId)).map(t=>({name:String(t.name||'Sound').slice(0,60),settings:t.settings?normalize(t.settings):null,audioId:t.audioId||null,clipDuration:Number(t.clipDuration)||0,start:Math.max(0,Math.min(59,Number(t.start)||0)),volume:Math.max(0,Math.min(150,Number(t.volume)??100)),rate:Math.max(.5,Math.min(2,Number(t.rate)||1))}))}catch{}
  try{const a=JSON.parse(localStorage.getItem(eqKey)||'{}');for(const k of Object.keys(masterEQ))if(Number.isFinite(a[k]))masterEQ[k]=Math.max(-12,Math.min(k==='output'?6:12,a[k]))}catch{}
  for(const key of Object.keys(masterEQ)){const k=key[0].toUpperCase()+key.slice(1),el=$sc('sc'+k);el.value=masterEQ[key];$sc('sc'+k+'V').textContent=masterEQ[key]+' dB';el.oninput=()=>{masterEQ[key]=Number(el.value);$sc('sc'+k+'V').textContent=masterEQ[key]+' dB';try{localStorage.setItem(eqKey,JSON.stringify(masterEQ))}catch{}}}
  $sc('scResetEQ').onclick=()=>{for(const key of Object.keys(masterEQ)){masterEQ[key]=0;const k=key[0].toUpperCase()+key.slice(1);$sc('sc'+k).value=0;$sc('sc'+k+'V').textContent='0 dB'}try{localStorage.setItem(eqKey,JSON.stringify(masterEQ))}catch{}};
@@ -108,6 +120,94 @@
  $sc('scExportMix').onclick=async()=>{try{downloadWav(await mixWav(),'tira-logo-flicker-mix.wav');$sc('scMixInfo').textContent='Mix exported with EQ.'}catch(e){$sc('scMixInfo').textContent=e.message}};
  $sc('scClearMix').onclick=()=>{if(!confirm('Clear all mixer clips?'))return;tracks=[];persistTracks();renderTracks()};
  renderTracks();
+
+ // WAV editor and durable local audio library (separate from settings-only presets).
+ const we=id=>document.getElementById(id);
+ let edited=null,selectionStart=0,selectionEnd=0,drawStart=null,editorDB=null,editorPlayer=null,editorURL=null;
+ const openDB=()=>new Promise((resolve,reject)=>{const req=indexedDB.open('tira-wav-library-v1',1);req.onupgradeneeded=()=>req.result.createObjectStore('clips',{keyPath:'id'});req.onerror=()=>reject(req.error);req.onsuccess=()=>resolve(req.result)});
+ const dbAction=(mode,fn)=>new Promise(async(resolve,reject)=>{try{const db=editorDB||await openDB();editorDB=db;const tx=db.transaction('clips',mode),store=tx.objectStore('clips'),req=fn(store);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)}catch(e){reject(e)}});
+ const clipPut=record=>dbAction('readwrite',st=>st.put(record));
+ const clipGet=id=>dbAction('readonly',st=>st.get(id));
+ const clipDelete=id=>dbAction('readwrite',st=>st.delete(id));
+ const clipAll=()=>dbAction('readonly',st=>st.getAll());
+ async function readClipSamples(id){const row=await clipGet(id);if(!row)throw Error('Imported clip missing from library: '+id);return new Float32Array(row.pcm)}
+ function makeEditorAudio(data){if(editorPlayer){editorPlayer.pause();editorPlayer=null}if(editorURL){URL.revokeObjectURL(editorURL);editorURL=null}editorURL=URL.createObjectURL(encode(processEQ(data)));editorPlayer=new Audio(editorURL);editorPlayer.volume=.65;editorPlayer.onended=()=>{if(editorURL){URL.revokeObjectURL(editorURL);editorURL=null}};return editorPlayer}
+ function cutSamples(){if(!edited)throw Error('Import or load audio first.');const a=Math.max(0,Math.min(edited.length,Math.floor(selectionStart*SR))),b=Math.max(a+1,Math.min(edited.length,Math.ceil(selectionEnd*SR)));if(b<=a)throw Error('Select a nonempty waveform region.');return edited.slice(a,b)}
+ function drawWave(){
+  const canvas=we('weCanvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+  ctx.fillStyle='#051421';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='#23465b';ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+  if(!edited||!edited.length)return;
+  const seconds=edited.length/SR,lo=selectionStart/seconds*w,hi=selectionEnd/seconds*w;
+  ctx.fillStyle='#13506a99';ctx.fillRect(lo,0,Math.max(1,hi-lo),h);
+  ctx.strokeStyle='#6cdaff';ctx.beginPath();
+  const step=edited.length/w;
+  for(let x=0;x<w;x++){let min=1,max=-1;const a=Math.floor(x*step),b=Math.max(a+1,Math.floor((x+1)*step));for(let j=a;j<b&&j<edited.length;j++){min=Math.min(min,edited[j]);max=Math.max(max,edited[j])}ctx.moveTo(x,h/2-max*(h*.43));ctx.lineTo(x,h/2-min*(h*.43))}
+  ctx.stroke();
+  ctx.strokeStyle='#ffe09a';for(const x of [lo,hi]){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+ }
+ function selectionUI(){
+  if(!edited)return;
+  const max=edited.length/SR;
+  selectionStart=Math.max(0,Math.min(max,selectionStart));selectionEnd=Math.max(selectionStart,Math.min(max,selectionEnd));
+  we('weStart').value=selectionStart.toFixed(2);we('weEnd').value=selectionEnd.toFixed(2);
+  we('weLength').textContent='Total '+max.toFixed(2)+' s';
+  we('weSelection').textContent='Keep '+selectionStart.toFixed(2)+' – '+selectionEnd.toFixed(2)+' s';
+  drawWave()
+ }
+ function setEdited(a,name){edited=a;selectionStart=0;selectionEnd=a.length/SR;we('weName').value=name.slice(0,60);selectionUI()}
+ async function importWav(file){
+  if(!file)return;
+  if(!/\.wav$/i.test(file.name)&&!(/wav|wave/i.test(file.type)))throw Error('Choose a WAV file.');
+  if(file.size>12*1024*1024)throw Error('Maximum WAV file size is 12 MB.');
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  try{
+   const decoded=await ctx.decodeAudioData(await file.arrayBuffer()),duration=decoded.duration;
+   if(duration>60||duration<=0)throw Error('Import audio between 0 and 60 seconds.');
+   const count=Math.floor(duration*SR),resampled=new Float32Array(count),ch=decoded.numberOfChannels;
+   for(let k=0;k<count;k++){const pos=k*decoded.sampleRate/SR,i=Math.floor(pos),f=pos-i;let value=0;for(let c=0;c<ch;c++){const data=decoded.getChannelData(c);value+=((data[i]||0)*(1-f)+(data[i+1]||0)*f)/ch}resampled[k]=value}
+   setEdited(resampled,file.name.replace(/\.wav$/i,''));we('weStatus').textContent='Imported '+file.name+'. Select the waveform portion to keep.';
+  }finally{await ctx.close()}
+ }
+ async function saveEdited(){
+  const a=cutSamples(),name=(we('weName').value.trim()||'Untitled Clip').slice(0,60);
+  const id='wav-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  await clipPut({id,name,pcm:a.buffer,created:Date.now()});await showLibrary();
+  we('weStatus').textContent='Saved '+name+' locally in your browser.';return {id,name,duration:a.length/SR};
+ }
+ async function addEdited(){
+  const saved=await saveEdited();
+  if(tracks.length>=30)throw Error('Maximum 30 mixer tracks.');
+  tracks.push({name:saved.name,audioId:saved.id,clipDuration:saved.duration,settings:null,start:tracks.length?Math.max(...tracks.map(t=>t.start+(t.audioId?t.clipDuration:t.settings.duration)/t.rate)):0,rate:1,volume:100});
+  persistTracks();renderTracks();we('weStatus').textContent='Cut added to the logo mixer.';
+ }
+ async function showLibrary(){
+  const root=we('weLibrary');root.replaceChildren();const list=await clipAll();
+  if(!list.length){root.textContent='No WAV clips saved yet.';return}
+  for(const item of list.sort((a,b)=>b.created-a.created)){
+   const row=document.createElement('div');row.className='sound';
+   const title=document.createElement('strong');title.textContent=item.name+' · '+(item.pcm.byteLength/4/SR).toFixed(2)+' s';row.append(title);
+   const actions=document.createElement('div');actions.className='actions';
+   const load=document.createElement('button');load.textContent='EDIT';load.onclick=()=>{setEdited(new Float32Array(item.pcm),item.name);we('weStatus').textContent='Loaded for waveform trimming.'};
+   const add=document.createElement('button');add.textContent='ADD TO MIX';add.onclick=()=>{if(tracks.length>=30){we('weStatus').textContent='Maximum 30 mixer tracks.';return}const last=tracks.length?Math.max(...tracks.map(t=>t.start+(t.audioId?t.clipDuration:t.settings.duration)/t.rate)):0;tracks.push({name:item.name,audioId:item.id,clipDuration:item.pcm.byteLength/4/SR,settings:null,start:last,volume:100,rate:1});persistTracks();renderTracks();we('weStatus').textContent='Clip added to timeline.'};
+   const remove=document.createElement('button');remove.textContent='DELETE';remove.onclick=async()=>{if(!confirm('Delete this WAV from the library? Clips using it in the timeline will stop working.'))return;await clipDelete(item.id);tracks=tracks.filter(t=>t.audioId!==item.id);persistTracks();renderTracks();showLibrary()};
+   actions.append(load,add,remove);row.append(actions);root.append(row)
+  }
+ }
+ we('weFile').onchange=async e=>{try{await importWav(e.target.files[0])}catch(err){we('weStatus').textContent=err.message}};
+ const drop=we('weDrop');drop.ondragover=e=>{e.preventDefault();drop.style.borderColor='#6cd7ff'};drop.ondragleave=()=>drop.style.borderColor='#37617e';
+ drop.ondrop=async e=>{e.preventDefault();drop.style.borderColor='#37617e';try{await importWav(e.dataTransfer.files[0])}catch(err){we('weStatus').textContent=err.message}};
+ const canvas=we('weCanvas'),timeAt=e=>{const rect=canvas.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width))*edited.length/SR};
+ canvas.onpointerdown=e=>{if(!edited)return;canvas.setPointerCapture(e.pointerId);drawStart=timeAt(e);selectionStart=drawStart;selectionEnd=drawStart;selectionUI()};
+ canvas.onpointermove=e=>{if(drawStart===null||!edited)return;const end=timeAt(e);selectionStart=Math.min(drawStart,end);selectionEnd=Math.max(drawStart,end);selectionUI()};
+ canvas.onpointerup=e=>{if(drawStart===null)return;const end=timeAt(e);selectionStart=Math.min(drawStart,end);selectionEnd=Math.max(drawStart,end);drawStart=null;selectionUI()};
+ for(const k of ['Start','End'])we('we'+k).onchange=()=>{if(!edited)return;selectionStart=Number(we('weStart').value);selectionEnd=Number(we('weEnd').value);selectionUI()};
+ we('wePlay').onclick=async()=>{try{await makeEditorAudio(cutSamples()).play();we('weStatus').textContent='Playing selected waveform with master EQ.'}catch(e){we('weStatus').textContent=e.message}};
+ we('weTrim').onclick=()=>{try{setEdited(cutSamples(),we('weName').value);we('weStatus').textContent='Trimmed. Original imported file is unchanged.'}catch(e){we('weStatus').textContent=e.message}};
+ we('weSave').onclick=async()=>{try{await saveEdited()}catch(e){we('weStatus').textContent=e.message}};
+ we('weAdd').onclick=async()=>{try{await addEdited()}catch(e){we('weStatus').textContent=e.message}};
+ we('weExport').onclick=()=>{try{downloadWav(encode(processEQ(cutSamples())),(we('weName').value.trim()||'tira-cut').replace(/[^a-z0-9_-]/gi,'-')+'.wav');we('weStatus').textContent='Cut WAV exported with master EQ.'}catch(e){we('weStatus').textContent=e.message}};
+ showLibrary().catch(e=>{we('weStatus').textContent='Local WAV library unavailable: '+e.message});
  function stop(){if(active){active.pause();active.src='';active=null}if(activeUrl){URL.revokeObjectURL(activeUrl);activeUrl=null}}
  async function play(){stop();const blob=await currentWav();activeUrl=URL.createObjectURL(blob);const audio=new Audio(activeUrl);active=audio;audio.volume=.65;audio.onended=()=>{if(active===audio){stop();status.textContent='Preview finished.'}};try{await audio.play();status.textContent='Playing synthesized preview.'}catch(e){stop();status.textContent='Playback blocked. Tap PLAY again or check device sound: '+e.message}}
  function persist(){try{localStorage.setItem(key,JSON.stringify(entries));return true}catch{return false}}
