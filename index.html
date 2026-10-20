@@ -134,7 +134,7 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame
 // Subtle synthesized neon-transformer flicker: no external media or downloads.
 const flickerAudioButton=document.getElementById('flickerAudioToggle');
 const fileNames=['tira-grounded-buzz-background.wav','tira-intro-electric-glitch.wav','tira-light-flickers.wav','tira-grounded-flickering-lights.wav','tira-electric-flickering-grounded-lights.wav'];
-const sourceAudio=fileNames.map(x=>{const a=new Audio('./assets/audio/'+x);a.preload='auto';return a});
+const sourceAudio=fileNames.map(x=>{const a=new Audio('./dev/assets/audio/'+x);a.preload='auto';return a});
 const audioKey='tira-dev-audio-mix-v3';let preference={};try{preference=JSON.parse(localStorage.getItem(audioKey)||'{}')}catch{}
 let neonEnabled=preference.flicker!==false;
 const sharedMusicKey='tira-dev-shared-music-enabled-v1';
