@@ -16,7 +16,7 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 <section class="panel hidden" id="audioSettings"><button class="back" data-back="home">← HOME</button><h2>TIRA! AUDIO SETTINGS</h2>
 <label class="tira-audio-switch">Background music <input id="autoMusic" type="checkbox" checked></label>
 <label class="tira-audio-switch">Flickering effects <input id="autoFlicker" type="checkbox" checked></label>
-<div class="tira-audio-settings" id="tiraAudioRows"></div>
+<p class="tira-audio-note" id="tiraWordsNote">Flickering words retain their existing weighted sequences and fixed exclamation-point alignment. After 20 openings, use Replay to preview them.</p><button type="button" id="tiraReplayWords" class="small">▶ REPLAY FLICKERING WORDS</button><div class="tira-audio-settings" id="tiraAudioRows"></div>
 <p class="tira-audio-note" id="tiraAudioNotice" role="status">Sound is enabled by default. Your browser may require a tap to allow autoplay.</p></section><section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><div class="options"><a class="link primary" href="./play.html?goal=6">CLASSIC<span class="tiny">Play the current Classic prototype</span></a><button disabled>RANKED<span class="tiny">Coming later</span></button><button disabled>ARCADE<span class="tiny">Coming later</span></button><button data-open="custom">CUSTOM<span class="tiny">Includes Practice against the computer</span></button></div></section>
 <section class="panel hidden" id="custom"><button class="back" data-back="modes">← PLAY</button><h2>CUSTOM</h2><button class="primary" data-open="practice">PRACTICE<span class="tiny">Play against the computer</span></button><p class="subtitle">Friend lobbies and additional custom rules are not implemented yet.</p></section>
 <section class="panel hidden" id="practice"><button class="back" data-back="custom">← CUSTOM</button><h2>PRACTICE · COMPUTER</h2><div class="options"><a class="link" href="./play.html?goal=6">EASY<span class="tiny">Current Easy AI · target 6</span></a><a class="link" href="./play.html?goal=7">MEDIUM<span class="tiny">Current Medium AI · target 7</span></a><a class="link" href="./play.html?goal=10">ADVANCED<span class="tiny">Current Hard AI · target 10</span></a></div><p class="subtitle">Practice uses the prototype's existing difficulty and Core targets. A separate advanced AI has not yet been verified.</p></section>
@@ -143,9 +143,9 @@ const introDelay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function introLabel(){introButton.textContent='INTRO · '+(introEnabled?'ON':'OFF');introButton.setAttribute('aria-pressed',String(introEnabled))}
 function introReset(){mark.classList.remove('suffix-lit');suffix.classList.remove('lit');suffix.textContent=''}
 function pickIntroSet(){const total=openingSets.reduce((a,b)=>a+b.weight,0);let n=Math.random()*total;return openingSets.find(set=>(n-=set.weight)<0)||openingSets[openingSets.length-1]}
-async function animateIntro(){
+async function animateIntro(forcePreview=false){
  const token=++introToken;introReset();
- if(!introEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if((!introEnabled&&!forcePreview)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  const set=pickIntroSet().words.slice();
  // Random-set choice on each opening; first set also gets randomized ordering.
  if(set.length===8)for(let i=set.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[set[i],set[j]]=[set[j],set[i]]}
@@ -166,6 +166,7 @@ async function animateIntro(){
  if(token===introToken)introReset();
 }
 introButton.addEventListener('click',()=>{introEnabled=!introEnabled;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};introLabel();introToken++;introReset();silenceNeon();if(introEnabled)animateIntro()});
+document.getElementById('tiraReplayWords').addEventListener('click',()=>animateIntro(true));
 introLabel();animateIntro();
 function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
 </main></body></html>
