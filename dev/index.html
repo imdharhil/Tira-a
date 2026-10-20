@@ -26,13 +26,13 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 </div>
 <div role="tabpanel" id="settingsTabPanel" aria-labelledby="settingsTab">
 <h3>SOUND</h3>
+<label for="homeCoreVolume">Core volume: <strong id="homeCoreVolumeValue">45%</strong></label><input id="homeCoreVolume" type="range" min="0" max="100" step="5" value="45" style="width:100%">
 <button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span>
 <div id="tiraAudioRows"></div>
-<label for="homeCoreVolume">Core volume: <strong id="homeCoreVolumeValue">45%</strong></label><input id="homeCoreVolume" type="range" min="0" max="100" step="5" value="45" style="width:100%">
+<div class="tira-audio-settings"><h3>INTRO</h3>
+<button id="introToggle" type="button" aria-label="Toggle TIRA! animated intro">INTRO · ON</button>
 <button id="flickerAudioToggle" type="button" aria-pressed="true">⚡ FLICKER SOUND · ON</button>
 <p class="tira-audio-note" id="tiraAudioNotice" role="status"></p>
-<div class="tira-audio-settings"><h3>INTRO</h3>
-<button id="introToggle" type="button" aria-label="Toggle TIRA! animated intro">INTRO · AUTO</button>
 <details><summary>Preview intro</summary>
 <button type="button" id="tiraReplayWords" class="small">▶ REPLAY INTRO</button>
 </details></div>
