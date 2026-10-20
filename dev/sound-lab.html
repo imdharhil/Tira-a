@@ -12,7 +12,7 @@
 <label>White noise <output id="scNoiseValue">20%</output><input id="scNoise" type="range" min="0" max="100" step="1" value="20" style="width:100%;display:block;margin-top:13px;accent-color:#65c7fa"></label>
 <label>Electric buzz <output id="scBuzzValue">35%</output><input id="scBuzz" type="range" min="0" max="100" step="1" value="35" style="width:100%;display:block;margin-top:13px;accent-color:#65c7fa"></label>
 <label>Duration <output id="scDurationValue">0.50 s</output><input id="scDuration" type="range" min="0.1" max="5" step="0.05" value="0.5" style="width:100%;display:block;margin-top:13px;accent-color:#65c7fa"></label>
-<label>Starter preset<select id="scPreset" style="width:100%;display:block;margin-top:6px;padding:10px;border-radius:8px;background:#071c2c;color:#e8f7ff;border:1px solid #43708a"><option value="custom">Custom</option><option value="neon">Neon Flicker</option><option value="spark">Electric Spark</option><option value="hum">Ballast Hum</option><option value="pulse">Soft Pulse</option></select></label>
+<label>Starter preset<select id="scPreset" style="width:100%;display:block;margin-top:6px;padding:10px;border-radius:8px;background:#071c2c;color:#e8f7ff;border:1px solid #43708a"><option value="custom">Custom</option><option value="neon">Neon Flicker</option><option value="spark">Electric Spark</option><option value="hum">Ballast Hum</option><option value="pulse">Soft Pulse</option><option value="fluorescent">Fluorescent Tube Startup · Glass Ticks</option></select></label>
 </div>
 <div class="actions" style="flex-wrap:wrap"><button id="scPlay" type="button">▶ PLAY</button><button id="scStop" type="button">■ STOP</button><button id="scExport" type="button">↓ EXPORT WAV</button></div>
 <label style="display:block;margin-top:14px">Sound name<input id="scName" maxlength="60" value="My Neon Sound" style="width:100%;display:block;margin-top:6px;padding:10px;border-radius:8px;background:#071c2c;color:#e8f7ff;border:1px solid #43708a;font:inherit"></label>
@@ -36,14 +36,16 @@
   neon:{wave:'sawtooth',pitch:120,noise:20,buzz:35,duration:.5},
   spark:{wave:'square',pitch:480,noise:34,buzz:55,duration:.22},
   hum:{wave:'sine',pitch:120,noise:5,buzz:28,duration:1.25},
-  pulse:{wave:'triangle',pitch:180,noise:4,buzz:12,duration:.7}
+  pulse:{wave:'triangle',pitch:180,noise:4,buzz:12,duration:.7},
+  fluorescent:{wave:'sine',pitch:120,noise:9,buzz:26,duration:1.45,mode:'fluorescent'}
  };
  const key='tira-sound-creator-v1',status=$sc('scStatus');
  let active=null,activeUrl=null,entries=[];
- const get=()=>({wave:$sc('scWave').value,pitch:+$sc('scPitch').value,noise:+$sc('scNoise').value,buzz:+$sc('scBuzz').value,duration:+$sc('scDuration').value});
- function normalize(p){const x={...defaults,...p};return {wave:['sawtooth','sine','triangle','square'].includes(x.wave)?x.wave:defaults.wave,pitch:Math.max(40,Math.min(2000,Number(x.pitch)||120)),noise:Math.max(0,Math.min(100,Number(x.noise)||0)),buzz:Math.max(0,Math.min(100,Number(x.buzz)||0)),duration:Math.max(.1,Math.min(5,Number(x.duration)||.5))}}
+ let creatorMode='standard';
+ const get=()=>({wave:$sc('scWave').value,pitch:+$sc('scPitch').value,noise:+$sc('scNoise').value,buzz:+$sc('scBuzz').value,duration:+$sc('scDuration').value,mode:creatorMode});
+ function normalize(p){const x={...defaults,...p};return {wave:['sawtooth','sine','triangle','square'].includes(x.wave)?x.wave:defaults.wave,pitch:Math.max(40,Math.min(2000,Number(x.pitch)||120)),noise:Math.max(0,Math.min(100,Number(x.noise)||0)),buzz:Math.max(0,Math.min(100,Number(x.buzz)||0)),duration:Math.max(.1,Math.min(5,Number(x.duration)||.5)),mode:x.mode==='fluorescent'?'fluorescent':'standard'}}
  function showValues(){const v=get();for(const [k,text] of [['Pitch',v.pitch+' Hz'],['Noise',v.noise+'%'],['Buzz',v.buzz+'%'],['Duration',v.duration.toFixed(2)+' s']])$sc('sc'+k+'Value').textContent=text}
- function apply(v){const p=normalize(v);for(const k of ids)$sc('sc'+k).value=p[k.toLowerCase()];showValues()}
+ function apply(v){const p=normalize(v);creatorMode=p.mode;for(const k of ids)$sc('sc'+k).value=p[k.toLowerCase()];showValues()}
  function sampleWave(w,ph){const cycle=ph-Math.floor(ph);if(w==='sine')return Math.sin(2*Math.PI*cycle);if(w==='triangle')return 1-4*Math.abs(cycle-.5);if(w==='square')return cycle<.5?1:-1;return 2*cycle-1}
  function makeWav(input){
   const p=normalize(input),sr=22050,n=Math.ceil(sr*p.duration),bytes=new ArrayBuffer(44+n*2),view=new DataView(bytes);
@@ -62,7 +64,25 @@
    const airy=(noise-noiseLP)*.19*noiseAmount;
    const electrical=(Math.sin(2*Math.PI*120*t)+.32*Math.sin(2*Math.PI*240*t))*.17*buzzAmount;
    const currentPulse=.82+.18*Math.sin(2*Math.PI*31*t);
-   const x=Math.tanh((body+airy+electrical*currentPulse)*env*.88);
+   let x=Math.tanh((body+airy+electrical*currentPulse)*env*.88);
+   if(p.mode==='fluorescent'){
+    // Glass-like thermal ticks at irregular ignition moments. Damped high pitched
+    // micro-resonances, with a short electric flutter before a stable low hum.
+    const tickTimes=[.075,.19,.36,.61];
+    let glass=0;
+    for(const start of tickTimes){
+     const age=t-start;
+     if(age>=0&&age<.095){
+      const rise=Math.min(1,age/.0015),decay=Math.exp(-age*75);
+      glass+=(Math.sin(2*Math.PI*1850*age)+.36*Math.sin(2*Math.PI*2740*age))*rise*decay*.16;
+     }
+    }
+    const warmup=Math.min(1,Math.max(0,(t-.43)/.33));
+    const flutter=Math.max(0,Math.sin(2*Math.PI*(13+8*t)*t))*(1-warmup)*.03;
+    const hum=(Math.sin(2*Math.PI*120*t)+.22*Math.sin(2*Math.PI*240*t))*(.018+.065*warmup)*(p.buzz/100);
+    const softHiss=(noise-noiseLP)*.025*(p.noise/100);
+    x=Math.tanh((glass+hum+flutter+softHiss)*Math.min(1,t/.012)*Math.min(1,(p.duration-t)/.055));
+   }
    view.setInt16(ptr,Math.round(Math.max(-1,Math.min(1,x))*32767),true);ptr+=2;
   }
   return new Blob([bytes],{type:'audio/wav'});
@@ -83,7 +103,7 @@
  }
  try{const stored=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(stored))entries=stored.filter(x=>x&&typeof x.name==='string'&&x.settings).slice(0,50).map(x=>({name:x.name.slice(0,60),settings:normalize(x.settings)}))}catch{}
  ids.forEach(k=>$sc('sc'+k).addEventListener(k==='Wave'?'change':'input',()=>{$sc('scPreset').value='custom';showValues()}));
- $sc('scPreset').addEventListener('change',()=>{const id=$sc('scPreset').value;if(presets[id]){apply(presets[id]);status.textContent='Preset loaded. Press PLAY to listen.'}});
+ $sc('scPreset').addEventListener('change',()=>{const id=$sc('scPreset').value;if(presets[id]){apply(presets[id]);status.textContent=id==='fluorescent'?'Fluorescent startup loaded: glass ticks, electrical flutter, warm-up hum. Press PLAY.':'Preset loaded. Press PLAY to listen.'}});
  $sc('scPlay').onclick=play;$sc('scStop').onclick=()=>{stop();status.textContent='Stopped.'};
  $sc('scExport').onclick=()=>{const blob=makeWav(get()),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=($sc('scName').value.trim()||'tira-sound').replace(/[^a-z0-9 _-]/gi,'').trim().replace(/\s+/g,'-').slice(0,55)+'.wav';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);status.textContent='WAV exported at 22,050 Hz, mono, 16-bit.'};
  $sc('scSave').onclick=()=>{const name=$sc('scName').value.trim().slice(0,60);if(!name){status.textContent='Enter a name first.';return}const ix=entries.findIndex(x=>x.name.toLowerCase()===name.toLowerCase());const entry={name,settings:get()};if(ix>=0)entries[ix]=entry;else{if(entries.length>=50){status.textContent='Maximum 50 saved sounds. Delete one first.';return}entries.push(entry)}if(!persist()){status.textContent='Browser storage unavailable; sound was not saved permanently.';return}renderSaved();status.textContent='Saved locally: '+name};
