@@ -40,12 +40,25 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 <p class="tira-audio-note" id="tiraAudioNotice" role="status">Sound is enabled by default. Your browser may require a tap to allow autoplay.</p></div>
 </div>
 <div role="tabpanel" id="rulesTabPanel" aria-labelledby="rulesTab" hidden>
-<h3>HOW TO PLAY</h3>
-<p>Play a Cell card to add your cells to the shared Core, removing enemy cells first. You win when your total reaches the mode target.</p>
-<p><strong>Protect:</strong> Spend your turn to arm one Protect. It completely blocks the opponent's next shot. Each side starts with 3 stored Protects.</p>
-<p><strong>Protect draw:</strong> You also reveal a bonus normal card when you arm Protect. Replace one of your three normal cards or discard it.</p>
-<p><strong>Cell Pieces:</strong> Earn Cell Pieces only when a successful shot removes cells already controlled by your opponent. Adding friendly cells earns none; fully blocked shots earn none. You can also convert a normal Cell Card into its face-value pieces using its top-corner control. Spend 10 pieces on Gold +4 or manually restore a stored Protect for 12 pieces. Conversion and restoration do not end your turn.</p>
-<p><strong>Card odds:</strong> +1 28%, +2 34%, +3 33%, +4 5%. Gold +4 is reserved in the fourth slot when available.</p>
+<h3>FIRST TO 6 WINS</h3>
+<p>Turn the shared Core your color and reach <strong>6 or more</strong> to win Classic. You are Blue. Your opponent is Red.</p>
+<h3>ON YOUR TURN</h3>
+<p><strong>Fire:</strong> Choose a Cell Card, then tap <strong>FIRE CELL</strong>. Its number removes enemy cells first. Any amount left adds cells in your color. You draw a replacement card.</p>
+<p><strong>Example:</strong> The Core is Red 2. You fire +3. Two cancel the Red cells, and the remaining one makes it Blue 1.</p>
+<p><strong>Protect:</strong> Use your turn to block your opponent's next shot completely. You start with 3 Protects. You also draw a bonus card: keep it in a normal card slot or turn it into Cell Pieces.</p>
+<p><strong>The strategy:</strong> Push toward 6, stop your opponent, or protect your lead. Firing or activating Protect ends your turn.</p>
+<details><summary><strong>Cell Pieces &amp; power-ups</strong></summary>
+<p>Cell Pieces are also called <strong>PP</strong>. Earn 1 piece for each enemy cell your shot removes. Adding your own cells or hitting a Protect earns none.</p>
+<p><strong>Convert a card:</strong> Tap its corner arrow to turn a normal Cell Card into pieces equal to its number. The slot stays empty until you fill it with a Protect bonus card. Only normal Cell Cards can be converted.</p>
+<p><strong>Bonus cards:</strong> If you replace a card, the old card becomes pieces. If you discard the bonus card, that bonus becomes pieces instead.</p>
+<p><strong>Gold +4:</strong> Spend 10 pieces to fire a +4 shot. This ends your turn.</p>
+<p><strong>Refill Protect:</strong> Spend 12 pieces to restore one stored Protect, up to 3. You still need to activate it to block a shot.</p>
+<p>Converting cards and refilling Protect do <strong>not</strong> end your turn.</p>
+</details>
+<details><summary><strong>Practice targets &amp; card chances</strong></summary>
+<p>Classic and Easy: <strong>6</strong>. Medium: <strong>7</strong>. Advanced: <strong>10</strong>. Reaching or passing the target in your color wins.</p>
+<p>Normal draws: +1 28%, +2 34%, +3 33%, +4 5%.</p>
+</details>
 </div>
 </section>
 <section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><p class="subtitle play-description">Play the current game prototype</p><div class="options"><a class="link primary" id="resumeMatch" href="./play.html?continue=1" hidden>▶ CONTINUE GAME</a><a class="link primary" href="./play.html?goal=6">CLASSIC</a><button disabled>RANKED<span class="tiny">Coming later</span></button><button disabled>ARCADE<span class="tiny">Coming later</span></button><button data-open="custom">CUSTOM<span class="tiny">Includes Practice against the computer</span></button></div></section>
