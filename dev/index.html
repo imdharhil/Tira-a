@@ -71,7 +71,6 @@ function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active
 musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){musicAuto=false;saveMix();menuMusic.pause();musicStatus.textContent='';musicUI();return}musicAuto=true;saveMix();musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Music unavailable. Try again.'}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Music unavailable. Try again.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
-musicUI();
 // Six zero-gravity Core copies, gently bouncing within the viewport.
 // Replaces the old particles and rectangular corridor lines (Dev Home only).
 const hall=document.getElementById('hall'),hc=hall.getContext('2d');
@@ -148,6 +147,7 @@ flickerAudioButton.addEventListener('click',()=>{neonEnabled=!neonEnabled;if(!ne
 const mixer=document.getElementById('tiraAudioRows');
 function makeSlider(label,value,oninput,test){const box=document.createElement('div');const row=document.createElement('label');row.className='tira-audio-row';const title=document.createElement('span');title.textContent=label;const range=document.createElement('input');range.type='range';range.min=0;range.max=100;range.value=value;range.setAttribute('aria-label',label+' volume');const output=document.createElement('output');output.textContent=value+'%';range.oninput=()=>{output.textContent=range.value+'%';oninput(Number(range.value))};row.append(title,range,output);box.append(row);mixer.append(box)}
 makeSlider('Background music',musicVolume,v=>{musicVolume=v;menuMusic.volume=v/100;saveMix()},()=>{menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{})});
+musicUI();
 // Flicker volume levels are locked; only Home music has a slider.
 function startMenuMusic(){if(!musicAuto||document.hidden)return;menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Tap MUSIC to play.'})}
 startMenuMusic();
