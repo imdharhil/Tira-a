@@ -209,7 +209,7 @@ settingsTabs.forEach((tab,index)=>{tab.addEventListener('click',()=>chooseSettin
 const resumeMatch=document.getElementById('resumeMatch');
 function updateContinueMatch(){
  let canResume=false;
- try{const snap=JSON.parse(sessionStorage.getItem('corbit-dev-match')||'null');canResume=!!(snap&&snap.g&&!snap.g.ended&&[6,7,10].includes(Number(snap.goal)))}catch{}
+ try{const snap=JSON.parse(sessionStorage.getItem('corbit-dev-match')||'null');canResume=!!(snap&&snap.g&&snap.g.ended===false&&[6,7,10].includes(Number(snap.goal))&&Number.isFinite(snap.g.pos)&&snap.g.you&&snap.g.ai)}catch{}
  resumeMatch.hidden=!canResume;
 }
 updateContinueMatch();
