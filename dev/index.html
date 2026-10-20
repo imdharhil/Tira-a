@@ -67,8 +67,8 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 const menuMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
 menuMusic.loop=true;menuMusic.preload='none';menuMusic.playbackRate=.92;menuMusic.preservesPitch=true;menuMusic.volume=.50;
 const musicToggle=document.getElementById('musicToggle'),musicStatus=document.getElementById('musicStatus');
-function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active?'♪ MUSIC ON':'♪ MUSIC OFF';musicToggle.setAttribute('aria-pressed',String(active));const rows=document.getElementById('tiraAudioRows');if(rows)rows.hidden=!musicAuto;}
-musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){musicAuto=false;saveMix();menuMusic.pause();musicStatus.textContent='';musicUI();return}musicAuto=true;saveMix();musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Music unavailable. Try again.'}musicUI()});
+function musicUI(){const active=musicAuto;musicToggle.textContent=active?'♪ MUSIC ON':'♪ MUSIC OFF';musicToggle.setAttribute('aria-pressed',String(active));const rows=document.getElementById('tiraAudioRows');if(rows)rows.hidden=!musicAuto;}
+musicToggle.addEventListener('click',async()=>{musicAuto=!musicAuto;saveMix();if(!musicAuto){menuMusic.pause();musicStatus.textContent='';musicUI();return}musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Tap to enable music if your browser blocked playback.'}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Music unavailable. Try again.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
 // Six zero-gravity Core copies, gently bouncing within the viewport.
@@ -151,7 +151,8 @@ musicUI();
 // Flicker volume levels are locked; only Home music has a slider.
 function startMenuMusic(){if(!musicAuto||document.hidden)return;menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Tap MUSIC to play.'})}
 startMenuMusic();
-document.addEventListener('pointerdown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()},{once:true});
+document.addEventListener('pointerdown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()},{passive:true});
+document.addEventListener('keydown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)silenceNeon()});
 neonStatus();
 const introButton=document.getElementById('introToggle');
