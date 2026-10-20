@@ -121,12 +121,12 @@ function silenceNeon(keepBuzz=false){for(const t of wordTimers)clearTimeout(t);w
 function stopClip(i){const a=sourceAudio[i];a.pause();try{a.currentTime=0}catch{}}
 function playClip(i){if(!neonEnabled||document.hidden)return;const a=sourceAudio[i];stopClip(i);a.volume=Math.max(0,Math.min(1,Number(soundVolume[i]??55)/100));a.play().catch(()=>{document.getElementById('tiraAudioNotice').textContent='Audio did not start; click Replay after interacting with the page.'})}
 function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled));document.getElementById('autoFlicker').checked=neonEnabled}
-function beginWordAudio(){silenceNeon(true);chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1;if(Math.random()<.55)playClip(1)}
+function beginWordAudio(){silenceNeon(true);chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1}
 function neonFlick(on,hold=160,first=false){if(!on||!neonEnabled)return;
 flashCount++;
 // The chosen file is exclusive for the whole word, with at most two spaced accents.
 // The light flicker file is favored near the last illuminated flashes.
-const targets=chosenFlicker===2?(flickerLimit===2?[3,5]:[5]):(flickerLimit===2?[1,5]:[4]);
+const targets=flickerLimit===2?[1,4]:[1];
 if(!targets.includes(flashCount)||activeFlicker!==-1)return;
 activeFlicker=chosenFlicker;playClip(activeFlicker);
 const selected=activeFlicker;
@@ -182,9 +182,8 @@ async function animateIntro(forcePreview=false){
  // Random-set choice on each opening; first set also gets randomized ordering.
  if(set.length===8)for(let i=set.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[set[i],set[j]]=[set[j],set[i]]}
  await introDelay(800);if(token!==introToken)return;
- // One uninterrupted, looping grounded buzz across this entire word set.
- sourceAudio[0].loop=true;playClip(0);
- for(const word of set){
+ // Begin both intro sounds at the first illuminated frame of the first word.
+ for(const [wordIndex,word] of set.entries()){
   if(token!==introToken){silenceNeon();return;}
   suffix.textContent=word;
   beginWordAudio();
@@ -192,6 +191,7 @@ async function animateIntro(forcePreview=false){
   let firstFlash=true;
   for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
    if(token!==introToken){silenceNeon();return;}
+   if(on&&firstFlash&&wordIndex===0){sourceAudio[0].loop=true;playClip(0);playClip(1)}
    suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms,firstFlash);if(on)firstFlash=false;
    await introDelay(ms);
   }
