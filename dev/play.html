@@ -52,7 +52,9 @@ const coreMix={a:42,b:42,va:1,vb:0}; // Lab #43 Spring Boing (zero-based index 4
 // iOS Safari requires an explicit user interaction before playback.
 const bgMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
 bgMusic.loop=true;bgMusic.preload='none';bgMusic.volume=.10;bgMusic.playbackRate=.92;
+const sharedMusicKey='tira-dev-shared-music-enabled-v1';
 let musicEnabled=true,musicError=false;
+try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null)musicEnabled=shared!=='off';else{const legacy=JSON.parse(localStorage.getItem('tira-dev-audio-mix-v3')||'{}');musicEnabled=legacy.music!==false}}catch{}
 const musicToggle=$('musicToggle');
 let animationMode='full',coreSoundEnabled=true;
 try{const saved=localStorage.getItem('corbit-dev-animation-v1');if(['full','reduced','off'].includes(saved))animationMode=saved;coreSoundEnabled=localStorage.getItem('corbit-dev-core-sound-enabled-v1')!=='off'}catch{}
@@ -62,11 +64,13 @@ let coreShakeEnabled=true;try{coreShakeEnabled=localStorage.getItem('corbit-dev-
 const coreShakeControl=$('coreShakeEnabled');coreShakeControl.checked=coreShakeEnabled;coreShakeControl.addEventListener('change',()=>{coreShakeEnabled=coreShakeControl.checked;try{localStorage.setItem('corbit-dev-core-shake-enabled-v1',coreShakeEnabled?'on':'off')}catch{}});
 function musicLabel(){musicToggle.textContent=musicError?'♪ ERROR':!musicEnabled?'♪ OFF':bgMusic.paused?'♪ START':'♪ ON';musicToggle.setAttribute('aria-pressed',String(musicEnabled&&!bgMusic.paused))}
 function startMusic(){if(!musicEnabled||!g||g.ended||!document.getElementById('game')?.offsetParent)return;if(!bgMusic.paused)return;const p=bgMusic.play();if(p&&p.catch)p.then(()=>{musicError=false;musicLabel()}).catch(()=>{musicLabel()})}
-musicToggle.addEventListener('click',()=>{musicEnabled=!musicEnabled;musicError=false;if(!musicEnabled)bgMusic.pause();else startMusic();musicLabel()});
+musicToggle.addEventListener('click',()=>{musicEnabled=!musicEnabled;musicError=false;try{localStorage.setItem(sharedMusicKey,musicEnabled?'on':'off');const legacy=JSON.parse(localStorage.getItem('tira-dev-audio-mix-v3')||'{}');legacy.music=musicEnabled;localStorage.setItem('tira-dev-audio-mix-v3',JSON.stringify(legacy))}catch{}if(!musicEnabled)bgMusic.pause();else startMusic();musicLabel()});
 bgMusic.addEventListener('error',()=>{musicError=true;musicLabel()});
 document.addEventListener('pointerdown',e=>{if(musicEnabled&&e.target!==musicToggle)startMusic()},{passive:true});
 document.addEventListener('keydown',()=>{if(musicEnabled)startMusic()});
 window.addEventListener('pagehide',()=>bgMusic.pause());
+function refreshSharedMatchSettings(){try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null){musicEnabled=shared!=='off';if(!musicEnabled)bgMusic.pause()}const raw=localStorage.getItem('corbit-dev-core-volume-spring-v1');if(raw!==null){const v=Number(raw);if(Number.isFinite(v)){coreVolume=Math.max(0,Math.min(100,v));coreAudio.volume=coreVolume/100;$('coreVolume').value=coreVolume;$('coreVolumeValue').textContent=coreVolume+'%'}}}catch{}musicLabel()}
+window.addEventListener('pageshow',refreshSharedMatchSettings);
 function syncGameMusic(){if(!g||g.ended){bgMusic.pause()}musicLabel()}
 musicLabel();
 const coreAudio=new Audio();coreAudio.loop=true;coreAudio.preload='auto';let coreVolume=45;try{const v=Number(localStorage.getItem('corbit-dev-core-volume-spring-v1'));if(localStorage.getItem('corbit-dev-core-volume-spring-v1')!==null&&Number.isFinite(v))coreVolume=Math.max(0,Math.min(100,v))}catch{}coreAudio.volume=coreVolume/100;$('coreVolume').value=coreVolume;$('coreVolumeValue').textContent=coreVolume+'%';$('coreVolume').addEventListener('input',e=>{coreVolume=Number(e.target.value);coreAudio.volume=coreVolume/100;$('coreVolumeValue').textContent=coreVolume+'%';try{localStorage.setItem('corbit-dev-core-volume-spring-v1',String(coreVolume))}catch{}});
