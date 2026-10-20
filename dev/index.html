@@ -105,16 +105,16 @@ function neonFlick(on,hold=160){
   prev=hiss;
  }
  const crackle=ac.createBufferSource();crackle.buffer=buffer;
- const filter=ac.createBiquadFilter();filter.type='bandpass';filter.frequency.value=1650;filter.Q.value=.55;
- const fizz=ac.createGain();fizz.gain.value=.14;
+ const filter=ac.createBiquadFilter();filter.type='bandpass';filter.frequency.value=1950;filter.Q.value=1.15;
+ const fizz=ac.createGain();fizz.gain.value=.105;
  crackle.connect(filter);filter.connect(fizz);fizz.connect(ac.destination);
  crackle.start(now);crackle.stop(now+duration);
  // Subdued fluorescent ballast hum emerges after the initial ignition.
  const hum=ac.createOscillator(),humGain=ac.createGain();
  hum.type='sine';hum.frequency.value=120;
  humGain.gain.setValueAtTime(0,now);
- humGain.gain.linearRampToValueAtTime(.007,now+Math.min(.12,duration*.55));
- humGain.gain.setValueAtTime(.007,now+Math.max(.12,duration-.08));
+ humGain.gain.linearRampToValueAtTime(.0085,now+Math.min(.12,duration*.55));
+ humGain.gain.setValueAtTime(.0085,now+Math.max(.12,duration-.08));
  humGain.gain.linearRampToValueAtTime(0,now+duration);
  hum.connect(humGain);humGain.connect(ac.destination);
  hum.start(now);hum.stop(now+duration+.015);
