@@ -57,7 +57,7 @@ const menuMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp
 menuMusic.loop=true;menuMusic.preload='none';menuMusic.playbackRate=.92;menuMusic.preservesPitch=true;menuMusic.volume=.50;
 const musicToggle=document.getElementById('musicToggle'),musicStatus=document.getElementById('musicStatus');
 function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active?'♪ MUSIC ON':'♪ MUSIC OFF';musicToggle.setAttribute('aria-pressed',String(active));}
-musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){menuMusic.pause();musicStatus.textContent='';musicUI();return}musicStatus.textContent='Loading Doodle Menu…';try{await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Music unavailable from external source: '+e.message}musicUI()});
+musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){musicAuto=false;saveMix();menuMusic.pause();musicStatus.textContent='';musicUI();return}musicAuto=true;saveMix();musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Music unavailable from external source: '+e.message}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Doodle Menu source unavailable. Music cannot play.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
 // Six zero-gravity Core copies, gently bouncing within the viewport.
@@ -137,7 +137,6 @@ function makeSlider(label,value,oninput,test){const box=document.createElement('
 makeSlider('Background music',musicVolume,v=>{musicVolume=v;menuMusic.volume=v/100;saveMix()},()=>{menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{})});
 // Flicker volume levels are locked; only Home music has a slider.
 function startMenuMusic(){if(!musicAuto||document.hidden)return;menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Autoplay blocked; tap MUSIC to start.'})}
-musicToggle.addEventListener('click',()=>{musicAuto=!menuMusic.paused;saveMix()});
 startMenuMusic();
 document.addEventListener('pointerdown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()},{once:true});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)silenceNeon()});
