@@ -71,6 +71,7 @@ function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active
 musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){musicAuto=false;saveMix();menuMusic.pause();musicStatus.textContent='';musicUI();return}musicAuto=true;saveMix();musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Music unavailable. Try again.'}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Music unavailable. Try again.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
+musicUI();
 // Six zero-gravity Core copies, gently bouncing within the viewport.
 // Replaces the old particles and rectangular corridor lines (Dev Home only).
 const hall=document.getElementById('hall'),hc=hall.getContext('2d');
