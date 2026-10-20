@@ -122,11 +122,12 @@ const fileNames=['tira-grounded-buzz-background.wav','tira-intro-electric-glitch
 const sourceAudio=fileNames.map(x=>{const a=new Audio('./assets/audio/'+x);a.preload='auto';return a});
 const audioKey='tira-dev-audio-mix-v3';let preference={};try{preference=JSON.parse(localStorage.getItem(audioKey)||'{}')}catch{}
 let neonEnabled=preference.flicker!==false;
-let musicAuto=preference.music!==false;
+const sharedMusicKey='tira-dev-shared-music-enabled-v1';
+let musicAuto=preference.music!==false;try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null)musicAuto=shared!=='off'}catch{}
 const soundVolume=[51,18,71,79,33]; // fixed approved levels
 let musicVolume=50;
 let chosenFlicker=2,activeFlicker=-1,wordTimers=[],flashCount=0,flickerLimit=1;
-function saveMix(){try{localStorage.setItem(audioKey,JSON.stringify({flicker:neonEnabled,music:musicAuto,musicVolume}))}catch{}}
+function saveMix(){try{localStorage.setItem(audioKey,JSON.stringify({flicker:neonEnabled,music:musicAuto,musicVolume}));localStorage.setItem(sharedMusicKey,musicAuto?'on':'off')}catch{}}
 function silenceNeon(keepBuzz=false){for(const t of wordTimers)clearTimeout(t);wordTimers=[];sourceAudio.forEach((a,i)=>{if(keepBuzz&&i===0)return;a.pause();try{a.currentTime=0}catch{}});activeFlicker=-1}
 function stopClip(i){const a=sourceAudio[i];a.pause();try{a.currentTime=0}catch{}}
 function playClip(i){if(!neonEnabled||document.hidden)return;const a=sourceAudio[i];stopClip(i);a.volume=Math.max(0,Math.min(1,Number(soundVolume[i]??55)/100));a.play().catch(()=>{document.getElementById('tiraAudioNotice').textContent='Tap Replay Intro to enable its sound.'})}
@@ -210,6 +211,9 @@ introLabel();animateIntro();
 const homeCoreSlider=document.getElementById('homeCoreVolume'),homeCoreLabel=document.getElementById('homeCoreVolumeValue');
 try{const raw=localStorage.getItem('corbit-dev-core-volume-spring-v1');if(raw!==null){const v=Number(raw);if(Number.isFinite(v))homeCoreSlider.value=String(Math.max(0,Math.min(100,v)))}}catch{}
 homeCoreLabel.textContent=homeCoreSlider.value+'%';
+function refreshSharedHomeSettings(){try{const raw=localStorage.getItem('corbit-dev-core-volume-spring-v1');if(raw!==null){const v=Number(raw);if(Number.isFinite(v))homeCoreSlider.value=String(Math.max(0,Math.min(100,v)))}homeCoreLabel.textContent=homeCoreSlider.value+'%';const shared=localStorage.getItem(sharedMusicKey);if(shared!==null){musicAuto=shared!=='off';if(!musicAuto)menuMusic.pause()}}catch{}musicUI()}
+window.addEventListener('pageshow',refreshSharedHomeSettings);
+window.addEventListener('storage',e=>{if(e.key===sharedMusicKey||e.key==='corbit-dev-core-volume-spring-v1')refreshSharedHomeSettings()});
 homeCoreSlider.addEventListener('input',()=>{homeCoreLabel.textContent=homeCoreSlider.value+'%';try{localStorage.setItem('corbit-dev-core-volume-spring-v1',homeCoreSlider.value)}catch{}});
 const settingsTabs=[document.getElementById('settingsTab'),document.getElementById('rulesTab')];
 function chooseSettingsTab(which,focus=false){
