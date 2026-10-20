@@ -1,102 +1,252 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CORBIT Public Beta v0.1</title><style>
-:root{font-family:Inter,system-ui,Segoe UI,sans-serif;color:#e8f6ff;background:#030c17}*{box-sizing:border-box}body{margin:0}button,select{font:inherit}button{cursor:pointer;color:inherit}button:disabled{opacity:.35;cursor:not-allowed}#game{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px}.top{width:min(940px,100%);display:flex;align-items:center;justify-content:space-between;gap:8px}.brand{font-size:16px;font-weight:900;letter-spacing:.12em}.smallbtn{background:#102438;border:1px solid #34546b;border-radius:10px;padding:9px 13px;font-weight:700}.stage{width:min(940px,100%);height:min(61dvh,580px);min-height:290px;position:relative;overflow:hidden;border-radius:20px;background:#06121f}canvas{width:100%;height:100%;display:block}.meta{position:absolute;top:14px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18px;font-size:12px;letter-spacing:.07em;color:#b8d9e9;pointer-events:none}.blue{color:#61c9ff}.red{color:#ff8191}.msg{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:13px;color:#bdd8e8;background:#071522ae;padding:7px 12px;border-radius:15px;pointer-events:none}.cards{width:min(650px,100%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.card{border-radius:16px;border:1px solid #2c526d;background:#10283e;min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:transform .15s,border-color .15s}.card.selected{border:2px solid #79d7ff;transform:translateY(-5px)}.card.gold{background:#302814;border-color:#987735}.orb{height:57px;width:57px;border-radius:100%;display:grid;place-items:center;font-size:23px;font-weight:900;background:radial-gradient(circle at 30% 20%,#b9f6ff,#329fe9 43%,#1550a6 90%);box-shadow:0 5px 17px #077fbc66}.gold .orb{background:radial-gradient(circle at 30% 20%,#fff0b2,#e6ae35 45%,#936015 90%);box-shadow:0 5px 18px #d5a03d55}.card small{font-size:10px;color:#a8c6db;letter-spacing:.07em}.controls{display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap}.action{background:#1476ab;border:1px solid #67bbef;padding:12px 23px;border-radius:11px;font-weight:850}.action.alt{background:#163247;border-color:#3f6e89}.hint{font-size:12px;color:#8fb2c9;text-align:center;min-height:1.5em}.screen{position:fixed;inset:0;background:#030b16f3;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px}.screen.hidden{display:none}.panel{width:min(460px,100%);border-radius:20px;border:1px solid #315c77;background:#0e2235;padding:24px;max-height:92dvh;overflow:auto}.panel h1{margin:0 0 6px;letter-spacing:.07em}.panel h2{margin:0 0 14px}.panel p{color:#aac7da;font-size:14px;line-height:1.5}.menuBtn{display:block;width:100%;padding:14px 12px;margin:10px 0;border:1px solid #416d87;background:#153951;border-radius:12px;font-weight:800}.menuBtn.primary{background:#1679aa}.menuBtn[hidden]{display:none}.option{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;font-size:14px}.option select{background:#142d42;padding:8px;border:1px solid #42627d;border-radius:9px}.log{width:100%;height:240px;background:#061624;color:#dbf2ff;border:1px solid #42627d;border-radius:9px;padding:12px;font:12px/1.5 monospace}.modalBack{position:fixed;inset:0;background:#030c18bd;z-index:8;display:flex;align-items:center;justify-content:center;padding:20px}.modalBack.hidden{display:none}.dialog{background:#102b41;border:1px solid #4d819f;border-radius:19px;padding:23px;text-align:center;width:min(460px,100%)}.swapRow{display:flex;gap:10px;justify-content:center}.swapRow button{flex:1;min-width:0;border:1px solid #45799c;border-radius:12px;background:#1a4869;padding:14px 6px}.swapRow button span{display:block;font-size:26px;font-weight:900}.muted{font-size:12px;color:#a5c2d6}@media(max-width:540px){.stage{height:52dvh;min-height:260px}.card{min-height:95px}.orb{width:45px;height:45px}.action{padding:10px 15px}.meta{font-size:10px}.brand{font-size:14px}}
-</style></head><body><main id="game"><div class="top"><b class="brand">CORBIT Public Beta v0.1</b><button class="smallbtn" id="openMenu">☰ MENU</button></div><div class="stage"><canvas id="arena" aria-label="Shared Core firing arena"></canvas><div class="meta"><span class="blue" id="blueState">YOU · ◇◇◇</span><span class="red" id="redState">COMPUTER · ◇◇◇</span></div><div class="msg" id="message">YOUR TURN</div></div><div class="cards" id="cards"></div><div class="controls"><button class="action" id="fire">FIRE CELL</button><button class="action alt" id="protect">◇ PROTECT (3)</button></div><div class="hint" id="pieceCount" aria-live="polite">CELL PIECES · YOU 0 · RED 0</div><div class="hint" id="hint">Choose a card to fire, or spend a turn preparing a Protect.</div></main>
-<div class="screen" id="menu"><div class="panel"><h1>CORBIT Public Beta v0.1</h1><p>One Core. Two opponents. Claim it before the other side does.</p><button class="menuBtn primary" id="continueGame" hidden>▶ CONTINUE GAME</button><button class="menuBtn primary" id="play">▶ PLAY</button><button class="menuBtn" id="settingsBtn">SETTINGS & RULES</button><button class="menuBtn" id="debugBtn">COMBAT DEBUG LOG</button><p id="record">Wins 0 · Losses 0</p></div></div>
-<div class="screen hidden" id="modesScreen"><div class="panel"><h2>SELECT MODE</h2><p>Choose how you want to play.</p><button class="menuBtn primary" id="raceMode">◎ RACE TO CORE <small style="display:block;font-weight:400;color:#b7d7e9">One shared Core · Blue vs Red</small></button><button class="menuBtn" disabled>⚔ TYPE BATTLE · COMING SOON</button><button class="menuBtn" disabled>⬡ NETWORK SURVIVAL · COMING SOON</button><button class="menuBtn" disabled>◈ TERRITORY CLASH · COMING SOON</button><button class="menuBtn" id="backMain">← MAIN MENU</button></div></div>
-<div class="screen hidden" id="levelsScreen"><div class="panel"><h2>RACE TO CORE</h2><p>Select a difficulty to start a match.</p><button class="menuBtn" data-goal="5">EASY · 5 CELLS</button><button class="menuBtn" data-goal="7">MEDIUM · 7 CELLS</button><button class="menuBtn" data-goal="10">HARD · 10 CELLS</button><button class="menuBtn" id="backModes">← MODES</button></div></div>
-<div class="screen hidden" id="settingsScreen"><div class="panel"><h2>SETTINGS & RULES</h2><div class="option"><label for="effects">Animation intensity</label><select id="effects"><option value="full">Full</option><option value="reduced">Reduced</option></select></div><p>Play a Cell card to add your cells to the shared Core, removing enemy cells first. You win when your total reaches the mode target.</p><p><strong>Protect:</strong> Spend your turn to arm one Protect. It completely blocks the opponent's next shot. Each side starts with 3 stored Protects.</p><p><strong>Protect draw:</strong> You also reveal a bonus normal card when you arm Protect. Replace one of your three normal cards or discard it.</p><p><strong>Cell Process:</strong> Destroyed cells produce pieces when a Protect slot is empty. Every 12 pieces automatically rebuilds one stored Protect, without consuming a turn.</p><p><strong>Card odds:</strong> +1 28%, +2 34%, +3 33%, +4 5%. Gold +4 is reserved in the fourth slot when available.</p><button class="menuBtn" data-back>BACK</button></div></div>
-<div class="screen hidden" id="debugScreen"><div class="panel"><h2>COMBAT DEBUG LOG</h2><textarea readonly class="log" id="debugText"></textarea><button class="menuBtn" id="saveLog">DOWNLOAD LOG</button><button class="menuBtn" id="selectLog">SELECT ALL</button><button class="menuBtn" data-back>BACK</button></div></div>
-<div class="modalBack hidden" id="bonusModal"><div class="dialog"><h2>PROTECT BONUS DRAW</h2><p>You drew <strong id="drawVal">+2</strong>. Swap with a card, or discard it.</p><div class="swapRow" id="swapRow"></div><button class="menuBtn" id="discard">DISCARD CARD</button></div></div>
-<div class="modalBack hidden" id="resultModal"><div class="dialog"><h1 id="resultTitle">VICTORY</h1><p id="resultText"></p><button class="menuBtn primary" id="again">PLAY AGAIN</button><button class="menuBtn" id="toMenu">MAIN MENU</button></div></div>
-<script>
-(()=>{'use strict';const $=id=>document.getElementById(id),cv=$('arena'),ctx=cv.getContext('2d');let goal=5,g,phase='menu',sel=0,bonus=0,shot=null,particles=[],pulse=0,shake=0,boom=0,winTime=0,clock=0,last=0,ticket=0,tasks=[],events=[],impactNotice=null,record={wins:0,losses:0,gold:0};try{Object.assign(record,JSON.parse(localStorage.getItem('cellcore-record-v04')||'{}'))}catch{};function save(){try{localStorage.setItem('cellcore-record-v04',JSON.stringify(record))}catch{}}const standardOdds=[28,34,33,5],lateEasyOdds=[24,36,35,5];function drawCard(){const odds=goal===5&&g&&g.turn>=15?lateEasyOdds:standardOdds;let n=Math.random()*100;for(let i=0;i<4;i++){n-=odds[i];if(n<0)return i+1}return 4}const state=(pos)=>!pos?'NEUTRAL 0':`${pos>0?'BLUE':'RED'} ${Math.abs(pos)}`;function log(msg){events.push(`Turn ${g?.turn||1} · ${msg}`);$('debugText').value=events.join('\n')}function armReset(){for(const timer of tasks)clearTimeout(timer);tasks=[];ticket++}function later(f,ms){const t=ticket;tasks.push(setTimeout(()=>{if(t===ticket)f()},ms))}function show(id){if(id==='menu')$('continueGame').hidden=!(g&&!g.ended);for(const name of ['menu','modesScreen','levelsScreen','settingsScreen','debugScreen'])$(name).classList.toggle('hidden',name!==id)}function newGame(){armReset();g={pos:0,turn:1,ended:false,you:{hand:[drawCard(),drawCard(),drawCard()],shields:3,pieces:0,armed:false},ai:{hand:[drawCard(),drawCard(),drawCard()],shields:3,pieces:0,armed:false,lastAction:null}};events=[];shot=null;particles=[];impactNotice=null;boom=0;winTime=0;pulse=0;phase='human';sel=0;$('bonusModal').classList.add('hidden');$('resultModal').classList.add('hidden');show('');log(`New game, target ${goal}`);render()}function stat(s){return `${'◇'.repeat(s.shields)}${'·'.repeat(3-s.shields)}`}function render(){if(!g)return;const can=phase==='human';$('blueState').textContent='YOU · '+stat(g.you);$('redState').textContent='COMPUTER · '+stat(g.ai);$('message').textContent=phase==='human'?'TURN '+g.turn+' · YOUR TURN':phase==='bonus'?'BONUS CARD':phase==='ai'?'COMPUTER TURN':phase==='over'?'CORE OVERLOAD':'CELL IN FLIGHT';$('protect').textContent=`◇ PROTECT (${g.you.shields})`;$('pieceCount').textContent=`CELL PIECES · YOU ${g.you.pieces} · RED ${g.ai.pieces}`;$('protect').disabled=!can||g.you.shields===0||g.you.armed;$('fire').disabled=!can;$('hint').textContent=g.you.armed?'Your Protect is armed. It will block the next incoming shot.':`Turn ${g.turn} · Core: ${state(g.pos)} · First to ${goal}`;$('cards').replaceChildren();for(let i=0;i<4;i++){const gold=i===3,v=gold?4:g.you.hand[i],b=document.createElement('button');b.className='card'+(gold?' gold':'')+(i===sel?' selected':'');b.disabled=!can||(gold&&record.gold<1);b.innerHTML=`<span class="orb">+${v}</span><small>${gold?'GOLD · '+(record.gold||0):'SLOT '+(i+1)}</small>`;b.onclick=()=>{sel=i;render()};$('cards').appendChild(b)}$('record').textContent=`Wins ${record.wins||0} · Losses ${record.losses||0}`}
-function announce(label,color){impactNotice={label,color,life:1.75,full:1.75}}function process(s,name){let count=0;while(s.pieces>=12&&s.shields<3){s.pieces-=12;s.shields++;count++}if(count)log(`${name} automatically processed pieces → +${count} Protect (stored ${s.shields})`)}function apply(who,cp){const attacker=g[who],defender=g[who==='you'?'ai':'you'],a=who==='you'?1:-1,old=g.pos,before=defender.shields;let blocked=0;if(defender.armed){defender.armed=false;blocked=cp;log(`${who==='you'?'RED':'BLUE'} armed Protect stopped the entire +${cp} shot`)}announce(blocked?'BLOCKED':String(cp),blocked?'#d2ecfa':who==='you'?'#80dcff':'#ff9bab');const applied=cp-blocked,removed=old*a<0?Math.min(Math.abs(old),applied):0;g.pos=Math.max(-goal,Math.min(goal,old+a*applied));if(removed)attacker.pieces+=removed;log(`${who==='you'?'BLUE':'RED'} fires +${cp} | ${state(old)} → ${state(g.pos)} | Blocked ${blocked} | Applied ${applied} | Destroyed ${removed} | Opponent Protect ${before}→${defender.shields}`);pulse=1;shake=.6;if(Math.abs(g.pos)>=goal){g.ended=true;phase='over';boom=.001;winTime=0;particles=[];const won=g.pos>0;record[won?'wins':'losses']=(record[won?'wins':'losses']||0)+1;save();log(won?'BLUE victory':'RED victory');$('resultTitle').textContent=won?'BLUE WINS!':'RED WINS!';$('resultText').textContent=`Core overloaded at ${goal} cells.`;later(()=>$('resultModal').classList.remove('hidden'),2100);render();return}if(who==='you'){phase='ai';render();later(aiMove,650)}else{g.turn++;phase='human';render()}}
-function fire(who,cp){phase='shot';shot={who,cp,t:0};render()}function mediumDecision(pos,hand,shields,armed,target,blueArmed){
-  const sorted=[...hand].sort((a,b)=>b-a),highest=sorted[0];
-  const protectedShot=blueArmed;
-  // A complete Blue shield would nullify a shot, so protect/reload when possible.
-  const canGuard=shields>0&&!armed;
-  const redLead=pos<0?-pos:0;
-  const effective=protectedShot?0:highest;
-  // Never sacrifice an immediate win merely to arm a barrier.
-  const canWin=!protectedShot && pos-highest<=-target;
-  if(canWin){
-    const winCard=[...hand].filter(v=>pos-v<=-target).sort((a,b)=>a-b)[0];
-    return {type:'fire',cp:winCard,reason:'winning shot'};
-  }
-  // Shield up while RED already has a strong lead and has a +3/+4 for its next turn.
-  // One protect is one turn. AI must attack between protection actions.
-  if(canGuard && redLead>=3 && redLead<=4 && highest>=3 && !protectedShot){
-    return {type:'protect',reason:'hold a +'+highest+' while defending a '+redLead+'-cell lead'};
-  }
-  if(canGuard && protectedShot && highest>=2){
-    return {type:'protect',reason:'avoid wasting a strong card on an armed barrier'};
-  }
-  return {type:'fire',cp:highest,reason:highest===1?'only low cards available':'highest effective card'};
-}
-function aiMove(){if(!g||g.ended)return;
-  const ai=g.ai;
-  if(goal===7){
-    const choice=mediumDecision(g.pos,ai.hand,ai.shields,ai.armed || ai.lastAction==='protect',goal,g.you.armed);
-    if(choice.type==='protect'){
-      ai.shields--;ai.armed=true;ai.lastAction='protect';
-      const n=drawCard(),min=Math.min(...ai.hand);
-      if(n>min)ai.hand[ai.hand.indexOf(min)]=n;
-      announce('PROTECT','#ff9bab');log(`MEDIUM RED arms Protect: ${choice.reason}. Bonus +${n}${n>min?' replaces +'+min:' discarded'}. Stored ${ai.shields}`);
-      phase='human';g.turn++;render();return;
-    }
-    const idx=ai.hand.indexOf(choice.cp),cp=ai.hand[idx];ai.hand[idx]=drawCard();
-    ai.lastAction='fire';log(`MEDIUM RED fires +${cp}: ${choice.reason}.`);fire('ai',cp);return;
-  }
-  // Preserve pre-existing Easy and Hard behavior for now.
-  const best=Math.max(...ai.hand),threatened=g.pos>0&&g.pos>=goal-2;
-  const shouldProtect=ai.shields>0&&!ai.armed&&ai.lastAction!=='protect'&&threatened&&g.pos-best>0&&Math.random()<(goal===5?.24:.52);
-  if(shouldProtect){ai.shields--;ai.armed=true;ai.lastAction='protect';const n=drawCard(),min=Math.min(...ai.hand);if(n>min)ai.hand[ai.hand.indexOf(min)]=n;announce('PROTECT','#ff9bab');log(`RED spent turn arming Protect, bonus drew +${n}${n>min?' (upgraded hand)':''}`);phase='human';g.turn++;render();return}
-  const idx=ai.hand.indexOf(best),cp=ai.hand[idx];ai.hand[idx]=drawCard();ai.lastAction='fire';log(`RED chooses +${cp}`);fire('ai',cp)
-}
-function playerFire(){if(phase!=='human')return;let cp;if(sel===3){if(!(record.gold>0))return;record.gold--;save();cp=4;log('BLUE uses GOLD +4')}else{cp=g.you.hand[sel];g.you.hand[sel]=drawCard()}fire('you',cp)}function playerProtect(){if(phase!=='human'||g.you.shields<=0||g.you.armed)return;g.you.shields--;g.you.armed=true;bonus=drawCard();announce('PROTECT','#80dcff');log(`BLUE spends turn arming Protect (stored ${g.you.shields}); bonus drew +${bonus}`);phase='bonus';$('drawVal').textContent='+'+bonus;$('swapRow').replaceChildren();g.you.hand.forEach((c,i)=>{const b=document.createElement('button');b.innerHTML=`SLOT ${i+1}<span>+${c}</span>REPLACE`;b.onclick=()=>finishBonus(i);$('swapRow').append(b)});$('bonusModal').classList.remove('hidden');render()}function finishBonus(index){if(phase!=='bonus')return;if(index>=0){const original=g.you.hand[index];g.you.hand[index]=bonus;log(`BLUE swaps +${original} for +${bonus} in slot ${index+1}`)}else log(`BLUE discards +${bonus}`);$('bonusModal').classList.add('hidden');phase='ai';render();later(aiMove,650)}
-$('fire').onclick=playerFire;$('protect').onclick=playerProtect;$('discard').onclick=()=>finishBonus(-1);$('openMenu').onclick=()=>{$('continueGame').hidden=!(g&&!g.ended);show('menu')};$('continueGame').onclick=()=>{if(g&&!g.ended)show('')};$('play').onclick=()=>show('modesScreen');$('raceMode').onclick=()=>show('levelsScreen');$('backMain').onclick=()=>show('menu');$('backModes').onclick=()=>show('modesScreen');$('settingsBtn').onclick=()=>show('settingsScreen');$('debugBtn').onclick=()=>show('debugScreen');document.querySelectorAll('[data-goal]').forEach(b=>b.onclick=()=>{goal=Number(b.dataset.goal);newGame()});document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show('menu'));$('again').onclick=newGame;$('toMenu').onclick=()=>{$('resultModal').classList.add('hidden');show('menu')};$('selectLog').onclick=()=>{$('debugText').focus();$('debugText').select()};$('saveLog').onclick=()=>{const blob=new Blob([events.join('\n')],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='CELL_CORE_debug_log.txt';document.body.append(a);a.click();a.remove();later(()=>URL.revokeObjectURL(url),1000)};
-function circle(x,y,r,fill){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill()}function frame(t){const dt=Math.min(.05,(t-last)/1000||.016);last=t;clock+=dt;const w=cv.clientWidth,h=cv.clientHeight,dpr=Math.min(2,window.devicePixelRatio||1);if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const x=w/2,y=h*.51,r=Math.min(w*.28,h*.37);let bg=ctx.createRadialGradient(x,y,2,x,y,w*.65);bg.addColorStop(0,'#10293d');bg.addColorStop(1,'#03101b');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-if(impactNotice){
- const n=impactNotice;n.life=Math.max(0,n.life-dt);
- const alpha=Math.min(1,n.life/.4,(n.full-n.life)/.18);
- ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
- const numeric=/^\d+$/.test(n.label),size=numeric?Math.min(w*.085,h*.105,40):Math.min(w*.085,h*.085,32);
- ctx.font=`900 ${Math.round(size)}px system-ui`;
- ctx.globalAlpha=alpha*.78;ctx.fillStyle=n.color;
- ctx.shadowColor=n.color;ctx.shadowBlur=10;
- // Keep the whole number above the Core so it cannot be obscured by its opaque surface.
- ctx.fillText(n.label,x,y-r*1.23);
- ctx.restore();if(n.life<=0)impactNotice=null;
-}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TIRA! — Public Beta v0.2</title><style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#030c17;color:#e8f6ff}*{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 25%,#173a54,#081927 52%,#030c17 90%)}main{width:min(450px,100%)}h1{text-align:center;font-size:clamp(54px,13vw,82px);letter-spacing:.09em;margin:18px 0 10px;text-shadow:0 0 25px #298bd977}.tagline{text-align:center;color:#b7d6e9;font-size:15px;margin:0 0 55px}.group,.options{display:grid;gap:12px}button,a.link{display:block;width:100%;padding:16px 12px;border:1px solid #3a6884;border-radius:13px;background:#132d43;color:#e7f6ff;text-decoration:none;text-align:center;font-size:15px;font-weight:800;cursor:pointer}/* The exclamation keeps its space in the title while animated endings overlay it. */
+.tira-title{white-space:nowrap;overflow:visible;position:relative;line-height:1.12}
+.tira-base{display:inline}
+.tira-mark{display:inline-block;position:relative;font-size:1em;line-height:inherit;vertical-align:baseline;letter-spacing:inherit}
+.tira-bang{display:inline-block;transform:scale(.91);transform-origin:50% 75%}
+.tira-mark.suffix-lit .tira-bang{visibility:hidden}
+.tira-suffix{position:absolute;left:0;bottom:0;z-index:2;font-size:1em;line-height:inherit;letter-spacing:inherit;white-space:nowrap;opacity:0;pointer-events:none;color:#e8f6ff;text-shadow:0 0 25px #298bd977;visibility:hidden}
+.tira-suffix.lit{opacity:1;visibility:visible}
+.tira-title:has(.suffix-lit) .tira-base{opacity:1}
+#introToggle,#flickerAudioToggle{font-size:11px;padding:8px;margin-top:4px;border:1px solid #32546d;background:#0b2032;color:#a9ccdf;letter-spacing:.04em}
+@media(prefers-reduced-motion:reduce){.tira-suffix{display:none!important}}
+button.primary,.link.primary{background:#126f9e;border-color:#6bc4ea}button:disabled{opacity:.46;cursor:not-allowed}.back{background:transparent;text-align:left;border:none;padding:7px;color:#b8d9ea}.hidden{display:none!important}h2{text-align:center;font-size:23px;margin:0 0 22px}.subtitle{text-align:center;color:#98b7cc;font-size:12px;margin:10px 0 20px}.tiny{display:block;color:#acc8d8;font-size:11px;font-weight:500;margin-top:5px}.panel{min-height:300px}.small{font-size:12px;padding:11px}.lab-list{display:grid;gap:12px}button:focus-visible,a:focus-visible{outline:2px solid #a9e8ff;outline-offset:3px}
+body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hall{position:fixed;inset:0;width:100%;height:100%;pointer-events:auto;z-index:0;opacity:.7}main{position:relative;z-index:1;min-width:0}@media(max-width:600px){body{padding:clamp(14px,5vw,22px);align-items:center}main{width:min(450px,100%)}h1{font-size:clamp(48px,14vw,72px);line-height:1.12;letter-spacing:.065em;overflow-wrap:normal}.tagline{font-size:clamp(12px,3.6vw,15px);line-height:1.5;margin-bottom:clamp(28px,6vh,55px)}.panel{min-height:0}button,a.link{padding:15px 11px}h2{margin-bottom:18px}}@media(prefers-reduced-motion:reduce){#hall{display:none}}#musicToggle{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:16px;width:auto;min-width:114px;z-index:5;padding:11px 13px;font-size:12px;background:#123247cc;backdrop-filter:blur(10px)}#musicToggle[aria-pressed=true]{border-color:#80d6f4}#musicStatus{position:fixed;bottom:65px;right:16px;z-index:5;font-size:11px;color:#cce6f4;max-width:min(280px,75vw);text-align:right;pointer-events:none}</style><style id="tira-audio-additive">.tira-audio-settings{margin-top:14px;border-top:1px solid #33546a;padding-top:12px}.tira-audio-row{display:grid;grid-template-columns:minmax(0,1fr) 115px 38px;align-items:center;gap:8px;margin:10px 0;font-size:11px}.tira-audio-row input{width:100%;min-width:0;accent-color:#7cd6ff}.tira-audio-row output{text-align:right}.tira-audio-switch{display:flex;align-items:center;justify-content:space-between;margin:14px 0;font-size:13px}.tira-audio-switch input{width:19px;height:19px}.tira-audio-test{padding:7px;font-size:11px;margin:0 0 12px}.tira-audio-note{font-size:11px;color:#aaccdf;line-height:1.5}</style><style id="tira-turn-line-style">.turn-line{text-align:center;font-size:clamp(20px,5vw,25px);font-weight:600;letter-spacing:.01em;color:#d9f3ff;margin:-4px 0 0;line-height:1.1}.tira-title{margin-bottom:0}.turn-line+.tagline{margin-top:1px}</style><style id="tira-settings-tabs-style">.tira-settings-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 20px}.tira-settings-tabs button{margin:0;padding:12px 10px;background:#0c2132;border:1px solid #3a6884;border-radius:10px;font-size:13px}.tira-settings-tabs button[aria-selected="true"]{background:#126f9e;border-color:#90daf7;color:#fff}.tira-settings-tabs button:focus-visible{outline:2px solid #b3eeff;outline-offset:2px}#homeSettings [role="tabpanel"][hidden]{display:none!important}</style><style id="practice-entry-style">#custom h2,#modes h2{font-size:clamp(34px,7vw,42px);font-weight:800;letter-spacing:.035em;line-height:1.15;margin:16px 0 22px;text-align:center}.practice-entry{font-size:clamp(21px,5vw,25px);font-weight:500;letter-spacing:.055em;padding:20px 12px}</style><style id="tira-mobile-word-fit">@media(max-width:600px){#home .tira-title{font-size:clamp(36px,12vw,52px);letter-spacing:.01em}#home .tira-suffix{letter-spacing:inherit}}@media(max-width:600px) and (max-height:650px){body{align-items:start}}</style><style id="tira-home-menu-style">#home .group>button{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;font-size:clamp(18px,4.5vw,21px);font-weight:800;letter-spacing:.035em;padding:18px 12px}#homeSettings #musicToggle{position:static;bottom:auto;right:auto;width:100%;min-width:0;margin-top:7px;font-size:13px;backdrop-filter:none}#homeSettings #musicStatus{position:static;display:block;max-width:none;text-align:left;margin-top:6px;min-height:0;font-size:11px}#homeSettings #introToggle,#homeSettings #flickerAudioToggle{width:100%;margin-top:8px;font-size:12px;padding:11px}</style><style id="play-description-style">#modes .play-description{margin:-12px 0 22px;font-size:13px;color:#acc8d8}</style><style id="tira-resume-style">#resumeMatch[hidden]{display:none!important}</style><style id="tira-home-volume-alignment">.tira-core-volume-row{grid-template-columns:minmax(0,1fr) 115px 38px}.tira-core-volume-row label{font-size:11px;color:#d9f0ff}.tira-core-volume-row output{font-size:11px;font-weight:700;color:#f1faff}#tiraAudioRows[hidden]{display:none!important}</style><style>.tira-update-list{display:grid;gap:10px;margin-top:18px}.tira-update-list details{border:1px solid #386581;border-radius:12px;background:#102a3e;padding:13px 15px}.tira-update-list summary{cursor:pointer;font-weight:800;color:#ecf8ff;list-style-position:inside}.tira-update-list details[open] summary{margin-bottom:10px}.tira-update-list p{color:#c6e0ee;font-size:14px;line-height:1.55;margin:8px 0}.tira-update-list strong{color:#fff}</style><style>.tira-update-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 18px}.tira-update-tabs button{padding:11px 10px}.tira-update-tabs button[aria-current="page"]{opacity:1;color:#fff;border-color:#78c9fa;background:#24506c;cursor:default}</style><style>#tiraCoreContactPopup[hidden]{display:none!important}#tiraCoreContactPopup{position:fixed;inset:0;z-index:30;background:rgba(1,9,20,.75);display:grid;place-items:center;padding:20px}#tiraCoreContactPopup .core-contact-dialog{width:min(370px,100%);background:#102a3e;border:1px solid #4b829e;border-radius:18px;padding:24px;box-shadow:0 20px 70px #000a;text-align:center}#tiraCoreContactPopup h2{margin:0 0 12px}#tiraCoreContactPopup p{color:#c6e0ee;line-height:1.5}#tiraCoreContactPopup a{display:inline;color:inherit;font:inherit;font-style:italic;text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px}#tiraCoreContactPopup .core-contact-close{background:transparent;border:1px solid #4b829e;padding:10px}</style></head><body><canvas id="hall" aria-hidden="true"></canvas><div id="tiraCoreContactPopup" hidden><section class="core-contact-dialog" role="dialog" aria-modal="true" aria-label="Secret Core message" aria-describedby="coreContactDescription"><p id="coreContactDescription">Oh, you found me! Have something to tell me? You can <a href="https://www.instagram.com/dev.tira/" target="_blank" rel="noopener noreferrer" id="coreContactLink">message</a> me personally.</p><button type="button" class="core-contact-close" id="coreContactClose">CLOSE</button></section></div><main>
+<section class="panel" id="home"><h1 class="tira-title" aria-label="TIRA!"><span class="tira-base">TIRA</span><span class="tira-mark" id="tiraMark"><span class="tira-bang">!</span><span class="tira-suffix" id="tiraSuffix" aria-hidden="true"></span></span></h1>
+<p class="turn-line">Your Turn!</p>
+<p class="tagline">Don't Be the Dumbest. Outplay the Smartest!</p>
+<nav class="group" aria-label="Main menu"><button class="primary" data-open="modes">▶ PLAY</button>
+<button type="button" data-open="homeSettings">SETTINGS &amp; RULES</button>
+<button data-open="updatesNow">UPDATE</button></nav></section>
+<section class="panel hidden" id="homeSettings"><button class="back" type="button" data-back="home">← HOME</button>
+<h2>SETTINGS &amp; RULES</h2>
+<div class="tira-settings-tabs" role="tablist" aria-label="Settings and Rules">
+<button type="button" role="tab" id="settingsTab" aria-controls="settingsTabPanel" aria-selected="true" tabindex="0">SETTINGS</button>
+<button type="button" role="tab" id="rulesTab" aria-controls="rulesTabPanel" aria-selected="false" tabindex="-1">RULES</button>
+</div>
+<div role="tabpanel" id="settingsTabPanel" aria-labelledby="settingsTab">
+<h3>SOUND</h3>
+<div class="tira-audio-row tira-core-volume-row"><label for="homeCoreVolume">Core volume</label><input id="homeCoreVolume" type="range" min="0" max="100" step="5" value="45"><output id="homeCoreVolumeValue" for="homeCoreVolume">45%</output></div>
+<button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span>
+<div id="tiraAudioRows"></div>
+<div class="tira-audio-settings" style="border-top:0"><h3>INTRO</h3>
+<button id="introToggle" type="button" aria-label="Toggle TIRA! animated intro">INTRO · ON</button>
+<button id="flickerAudioToggle" type="button" aria-pressed="true">⚡ FLICKER SOUND · ON</button>
+<p class="tira-audio-note" id="tiraAudioNotice" role="status"></p>
+<details><summary>Preview intro</summary>
+<button type="button" id="tiraReplayWords" class="small">▶ REPLAY INTRO</button>
+</details></div>
+</div>
+<div role="tabpanel" id="rulesTabPanel" aria-labelledby="rulesTab" hidden>
+<h3>FIRST TO 6 WINS · PRACTICE MEDIUM</h3>
+<p>Turn the shared Core your color and reach <strong>6 or more</strong> to win Practice Medium (or 5 in Practice Easy). You are Blue. Your opponent is Red.</p>
+<h3>ON YOUR TURN</h3>
+<p><strong>ITIRA! (firing):</strong> Choose a Cell Card, then tap <strong>ITIRA!</strong>. Its number removes enemy cells first. Any amount left adds cells in your color. You draw a replacement card.</p>
+<p><strong>Example:</strong> The Core is Red 2. You use ITIRA! with +3. Two cancel the Red cells, and the remaining one makes it Blue 1.</p>
+<p><strong>Protect:</strong> Use your turn to block your opponent's next shot completely. You start with 3 Protects. You also draw a bonus card: keep it in a normal card slot or turn it into Cell Pieces.</p>
+<p><strong>The strategy:</strong> Push toward 6, stop your opponent, or protect your lead. Using ITIRA! or activating Protect ends your turn.</p>
+<details><summary><strong>Cell Pieces &amp; power-ups</strong></summary>
+<p>Cell Pieces are also called <strong>PP</strong>. Earn 1 piece for each enemy cell your shot removes. Adding your own cells or hitting a Protect earns none.</p>
+<p><strong>Convert a card:</strong> Tap its corner arrow to turn a normal Cell Card into pieces equal to its number. The slot stays empty until you fill it with a Protect bonus card. Only normal Cell Cards can be converted.</p>
+<p><strong>Bonus cards:</strong> If you replace a card, the old card becomes pieces. If you discard the bonus card, that bonus becomes pieces instead.</p>
+<p><strong>Gold +4:</strong> Spend 10 pieces to use ITIRA! with a +4 shot. This ends your turn.</p>
+<p><strong>Refill Protect:</strong> Spend 12 pieces to restore one stored Protect, up to 3. You still need to activate it to block a shot.</p>
+<p>Converting cards and refilling Protect do <strong>not</strong> end your turn.</p>
+</details>
+<details><summary><strong>Practice targets &amp; card chances</strong></summary>
+<p>Practice Easy: <strong>5</strong>. Practice Medium: <strong>6</strong>. Reaching or passing the target in your color wins. Online Classic is planned, not yet available.</p>
+<p>Normal draws: +1 28%, +2 34%, +3 33%, +4 5%.</p>
+</details>
+</div>
+</section>
+<section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><p class="subtitle play-description">Play the current game prototype</p><div class="options"><a class="link primary" id="resumeMatch" href="./play.html?continue=1" hidden>▶ CONTINUE GAME</a><button data-open="custom" class="primary">CUSTOM<span class="tiny">Practice against the computer</span></button><button disabled>CLASSIC<span class="tiny">Real-time matches · Next update</span></button></div></section>
+<section class="panel hidden" id="custom"><button class="back" data-back="modes">← PLAY</button><h2>CUSTOM</h2><button class="primary practice-entry" data-open="practice">PRACTICE</button><p class="subtitle">Friend lobbies and additional custom rules are not implemented yet.</p></section>
+<section class="panel hidden" id="practice"><button class="back" data-back="custom">← CUSTOM</button><h2>PRACTICE · COMPUTER</h2><div class="options"><a class="link" href="./play.html?goal=5">EASY<span class="tiny">First to 5 · quicker practice</span></a><a class="link" href="./play.html?goal=6">MEDIUM<span class="tiny">First to 6 · previous Classic rules</span></a></div><p class="subtitle">Practice uses the existing computer opponent. Easy and Medium currently differ by target score; distinct AI difficulty is not yet verified.</p></section>
+<section class="panel hidden" id="updatesNow"><button class="back" data-back="home">← HOME</button><h2>UPDATE</h2><div class="tira-update-tabs" role="group" aria-label="Update sections"><button type="button" aria-current="page" disabled>NOW</button><button type="button" data-open="updatesNext">NEXT</button></div><p class="subtitle">What's changing in TIRA!</p><div class="tira-update-list">
+<details><summary>CORBIT → TIRA!</summary><p><strong>TIRA!</strong> is the current name of the game previously called CORBIT. Earlier names included Cell Core and Race to Core. Older links, files, or screenshots may still say CORBIT; they refer to the same game, not a different title.</p></details>
+<details><summary>In-game currency · Cell Pieces</summary><p>Earlier terms such as Bits or Pieces can cause confusion. <strong>Cell Pieces</strong> are match resources, not real-money currency. Earn 1 for each enemy Core cell removed by a shot, or convert a normal Cell Card into Pieces equal to its number. Converted slots remain empty until filled with a Protect bonus card.</p><p>Spend <strong>10 Pieces</strong> to fire Gold +4 (five-player-turn cooldown), or <strong>12 Pieces</strong> to restore one Protect, up to three. These are separate from any future account economy.</p></details>
+<details><summary>Goal 5 → 6</summary><p>First-to-5 can end too quickly and leave little opportunity to recover. <strong>6</strong> remains the standard practice target for more counterplay; <strong>5</strong> moves to Easy Practice. Final competitive balance is still subject to testing.</p></details>
+<details><summary>Custom · Practice</summary><p>Go to <strong>Play → Custom → Practice</strong>. Easy is first to 5. Medium uses the previous Classic prototype at first to 6. Other practice difficulties are not listed in this update.</p></details>
 
-if(g){ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*7,(Math.random()-.5)*shake*7);shake=Math.max(0,shake-dt*1.9)}const progress=Math.min(1,Math.abs(g.pos)/goal);
- // Original v0.28 micro-tremor; position changes, not the progress number.
- const winning=!!g.ended;
- if(winning)winTime+=dt;
- const tension=winning? Math.max(0,1-winTime/.76):1;
- // Default visual style: Shake Lab #1 Micro Tremor.
- // Reference tuning: 1.70x tremor speed, 100% movement at 87% charge.
- // Actual instability always tracks current Core count / victory target.
- const urgency=Math.pow(progress,1.45);
- const f=clock*1.70;
- const amp=(.1+urgency*3.2)*(100/55);
- const jitterX=amp*Math.sin(f*69);
- const jitterY=amp*.75*Math.sin(f*47+.7);
- const throb=1+.005*urgency*Math.sin(clock*5);
- const overloadScale=winning?(winTime<.7?1+Math.sin(winTime*48)*.068:Math.max(0,1-(winTime-.7)/.32)):1;
- const rr=r*throb*overloadScale;
- let core=ctx.createRadialGradient(-rr*.28,-rr*.29,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(1,'#0b2137');
- if(!winning||winTime<1.02){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
- // The membrane stays intact: organic shape instability replaces stress cracks.
- circle(0,0,rr,core);
- ctx.globalAlpha*=.18;circle(0,0,rr*.77,'#071b29');ctx.globalAlpha=tension;
- if(!winning&&(g.you.armed||g.ai.armed)){const col=g.you.armed?'#50c0fa':'#ff748a',count=g.you.armed&&g.ai.armed?2:1;for(let m=0;m<count;m++)for(let i=0;i<12;i++){let a=i*Math.PI/6+clock*.04;const dist=rr*(1.13+m*.2),xx=Math.cos(a)*dist,yy=Math.sin(a)*dist,s=rr*.10;ctx.beginPath();for(let k=0;k<6;k++){let ang=k*Math.PI/3,px=xx+Math.cos(ang)*s,py=yy+Math.sin(ang)*s;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fillStyle=col+'35';ctx.fill()}}ctx.restore();ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#f0faff';ctx.font=`900 ${Math.round(rr*.47)}px system-ui`;ctx.fillText(Math.abs(g.pos),x,y);ctx.restore()}ctx.restore();if(shot){shot.t=Math.min(1,shot.t+dt*1.42);const k=1-Math.pow(1-shot.t,2),startX=shot.who==='you'?w*.17:w*.83,startY=h*.91,sx=startX+(x-startX)*k,sy=startY+(y-startY)*k,color=shot.who==='you'?'#49c9ff':'#ff6883',size=20*(1-k)+7;ctx.beginPath();ctx.moveTo(startX,startY);ctx.lineTo(sx,sy);ctx.strokeStyle=color+'80';ctx.lineWidth=3;ctx.stroke();circle(sx,sy,size,color);ctx.fillStyle='#071b2b';ctx.font=`800 ${size}px system-ui`;ctx.fillText(shot.cp,sx,sy);if(shot.t===1){const s=shot;shot=null;for(let i=0;i<8;i++){const a=i*Math.PI/4;particles.push({x,y,vx:Math.cos(a)*(25+Math.random()*55),vy:Math.sin(a)*(25+Math.random()*55),life:.18,color,size:2})}apply(s.who,s.cp)}}for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;ctx.globalAlpha=Math.max(0,p.life*2);circle(p.x,p.y,p.size||2.7,p.color);if(p.life<=0)particles.splice(i,1)}ctx.globalAlpha=1;if(pulse>0){ctx.globalAlpha=pulse*.16;circle(x,y,r*1.05,'#d3f7ff');ctx.globalAlpha=1;pulse=Math.max(0,pulse-dt*2.3)}if(boom>0){
- const t=winTime;
- if(t>.67&&t<1.17){ctx.save();const v=(t-.67)/.5,alpha=Math.pow(1-v,1.3),rad=r*(.2+v*2.9);
- const grad=ctx.createRadialGradient(x,y,0,x,y,rad);grad.addColorStop(0,`rgba(255,255,255,${alpha})`);grad.addColorStop(.27,`rgba(255,230,165,${alpha*.8})`);grad.addColorStop(.7,`rgba(105,206,255,${alpha*.23})`);grad.addColorStop(1,'rgba(0,0,0,0)');circle(x,y,rad,grad);
- ctx.strokeStyle=`rgba(255,245,218,${alpha*.95})`;ctx.lineWidth=12+v*15;ctx.beginPath();ctx.arc(x,y,rad*.92,0,Math.PI*2);ctx.stroke();ctx.restore()}
- if(t>=1.17&&t<1.55){ctx.save();ctx.globalAlpha=(1.55-t)*.25;circle(x,y,r*1.3,'#b8eaff');ctx.restore()}
-}}requestAnimationFrame(frame)}render();requestAnimationFrame(frame);
-})();
-</script></body></html>
+</div></section>
+<section class="panel hidden" id="updatesNext"><button class="back" data-back="home">← HOME</button><h2>UPDATE</h2><div class="tira-update-tabs" role="group" aria-label="Update sections"><button type="button" data-open="updatesNow">NOW</button><button type="button" aria-current="page" disabled>NEXT</button></div><p class="subtitle">Planned features · not yet playable</p><div class="tira-update-list">
+<details><summary>Profile</summary><p>Player profiles and identity management, with guest and registered accounts. Persistent online profiles require secure backend services.</p></details>
+<details><summary>Guest or Create an Account</summary><p>Choose a guest identity for quick entry or create a permanent account. Account upgrade and recovery are planned, not currently available.</p></details>
+<details><summary>Special Cards</summary><p>Additional special-card gameplay is planned. Exact card effects and rules will be announced after approval and testing.</p></details>
+<details><summary>Classic · Real-time Matches</summary><p>Classic is planned as live matches against other players. Current computer practice is not online matchmaking.</p></details>
+</div></section>
+<script>
+const menuMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
+menuMusic.loop=true;menuMusic.preload='none';menuMusic.playbackRate=.92;menuMusic.preservesPitch=true;menuMusic.volume=.50;
+const musicToggle=document.getElementById('musicToggle'),musicStatus=document.getElementById('musicStatus');
+function musicUI(){const active=musicAuto;musicToggle.textContent=active?'♪ MUSIC ON':'♪ MUSIC OFF';musicToggle.setAttribute('aria-pressed',String(active));const rows=document.getElementById('tiraAudioRows');if(rows)rows.hidden=!musicAuto;}
+musicToggle.addEventListener('click',async()=>{musicAuto=!musicAuto;saveMix();if(!musicAuto){menuMusic.pause();musicStatus.textContent='';musicUI();return}musicStatus.textContent='Loading music…';try{menuMusic.volume=musicVolume/100;await menuMusic.play();musicStatus.textContent=''}catch(e){musicStatus.textContent='Tap to enable music if your browser blocked playback.'}musicUI()});
+menuMusic.addEventListener('error',()=>{musicStatus.textContent='Music unavailable. Try again.';musicUI()});
+menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
+// Six zero-gravity Core copies, gently bouncing within the viewport.
+// Replaces the old particles and rectangular corridor lines (Dev Home only).
+const hall=document.getElementById('hall'),hc=hall.getContext('2d');
+const coreContactPopup=document.getElementById('tiraCoreContactPopup'),coreContactClose=document.getElementById('coreContactClose'),coreContactLink=document.getElementById('coreContactLink');
+let coreContactLastFocus=null;function closeCoreContact(){coreContactPopup.hidden=true;coreContactLastFocus?.focus?.()}
+coreContactClose.addEventListener('click',closeCoreContact);coreContactPopup.addEventListener('click',e=>{if(e.target===coreContactPopup)closeCoreContact()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!coreContactPopup.hidden)closeCoreContact();if(e.key==='Tab'&&!coreContactPopup.hidden){const target=e.shiftKey?coreContactLink:coreContactClose;if((e.shiftKey&&document.activeElement===coreContactClose)||(!e.shiftKey&&document.activeElement===coreContactLink)){e.preventDefault();target.focus()}}});
+hall.addEventListener('pointermove',e=>{const c=orbitCores[0];hall.style.cursor=document.getElementById('home').classList.contains('hidden')||!c?'default':Math.hypot(e.clientX-c.x,e.clientY-c.y)<=c.r+12?'pointer':'default'});
+hall.addEventListener('click',e=>{const c=orbitCores[0];if(!c||document.getElementById('home').classList.contains('hidden')||Math.hypot(e.clientX-c.x,e.clientY-c.y)>c.r+12)return;coreContactLastFocus=document.activeElement;coreContactPopup.hidden=false;coreContactLink.focus()});
+let orbitCores=[],w=0,h=0,prev=0;
+function resizeHall(){
+ const d=Math.min(2,devicePixelRatio||1);
+ const oldW=w,oldH=h;w=document.documentElement.clientWidth;h=window.innerHeight;
+ hall.width=Math.round(w*d);hall.height=Math.round(h*d);hc.setTransform(d,0,0,d,0,0);
+ const radius=Math.max(19,Math.min(45,w*.055));
+ if(!orbitCores.length){
+  orbitCores=Array.from({length:6},(_,i)=>{
+   const angle=Math.PI*2*i/6+.37;
+   return {x:radius+(w-radius*2)*((i%3+.55)/3),y:radius+(h-radius*2)*((Math.floor(i/3)+.5)/2),
+    vx:Math.cos(angle)*(16+i*2),vy:Math.sin(angle)*(14+i*2),r:radius*(.8+(i%3)*.12),phase:i*.8};
+  });
+ }else for(const c of orbitCores){c.x=Math.max(c.r,Math.min(w-c.r,c.x*(w/(oldW||w))));c.y=Math.max(c.r,Math.min(h-c.r,c.y*(h/(oldH||h))));c.r=Math.max(16,Math.min(45,radius))}
+}
+resizeHall();window.addEventListener('resize',resizeHall);
+function drawHall(t){
+ const dt=Math.min(.05,(t-prev)/1000||.016);prev=t;hc.clearRect(0,0,w,h);
+ for(const [i,c] of orbitCores.entries()){
+  c.x+=c.vx*dt;c.y+=c.vy*dt;c.phase+=dt;
+  if(c.x-c.r<0){c.x=c.r;c.vx=Math.abs(c.vx)}
+  if(c.x+c.r>w){c.x=w-c.r;c.vx=-Math.abs(c.vx)}
+  if(c.y-c.r<0){c.y=c.r;c.vy=Math.abs(c.vy)}
+  if(c.y+c.r>h){c.y=h-c.r;c.vy=-Math.abs(c.vy)}
+  // Elastic collisions: each Core stays in motion, with no gravity.
+  for(const other of orbitCores){
+   if(other===c)break;const dx=c.x-other.x,dy=c.y-other.y,dist=Math.hypot(dx,dy)||1,min=c.r+other.r;
+   if(dist<min){const nx=dx/dist,ny=dy/dist,overlap=(min-dist)/2;c.x+=nx*overlap;c.y+=ny*overlap;other.x-=nx*overlap;other.y-=ny*overlap;
+    const rel=(c.vx-other.vx)*nx+(c.vy-other.vy)*ny;
+    if(rel<0){c.vx-=rel*nx;c.vy-=rel*ny;other.vx+=rel*nx;other.vy+=rel*ny}
+   }
+  }
+  const r=c.r*(1+.015*Math.sin(c.phase*1.7));
+  const grad=hc.createRadialGradient(c.x-r*.28,c.y-r*.3,r*.04,c.x,c.y,r);
+  if(i===0){const hue=(210+t*.018)%360;grad.addColorStop(0,`hsla(${hue},100%,95%,.85)`);grad.addColorStop(.33,`hsla(${hue},95%,65%,.7)`);grad.addColorStop(.8,`hsla(${hue},85%,35%,.65)`);grad.addColorStop(1,`hsla(${hue},80%,15%,.5)`);hc.shadowColor=`hsl(${hue},95%,65%)`}else{grad.addColorStop(0,'rgba(222,250,255,.62)');grad.addColorStop(.33,'rgba(70,183,239,.54)');grad.addColorStop(.8,'rgba(19,79,143,.55)');grad.addColorStop(1,'rgba(5,22,49,.43)');hc.shadowColor='#4bbcff'}
+  hc.beginPath();hc.arc(c.x,c.y,r,0,Math.PI*2);hc.fillStyle=grad;hc.shadowBlur=16;hc.fill();hc.shadowBlur=0;
+ }
+ requestAnimationFrame(drawHall);
+}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(drawHall);
+// Opening-only title treatment. Base TIRA never moves; the smaller ! reserves a fixed slot.
+// Subtle synthesized neon-transformer flicker: no external media or downloads.
+const flickerAudioButton=document.getElementById('flickerAudioToggle');
+const fileNames=['tira-grounded-buzz-background.wav','tira-intro-electric-glitch.wav','tira-light-flickers.wav','tira-grounded-flickering-lights.wav','tira-electric-flickering-grounded-lights.wav'];
+const sourceAudio=fileNames.map(x=>{const a=new Audio('./assets/audio/'+x);a.preload='auto';return a});
+const audioKey='tira-dev-audio-mix-v3';let preference={};try{preference=JSON.parse(localStorage.getItem(audioKey)||'{}')}catch{}
+let neonEnabled=preference.flicker!==false;
+const sharedMusicKey='tira-dev-shared-music-enabled-v1';
+let musicAuto=preference.music!==false;try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null)musicAuto=shared!=='off'}catch{}
+const soundVolume=[51,18,71,79,33]; // fixed approved levels
+let musicVolume=50;
+let chosenFlicker=2,activeFlicker=-1,wordTimers=[],flashCount=0,flickerLimit=1;
+function saveMix(){try{localStorage.setItem(audioKey,JSON.stringify({flicker:neonEnabled,music:musicAuto,musicVolume}));localStorage.setItem(sharedMusicKey,musicAuto?'on':'off')}catch{}}
+function silenceNeon(keepBuzz=false){for(const t of wordTimers)clearTimeout(t);wordTimers=[];sourceAudio.forEach((a,i)=>{if(keepBuzz&&i===0)return;a.pause();try{a.currentTime=0}catch{}});activeFlicker=-1}
+function stopClip(i){const a=sourceAudio[i];a.pause();try{a.currentTime=0}catch{}}
+function playClip(i){if(!neonEnabled||document.hidden)return;const a=sourceAudio[i];stopClip(i);a.volume=Math.max(0,Math.min(1,Number(soundVolume[i]??55)/100));a.play().catch(()=>{document.getElementById('tiraAudioNotice').textContent='Tap Replay Intro to enable its sound.'})}
+function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled))}
+function beginWordAudio(){silenceNeon(true);chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1}
+function neonFlick(on,hold=160,first=false){if(!on||!neonEnabled)return;
+flashCount++;
+// The chosen file is exclusive for the whole word, with at most two spaced accents.
+// The light flicker file is favored near the last illuminated flashes.
+const targets=flickerLimit===2?[1,4]:[1];
+if(!targets.includes(flashCount)||activeFlicker!==-1)return;
+activeFlicker=chosenFlicker;playClip(activeFlicker);
+const selected=activeFlicker;
+const duration=Number.isFinite(sourceAudio[selected].duration)?Math.min(900,sourceAudio[selected].duration*1000):400;
+wordTimers.push(setTimeout(()=>{stopClip(selected);activeFlicker=-1},duration));
+}
+flickerAudioButton.addEventListener('click',()=>{neonEnabled=!neonEnabled;if(!neonEnabled)silenceNeon();neonStatus();saveMix()});
+const mixer=document.getElementById('tiraAudioRows');
+function makeSlider(label,value,oninput,test){const box=document.createElement('div');const row=document.createElement('label');row.className='tira-audio-row';const title=document.createElement('span');title.textContent=label;const range=document.createElement('input');range.type='range';range.min=0;range.max=100;range.value=value;range.setAttribute('aria-label',label+' volume');const output=document.createElement('output');output.textContent=value+'%';range.oninput=()=>{output.textContent=range.value+'%';oninput(Number(range.value))};row.append(title,range,output);box.append(row);mixer.append(box)}
+makeSlider('Background music',musicVolume,v=>{musicVolume=v;menuMusic.volume=v/100;saveMix()},()=>{menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{})});
+musicUI();
+// Flicker volume levels are locked; only Home music has a slider.
+function startMenuMusic(){if(!musicAuto||document.hidden)return;menuMusic.volume=musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Tap MUSIC to play.'})}
+startMenuMusic();
+document.addEventListener('pointerdown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()},{passive:true});
+document.addEventListener('keydown',()=>{if(musicAuto&&menuMusic.paused)startMenuMusic()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)silenceNeon()});
+neonStatus();
+const introButton=document.getElementById('introToggle');
+const mark=document.getElementById('tiraMark');
+const suffix=document.getElementById('tiraSuffix');
+const openingSets=[
+ {words:['MO','KO','NA','KAYO','KANA','HIN','KITA','HAN'],weight:20},
+ {words:['HIN','MO','KO'],weight:8},
+ {words:['HIN','KITA'],weight:8},
+ {words:['HAN','NA','KAYO'],weight:7},
+ {words:['MO','KO'],weight:8},
+ {words:['HAN','MO','KO'],weight:7},
+ {words:['MO','KO','KITA'],weight:3}, // 99% original + provisional 1% here
+ {words:['NA','KAYO'],weight:3},
+ {words:['NA','KITA'],weight:7},
+ {words:['NA','KO'],weight:6},
+ {words:['HAN','KAYO'],weight:8},
+ {words:['HAN','KO','KAYO'],weight:7},
+ {words:['HAN','KITA'],weight:8}
+];
+const introKey='tira-dev-intro-v1',countKey='tira-dev-open-count-v1';
+let opens=0,introOverride=null;
+try{opens=Math.max(0,Number(localStorage.getItem(countKey))||0)+1;localStorage.setItem(countKey,String(opens));const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{opens=1}
+let introEnabled=introOverride===null?opens<=20:introOverride;
+let introToken=0;
+const introDelay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function introLabel(){introButton.textContent='INTRO · '+(introEnabled?'ON':'OFF');introButton.setAttribute('aria-pressed',String(introEnabled))}
+function introReset(){mark.classList.remove('suffix-lit');suffix.classList.remove('lit');suffix.textContent=''}
+function pickIntroSet(){const total=openingSets.reduce((a,b)=>a+b.weight,0);let n=Math.random()*total;return openingSets.find(set=>(n-=set.weight)<0)||openingSets[openingSets.length-1]}
+async function animateIntro(forcePreview=false){
+ const token=++introToken;introReset();
+ if((!introEnabled&&!forcePreview)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const set=pickIntroSet().words.slice();
+ // Random-set choice on each opening; first set also gets randomized ordering.
+ if(set.length===8)for(let i=set.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[set[i],set[j]]=[set[j],set[i]]}
+ await introDelay(800);if(token!==introToken)return;
+ // Begin both intro sounds at the first illuminated frame of the first word.
+ for(const [wordIndex,word] of set.entries()){
+  if(token!==introToken){silenceNeon();return;}
+  suffix.textContent=word;
+  beginWordAudio();
+  // Faulty sign rhythm: brief spark, rest, second irregular burst, hold, then fade off.
+  let firstFlash=true;
+  for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
+   if(token!==introToken){silenceNeon();return;}
+   if(on&&firstFlash&&wordIndex===0){sourceAudio[0].loop=true;playClip(0);playClip(1)}
+   suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms,firstFlash);if(on)firstFlash=false;
+   await introDelay(ms);
+  }
+  introReset();silenceNeon(true);await introDelay(320);
+ }
+ if(token===introToken){introReset();silenceNeon();}
+}
+introButton.addEventListener('click',()=>{introEnabled=!introEnabled;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};introLabel();introToken++;introReset();silenceNeon();if(introEnabled)animateIntro()});
+document.getElementById('tiraReplayWords').addEventListener('click',()=>animateIntro(true));
+introLabel();animateIntro();
+const homeCoreSlider=document.getElementById('homeCoreVolume'),homeCoreLabel=document.getElementById('homeCoreVolumeValue');
+try{const raw=localStorage.getItem('corbit-dev-core-volume-spring-v1');if(raw!==null){const v=Number(raw);if(Number.isFinite(v))homeCoreSlider.value=String(Math.max(0,Math.min(100,v)))}}catch{}
+homeCoreLabel.textContent=homeCoreSlider.value+'%';
+function refreshSharedHomeSettings(){try{const raw=localStorage.getItem('corbit-dev-core-volume-spring-v1');if(raw!==null){const v=Number(raw);if(Number.isFinite(v))homeCoreSlider.value=String(Math.max(0,Math.min(100,v)))}homeCoreLabel.textContent=homeCoreSlider.value+'%';const shared=localStorage.getItem(sharedMusicKey);if(shared!==null){musicAuto=shared!=='off';if(!musicAuto)menuMusic.pause()}}catch{}musicUI()}
+window.addEventListener('pageshow',refreshSharedHomeSettings);
+window.addEventListener('storage',e=>{if(e.key===sharedMusicKey||e.key==='corbit-dev-core-volume-spring-v1')refreshSharedHomeSettings()});
+homeCoreSlider.addEventListener('input',()=>{homeCoreLabel.textContent=homeCoreSlider.value+'%';try{localStorage.setItem('corbit-dev-core-volume-spring-v1',homeCoreSlider.value)}catch{}});
+const settingsTabs=[document.getElementById('settingsTab'),document.getElementById('rulesTab')];
+function chooseSettingsTab(which,focus=false){
+  settingsTabs.forEach((tab,index)=>{const selected=index===which;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;document.getElementById(index===0?'settingsTabPanel':'rulesTabPanel').hidden=!selected});
+  if(focus)settingsTabs[which].focus();
+}
+settingsTabs.forEach((tab,index)=>{tab.addEventListener('click',()=>chooseSettingsTab(index));tab.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();chooseSettingsTab((index+1)%2,true)}else if(e.key==='Home'){e.preventDefault();chooseSettingsTab(0,true)}else if(e.key==='End'){e.preventDefault();chooseSettingsTab(1,true)}})});
+// Only offer Continue when a valid unfinished match exists in this tab.
+const resumeMatch=document.getElementById('resumeMatch');
+function updateContinueMatch(){
+ let canResume=false;
+ try{const snap=JSON.parse(sessionStorage.getItem('tira-public-beta-v02-match')||'null');canResume=!!(snap&&snap.g&&snap.g.ended===false&&[5,6,7,10].includes(Number(snap.goal))&&Number.isFinite(snap.g.pos)&&snap.g.you&&snap.g.ai)}catch{}
+ resumeMatch.hidden=!canResume;
+}
+updateContinueMatch();
+window.addEventListener('pageshow',updateContinueMatch);
+const tiraContactReveal=document.getElementById('tiraContactReveal'),tiraContactDetails=document.getElementById('tiraContactDetails');tiraContactReveal.addEventListener('click',()=>{const expanded=tiraContactReveal.getAttribute('aria-expanded')==='true';tiraContactReveal.setAttribute('aria-expanded',String(!expanded));tiraContactDetails.hidden=expanded});
+function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
+</main></body></html>
