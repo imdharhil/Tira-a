@@ -11,9 +11,19 @@
 #introToggle,#flickerAudioToggle{font-size:11px;padding:8px;margin-top:4px;border:1px solid #32546d;background:#0b2032;color:#a9ccdf;letter-spacing:.04em}
 @media(prefers-reduced-motion:reduce){.tira-suffix{display:none!important}}
 button.primary,.link.primary{background:#126f9e;border-color:#6bc4ea}button:disabled{opacity:.46;cursor:not-allowed}.back{background:transparent;text-align:left;border:none;padding:7px;color:#b8d9ea}.hidden{display:none!important}h2{text-align:center;font-size:23px;margin:0 0 22px}.subtitle{text-align:center;color:#98b7cc;font-size:12px;margin:10px 0 20px}.tiny{display:block;color:#acc8d8;font-size:11px;font-weight:500;margin-top:5px}.panel{min-height:300px}.small{font-size:12px;padding:11px}.lab-list{display:grid;gap:12px}button:focus-visible,a:focus-visible{outline:2px solid #a9e8ff;outline-offset:3px}
-body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hall{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.7}main{position:relative;z-index:1;min-width:0}@media(max-width:600px){body{padding:clamp(14px,5vw,22px);align-items:center}main{width:min(450px,100%)}h1{font-size:clamp(48px,14vw,72px);line-height:1.12;letter-spacing:.065em;overflow-wrap:normal}.tagline{font-size:clamp(12px,3.6vw,15px);line-height:1.5;margin-bottom:clamp(28px,6vh,55px)}.panel{min-height:0}button,a.link{padding:15px 11px}h2{margin-bottom:18px}}@media(prefers-reduced-motion:reduce){#hall{display:none}}#musicToggle{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:16px;width:auto;min-width:114px;z-index:5;padding:11px 13px;font-size:12px;background:#123247cc;backdrop-filter:blur(10px)}#musicToggle[aria-pressed=true]{border-color:#80d6f4}#musicStatus{position:fixed;bottom:65px;right:16px;z-index:5;font-size:11px;color:#cce6f4;max-width:min(280px,75vw);text-align:right;pointer-events:none}</style></head><body><canvas id="hall" aria-hidden="true"></canvas><button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span><main>
-<section class="panel" id="home"><h1 class="tira-title" aria-label="TIRA!"><span class="tira-base">TIRA</span><span class="tira-mark" id="tiraMark"><span class="tira-bang">!</span><span class="tira-suffix" id="tiraSuffix" aria-hidden="true"></span></span></h1><p class="tagline">Don't Be the Dumbest. Outplay the Smartest!</p><nav class="group" aria-label="Main menu"><button class="primary" data-open="modes">▶ PLAY</button><a class="link" href="./play.html?screen=settings">SETTINGS &amp; RULES</a><button data-open="labs">LABS <span class="tiny">Sound · Visuals</span></button><button id="introToggle" type="button" aria-label="Toggle TIRA! animated intro">INTRO · AUTO</button><button id="flickerAudioToggle" type="button" aria-pressed="false">⚡ FLICKER SOUND · TAP TO ENABLE</button></nav></section>
-<section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><div class="options"><a class="link primary" href="./play.html?goal=6">CLASSIC<span class="tiny">Play the current Classic prototype</span></a><button disabled>RANKED<span class="tiny">Coming later</span></button><button disabled>ARCADE<span class="tiny">Coming later</span></button><button data-open="custom">CUSTOM<span class="tiny">Includes Practice against the computer</span></button></div></section>
+body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hall{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.7}main{position:relative;z-index:1;min-width:0}@media(max-width:600px){body{padding:clamp(14px,5vw,22px);align-items:center}main{width:min(450px,100%)}h1{font-size:clamp(48px,14vw,72px);line-height:1.12;letter-spacing:.065em;overflow-wrap:normal}.tagline{font-size:clamp(12px,3.6vw,15px);line-height:1.5;margin-bottom:clamp(28px,6vh,55px)}.panel{min-height:0}button,a.link{padding:15px 11px}h2{margin-bottom:18px}}@media(prefers-reduced-motion:reduce){#hall{display:none}}#musicToggle{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));right:16px;width:auto;min-width:114px;z-index:5;padding:11px 13px;font-size:12px;background:#123247cc;backdrop-filter:blur(10px)}#musicToggle[aria-pressed=true]{border-color:#80d6f4}#musicStatus{position:fixed;bottom:65px;right:16px;z-index:5;font-size:11px;color:#cce6f4;max-width:min(280px,75vw);text-align:right;pointer-events:none}</style><style id="tira-audio-settings-style">
+.tira-setting{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:14px 0;font-size:14px}.tira-setting input{width:19px;height:19px;accent-color:#6bc4ea}
+.tira-settings-heading{margin:18px 0 10px;font-size:15px}.tira-volume-row{display:grid;grid-template-columns:minmax(0,1fr) 112px 38px;align-items:center;gap:8px;padding:9px 0;font-size:11px}.tira-volume-row input{width:100%;min-width:0;accent-color:#6bc4ea}.tira-volume-row output{text-align:right}.tira-test{font-size:11px;padding:6px;width:auto;margin:2px 0 9px}.tira-audio-entry{border-bottom:1px solid #24445a}.tira-music-row{margin-bottom:10px}
+</style></head><body><canvas id="hall" aria-hidden="true"></canvas><button id="musicToggle" type="button" aria-pressed="false">♪ MUSIC OFF</button><span id="musicStatus" role="status"></span><main>
+<section class="panel" id="home"><h1 class="tira-title" aria-label="TIRA!"><span class="tira-base">TIRA</span><span class="tira-mark" id="tiraMark"><span class="tira-bang">!</span><span class="tira-suffix" id="tiraSuffix" aria-hidden="true"></span></span></h1><p class="tagline">Don't Be the Dumbest. Outplay the Smartest!</p><nav class="group" aria-label="Main menu"><button class="primary" data-open="modes">▶ PLAY</button><button type="button" data-open="settings">SETTINGS &amp; RULES</button><button data-open="labs">LABS <span class="tiny">Sound · Visuals</span></button></nav></section>
+<section class="panel hidden" id="settings"><button class="back" data-back="home">← HOME</button><h2>SETTINGS &amp; RULES</h2>
+<label class="tira-setting"><span>Background music</span><input type="checkbox" id="musicSetting" checked></label>
+<label class="tira-setting"><span>Intro flickering sounds</span><input type="checkbox" id="flickerSetting" checked></label>
+<label class="tira-setting"><span>Word-light intro</span><input type="checkbox" id="introSetting" checked></label>
+<p class="subtitle" id="introPolicy"></p><h3 class="tira-settings-heading">Sound volumes</h3><div id="volumeSettings"></div>
+<button class="small" type="button" id="replayIntro">▶ REPLAY INTRO</button>
+<a class="link small" href="./play.html?screen=settings">GAMEPLAY RULES &amp; SETTINGS</a>
+<p class="subtitle" id="audioNotice" role="status">Volume preferences are saved on this device. Browser audio may require your first interaction.</p></section><section class="panel hidden" id="modes"><button class="back" data-back="home">← HOME</button><h2>PLAY</h2><div class="options"><a class="link primary" href="./play.html?goal=6">CLASSIC<span class="tiny">Play the current Classic prototype</span></a><button disabled>RANKED<span class="tiny">Coming later</span></button><button disabled>ARCADE<span class="tiny">Coming later</span></button><button data-open="custom">CUSTOM<span class="tiny">Includes Practice against the computer</span></button></div></section>
 <section class="panel hidden" id="custom"><button class="back" data-back="modes">← PLAY</button><h2>CUSTOM</h2><button class="primary" data-open="practice">PRACTICE<span class="tiny">Play against the computer</span></button><p class="subtitle">Friend lobbies and additional custom rules are not implemented yet.</p></section>
 <section class="panel hidden" id="practice"><button class="back" data-back="custom">← CUSTOM</button><h2>PRACTICE · COMPUTER</h2><div class="options"><a class="link" href="./play.html?goal=6">EASY<span class="tiny">Current Easy AI · target 6</span></a><a class="link" href="./play.html?goal=7">MEDIUM<span class="tiny">Current Medium AI · target 7</span></a><a class="link" href="./play.html?goal=10">ADVANCED<span class="tiny">Current Hard AI · target 10</span></a></div><p class="subtitle">Practice uses the prototype's existing difficulty and Core targets. A separate advanced AI has not yet been verified.</p></section>
 <section class="panel hidden" id="labs"><button class="back" data-back="home">← HOME</button><h2>LABS</h2><div class="lab-list"><a class="link primary" href="./sound-lab.html">SOUND LAB</a><button disabled>VISUAL LAB<span class="tiny">Coming later</span></button></div></section>
@@ -70,79 +80,59 @@ function drawHall(t){
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(drawHall);
 // Opening-only title treatment. Base TIRA never moves; the smaller ! reserves a fixed slot.
 // Subtle synthesized neon-transformer flicker: no external media or downloads.
-const flickerAudioButton=document.getElementById('flickerAudioToggle');
-// User-created WAV recordings from the Dev audio folder.
-// Browser audio starts only after the user enables it by tapping the control.
-const flickerShort=new Audio('./assets/audio/tira-one-short-light-flick.wav');
-const flickerLong=new Audio('./assets/audio/tira-longer-multiple-light-flick.wav');
-for(const sound of [flickerShort,flickerLong]){sound.preload='auto';sound.volume=.42}
-let neonEnabled=false;
-function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF / ENABLE';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled))}
-function silenceNeon(){for(const sound of [flickerShort,flickerLong]){sound.pause();try{sound.currentTime=0}catch{}}}
-function playFlicker(sound){
- if(!neonEnabled||document.hidden)return;
- try{sound.pause();sound.currentTime=0;const result=sound.play();if(result&&result.catch)result.catch(()=>{flickerAudioButton.title='Playback was blocked; tap sound button again.'})}catch{}
-}
-function neonFlick(on,hold=160,first=false){
- if(!on)return;
- if(first)playFlicker(flickerLong);
- else playFlicker(flickerShort);
-}
-flickerAudioButton.addEventListener('click',()=>{
- neonEnabled=!neonEnabled;silenceNeon();neonStatus();
- // Explicit user gesture unlocks the clips for subsequent animated playback.
- if(neonEnabled)playFlicker(flickerShort);
-});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)silenceNeon()});
-const introButton=document.getElementById('introToggle');
-const mark=document.getElementById('tiraMark');
-const suffix=document.getElementById('tiraSuffix');
+// TIRA! audio controller: one buzz per word; one flicker variant per word.
+const mark=document.getElementById('tiraMark'),suffix=document.getElementById('tiraSuffix');
+const soundNames=['tira-grounded-buzz-background.wav','tira-intro-electric-glitch.wav','tira-light-flickers.wav','tira-grounded-flickering-lights.wav','tira-electric-flickering-grounded-lights.wav'];
+const soundLabels=['Grounded buzz','Intro electric glitch','Light flickers','Grounded flickering lights','Electric grounded flickering lights'];
+const audio=soundNames.map(name=>{const a=new Audio('./assets/audio/'+name);a.preload='auto';return a});
+const settingsKey='tira-dev-audio-settings-v2';let stored={};try{stored=JSON.parse(localStorage.getItem(settingsKey)||'{}')}catch{}
+const settings={music:stored.music!==false,fx:stored.fx!==false,volumes:Array.isArray(stored.volumes)?stored.volumes:[55,55,55,55,55],musicVolume:stored.musicVolume??42};
+const introKey='tira-dev-intro-v1',countKey='tira-dev-open-count-v1';let opens=0;
+try{opens=Math.max(0,Number(localStorage.getItem(countKey))||0)+1;localStorage.setItem(countKey,String(opens))}catch{opens=1}
+let introOverride=null;try{const raw=localStorage.getItem(introKey);introOverride=raw===null?null:raw==='on'}catch{}
+let introEnabled=introOverride===null?opens<=20:introOverride,sequenceToken=0,playingFx=-1,wordTimers=[];
+function storeSettings(){try{localStorage.setItem(settingsKey,JSON.stringify(settings))}catch{}}
+function updateSwitches(){document.getElementById('musicSetting').checked=settings.music;document.getElementById('flickerSetting').checked=settings.fx;document.getElementById('introSetting').checked=introEnabled;document.getElementById('introPolicy').textContent=opens<=20?'Opening '+opens+'/20 · intro automatically enabled unless turned off.':'Opening '+opens+' · intro is optional after the first 20 openings.'}
+function stopAudio(i){const a=audio[i];a.pause();try{a.currentTime=0}catch{}}
+function stopWord(){wordTimers.forEach(clearTimeout);wordTimers=[];audio.forEach((_,i)=>stopAudio(i));playingFx=-1;mark.classList.remove('suffix-lit');suffix.classList.remove('lit');suffix.textContent=''}
+function cue(fn,ms){const t=setTimeout(fn,ms);wordTimers.push(t)}
+function sound(i){if(!settings.fx||document.hidden)return;stopAudio(i);audio[i].volume=Math.max(0,Math.min(1,(settings.volumes[i]??55)/100));audio[i].play().catch(()=>{document.getElementById('audioNotice').textContent='Audio blocked or unavailable; click Replay after interacting with this page.'})}
+const entries=document.getElementById('volumeSettings');
+function volumeRow(label,value,change,test){const item=document.createElement('div');item.className='tira-audio-entry';const row=document.createElement('label');row.className='tira-volume-row';const t=document.createElement('span');t.textContent=label;const input=document.createElement('input');input.type='range';input.min='0';input.max='100';input.value=String(value);input.setAttribute('aria-label',label+' volume');const output=document.createElement('output');output.textContent=value+'%';input.oninput=()=>{output.textContent=input.value+'%';change(Number(input.value))};row.append(t,input,output);item.append(row);const b=document.createElement('button');b.className='tira-test';b.type='button';b.textContent='▶ TEST';b.onclick=test;item.append(b);entries.append(item)}
+volumeRow('Background music',settings.musicVolume,v=>{settings.musicVolume=v;menuMusic.volume=v/100;storeSettings()},()=>{menuMusic.volume=settings.musicVolume/100;menuMusic.play().catch(()=>{});setTimeout(()=>menuMusic.pause(),2500)});
+soundLabels.forEach((label,i)=>{audio[i].volume=(settings.volumes[i]??55)/100;volumeRow(label,settings.volumes[i]??55,v=>{settings.volumes[i]=v;audio[i].volume=v/100;storeSettings()},()=>{stopAudio(i);audio[i].play().catch(()=>{document.getElementById('audioNotice').textContent='Could not play '+soundNames[i]})})});
+document.getElementById('musicSetting').onchange=e=>{settings.music=e.target.checked;storeSettings();if(!settings.music)menuMusic.pause();else startMusic()};
+document.getElementById('flickerSetting').onchange=e=>{settings.fx=e.target.checked;storeSettings();if(!settings.fx)audio.forEach((_,i)=>stopAudio(i))};
+document.getElementById('introSetting').onchange=e=>{introEnabled=e.target.checked;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};sequenceToken++;stopWord();if(introEnabled)animateIntro()};
+function startMusic(){if(!settings.music)return;menuMusic.volume=settings.musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Tap to enable music if your browser blocks autoplay.'})}
+musicToggle.onclick=()=>{settings.music=menuMusic.paused;document.getElementById('musicSetting').checked=settings.music;storeSettings();if(settings.music)startMusic();else menuMusic.pause()};
+menuMusic.volume=settings.musicVolume/100;musicToggle.textContent='♪ MUSIC ON'; // Preference ON; actual playback follows browser autoplay policy.
+startMusic();
+document.addEventListener('pointerdown',()=>{if(settings.music&&menuMusic.paused)startMusic()},{once:true});
 const openingSets=[
  {words:['MO','KO','NA','KAYO','KANA','HIN','KITA','HAN'],weight:20},
- {words:['HIN','MO','KO'],weight:8},
- {words:['HIN','KITA'],weight:8},
- {words:['HAN','NA','KAYO'],weight:7},
- {words:['MO','KO'],weight:8},
- {words:['HAN','MO','KO'],weight:7},
- {words:['MO','KO','KITA'],weight:3}, // 99% original + provisional 1% here
- {words:['NA','KAYO'],weight:3},
- {words:['NA','KITA'],weight:7},
- {words:['NA','KO'],weight:6},
- {words:['HAN','KAYO'],weight:8},
- {words:['HAN','KO','KAYO'],weight:7},
- {words:['HAN','KITA'],weight:8}
+ {words:['HIN','MO','KO'],weight:8},{words:['HIN','KITA'],weight:8},
+ {words:['HAN','NA','KAYO'],weight:7},{words:['MO','KO'],weight:8},
+ {words:['HAN','MO','KO'],weight:7},{words:['MO','KO','KITA'],weight:3},
+ {words:['NA','KAYO'],weight:3},{words:['NA','KITA'],weight:7},{words:['NA','KO'],weight:6},
+ {words:['HAN','KAYO'],weight:8},{words:['HAN','KO','KAYO'],weight:7},{words:['HAN','KITA'],weight:8}
 ];
-const introKey='tira-dev-intro-v1',countKey='tira-dev-open-count-v1';
-let opens=0,introOverride=null;
-try{opens=Math.max(0,Number(localStorage.getItem(countKey))||0)+1;localStorage.setItem(countKey,String(opens));const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{opens=1}
-let introEnabled=introOverride===null?opens<=20:introOverride;
-let introToken=0;
-const introDelay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-function introLabel(){introButton.textContent='INTRO · '+(introEnabled?'ON':'OFF');introButton.setAttribute('aria-pressed',String(introEnabled))}
-function introReset(){mark.classList.remove('suffix-lit');suffix.classList.remove('lit');suffix.textContent=''}
-function pickIntroSet(){const total=openingSets.reduce((a,b)=>a+b.weight,0);let n=Math.random()*total;return openingSets.find(set=>(n-=set.weight)<0)||openingSets[openingSets.length-1]}
-async function animateIntro(){
- const token=++introToken;introReset();
- if(!introEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const set=pickIntroSet().words.slice();
- // Random-set choice on each opening; first set also gets randomized ordering.
- if(set.length===8)for(let i=set.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[set[i],set[j]]=[set[j],set[i]]}
- await introDelay(800);if(token!==introToken)return;
- for(const word of set){
-  if(token!==introToken)return;
-  suffix.textContent=word;
-  // Faulty sign rhythm: brief spark, rest, second irregular burst, hold, then fade off.
-  let firstFlash=true;
-  for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
-   if(token!==introToken)return;
-   suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms,firstFlash);if(on)firstFlash=false;
-   await introDelay(ms);
-  }
-  introReset();silenceNeon();await introDelay(320);
- }
- if(token===introToken)introReset();
+function pickSet(){const total=openingSets.reduce((a,b)=>a+b.weight,0);let roll=Math.random()*total;const chosen=openingSets.find(s=>(roll-=s.weight)<0)||openingSets.at(-1);const words=chosen.words.slice();if(words.length===8)for(let i=words.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[words[i],words[j]]=[words[j],words[i]]}return words}
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+async function animateIntro(){const token=++sequenceToken;stopWord();if(!introEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+const words=pickSet();await delay(700);if(token!==sequenceToken)return;
+for(const word of words){if(token!==sequenceToken)return;stopWord();suffix.textContent=word;
+sound(0);if(Math.random()<.5)sound(1);
+const flickerVariant=2+Math.floor(Math.random()*3),repeat=Math.random()<.42?2:1;
+const times=repeat===2?[950,3100]:[flickerVariant===2?3500:1350];
+times.forEach(ms=>cue(()=>{if(token!==sequenceToken||!settings.fx)return;if(playingFx!==-1)return;playingFx=flickerVariant;sound(flickerVariant);const duration=Number.isFinite(audio[flickerVariant].duration)?Math.min(1250,1000*audio[flickerVariant].duration):700;cue(()=>{stopAudio(flickerVariant);playingFx=-1},duration)},ms));
+for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
+if(token!==sequenceToken){stopWord();return}suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);await delay(ms)}
+stopWord();await delay(320)}
+if(token===sequenceToken)stopWord();
 }
-introButton.addEventListener('click',()=>{introEnabled=!introEnabled;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};introLabel();introToken++;introReset();silenceNeon();if(introEnabled)animateIntro()});
-introLabel();animateIntro();
+document.getElementById('replayIntro').onclick=()=>{if(!introEnabled){introEnabled=true;document.getElementById('introSetting').checked=true}animateIntro()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden){sequenceToken++;stopWord();menuMusic.pause()}else if(settings.music)startMusic()});
+updateSwitches();animateIntro();
 function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
 </main></body></html>
