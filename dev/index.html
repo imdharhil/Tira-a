@@ -78,38 +78,33 @@ function silenceNeon(){
  const stop=neonActive;neonActive=null;
  try{stop()}catch{}
 }
-// High-passed electrical crackle and tiny ignition ticks, not bass synthesis.
-// No low-frequency sawtooth or downward pitch sweeps.
+// Quiet fluorescent/neon ballast: a gated airy electrical shimmer, not a struck object.
+// Filtered noise is sustained at very low level; fades prevent metallic transients.
 function neonFlick(on,hold=160){
  if(!neonEnabled||!neonContext||neonContext.state!=='running'||document.hidden)return;
  silenceNeon();
+ if(!on)return; // a dark lamp should go quietly
  const ac=neonContext,now=ac.currentTime;
- const duration=on?Math.min(.85,Math.max(.035,hold/1000)):.036;
- const count=Math.floor(ac.sampleRate*.065);
- const buffer=ac.createBuffer(1,count,ac.sampleRate),samples=buffer.getChannelData(0);
- for(let i=0;i<count;i++){
-  const t=i/ac.sampleRate;
-  const envelope=Math.exp(-t*(on?94:165));
-  samples[i]=(Math.random()*2-1)*envelope;
+ const duration=Math.min(1.05,Math.max(.10,hold/1000));
+ const length=Math.ceil(ac.sampleRate*duration);
+ const buffer=ac.createBuffer(1,length,ac.sampleRate),a=buffer.getChannelData(0);
+ // Gentle filtered broadband hiss with irregular tiny current fluctuations.
+ let smooth=0;
+ for(let i=0;i<length;i++){
+  smooth=.94*smooth+.06*(Math.random()*2-1);
+  const flutter=.87+.13*Math.sin(i/ac.sampleRate*2*Math.PI*23);
+  a[i]=smooth*flutter;
  }
- const noise=ac.createBufferSource();noise.buffer=buffer;
- const hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=on?1900:2700;hp.Q.value=.65;
- const noiseGain=ac.createGain();noiseGain.gain.value=on?.085:.045;
- noise.connect(hp);hp.connect(noiseGain);noiseGain.connect(ac.destination);
- noise.start(now);noise.stop(now+.065);
- // Thin electronic ballast whine, very quiet and only while the word is lit.
- if(on){
-  const osc=ac.createOscillator(),gain=ac.createGain();
-  osc.type='sine';osc.frequency.setValueAtTime(2350,now);
-  osc.frequency.linearRampToValueAtTime(2420,now+Math.min(.15,duration));
-  gain.gain.setValueAtTime(.0001,now);
-  gain.gain.linearRampToValueAtTime(.0025,now+.018);
-  gain.gain.setValueAtTime(.0025,now+Math.max(.02,duration-.035));
-  gain.gain.linearRampToValueAtTime(.0001,now+duration);
-  osc.connect(gain);gain.connect(ac.destination);
-  osc.start(now);osc.stop(now+duration+.02);
-  neonActive=()=>{const t=ac.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setTargetAtTime(.0001,t,.005);try{osc.stop(t+.04)}catch{}};
- }else neonActive=null;
+ const source=ac.createBufferSource();source.buffer=buffer;
+ const band=ac.createBiquadFilter();band.type='bandpass';band.frequency.value=1050;band.Q.value=.42;
+ const gain=ac.createGain();
+ gain.gain.setValueAtTime(0,now);
+ gain.gain.linearRampToValueAtTime(.018,now+Math.min(.055,duration*.35));
+ gain.gain.setValueAtTime(.018,now+Math.max(.056,duration-.065));
+ gain.gain.linearRampToValueAtTime(0,now+duration);
+ source.connect(band);band.connect(gain);gain.connect(ac.destination);
+ source.start(now);source.stop(now+duration+.005);
+ neonActive=()=>{const t=ac.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setTargetAtTime(0,t,.012)};
 }
 flickerAudioButton.addEventListener('click',async()=>{
  if(neonEnabled){neonEnabled=false;silenceNeon();neonStatus();return}
