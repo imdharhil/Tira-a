@@ -11,7 +11,7 @@
  .controls{flex-shrink:0}
  .action{padding:12px 23px}
  .cards{grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:10px;flex-shrink:0}
- .card{aspect-ratio:.68;height:auto;min-height:0;padding:31px 5px 12px;border-radius:13px}
+ .card{width:100%;min-width:0;justify-self:stretch;aspect-ratio:.68;height:auto;min-height:0;padding:31px 5px 12px;border-radius:13px}
  .card .orb{width:min(60px,67%);font-size:23px}
  .card-main{gap:9px}
  .card small{font-size:9px}
@@ -23,7 +23,7 @@
 @media(max-width:380px){
  .stage{height:clamp(310px,45svh,390px)}
  .cards{gap:8px}
- .card{aspect-ratio:.68;padding:29px 4px 10px}
+ .card{width:100%;min-width:0;aspect-ratio:.68;padding:29px 4px 10px}
  .card .orb{width:min(52px,65%);font-size:21px}
 }
 </style></head><body><main id="game"><div class="top"><div id="topPieces" class="piece-header">CELL PIECES <strong>0</strong></div><div style="display:flex;gap:7px;align-items:center"><button class="smallbtn" id="openMenu">Ⅱ PAUSE</button></div></div><div class="stage"><canvas id="arena" aria-label="Shared Core ITIRA! (firing) arena"></canvas><div class="meta"><span class="blue" id="blueState">YOU · ◇◇◇</span><span class="red" id="redState">COMPUTER · ◇◇◇</span></div><div class="msg" id="message">YOUR TURN</div></div><div class="controls"><button class="action" id="fire" title="ITIRA! (firing)" aria-label="ITIRA! (firing)">ITIRA!</button></div><div class="cards" id="cards"></div><div class="hint" id="hint">Choose a card, then use ITIRA! (firing), or spend a turn preparing a Protect.</div></main>
