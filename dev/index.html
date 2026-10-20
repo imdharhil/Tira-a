@@ -85,11 +85,11 @@ let soundVolume=Array.isArray(preference.volume)?preference.volume:[55,55,55,55,
 let musicVolume=Number.isFinite(preference.musicVolume)?preference.musicVolume:42;
 let chosenFlicker=2,activeFlicker=-1,wordTimers=[],flashCount=0,flickerLimit=1;
 function saveMix(){try{localStorage.setItem(audioKey,JSON.stringify({flicker:neonEnabled,music:musicAuto,volume:soundVolume,musicVolume}))}catch{}}
-function silenceNeon(){for(const t of wordTimers)clearTimeout(t);wordTimers=[];sourceAudio.forEach(a=>{a.pause();try{a.currentTime=0}catch{}});activeFlicker=-1}
+function silenceNeon(keepBuzz=false){for(const t of wordTimers)clearTimeout(t);wordTimers=[];sourceAudio.forEach((a,i)=>{if(keepBuzz&&i===0)return;a.pause();try{a.currentTime=0}catch{}});activeFlicker=-1}
 function stopClip(i){const a=sourceAudio[i];a.pause();try{a.currentTime=0}catch{}}
 function playClip(i){if(!neonEnabled||document.hidden)return;const a=sourceAudio[i];stopClip(i);a.volume=Math.max(0,Math.min(1,Number(soundVolume[i]??55)/100));a.play().catch(()=>{document.getElementById('tiraAudioNotice').textContent='Audio did not start; click Replay after interacting with the page.'})}
 function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled));document.getElementById('autoFlicker').checked=neonEnabled}
-function beginWordAudio(){silenceNeon();chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1;playClip(0);if(Math.random()<.55)playClip(1)}
+function beginWordAudio(){silenceNeon(true);chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1;if(Math.random()<.55)playClip(1)}
 function neonFlick(on,hold=160,first=false){if(!on||!neonEnabled)return;
 flashCount++;
 // The chosen file is exclusive for the whole word, with at most two spaced accents.
@@ -150,20 +150,22 @@ async function animateIntro(forcePreview=false){
  // Random-set choice on each opening; first set also gets randomized ordering.
  if(set.length===8)for(let i=set.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[set[i],set[j]]=[set[j],set[i]]}
  await introDelay(800);if(token!==introToken)return;
+ // One uninterrupted, looping grounded buzz across this entire word set.
+ sourceAudio[0].loop=true;playClip(0);
  for(const word of set){
-  if(token!==introToken)return;
+  if(token!==introToken){silenceNeon();return;}
   suffix.textContent=word;
   beginWordAudio();
   // Faulty sign rhythm: brief spark, rest, second irregular burst, hold, then fade off.
   let firstFlash=true;
   for(const [on,ms] of [[true,160],[false,210],[true,115],[false,480],[true,120],[false,180],[true,140],[false,350],[true,1000],[false,380]]){
-   if(token!==introToken)return;
+   if(token!==introToken){silenceNeon();return;}
    suffix.classList.toggle('lit',on);mark.classList.toggle('suffix-lit',on);neonFlick(on,ms,firstFlash);if(on)firstFlash=false;
    await introDelay(ms);
   }
-  introReset();silenceNeon();await introDelay(320);
+  introReset();silenceNeon(true);await introDelay(320);
  }
- if(token===introToken)introReset();
+ if(token===introToken){introReset();silenceNeon();}
 }
 introButton.addEventListener('click',()=>{introEnabled=!introEnabled;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};introLabel();introToken++;introReset();silenceNeon();if(introEnabled)animateIntro()});
 document.getElementById('tiraReplayWords').addEventListener('click',()=>animateIntro(true));
