@@ -73,24 +73,43 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame
 const flickerAudioButton=document.getElementById('flickerAudioToggle');
 let neonContext=null,neonEnabled=false,neonActive=null;
 function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · '+(neonContext?'OFF':'TAP TO ENABLE');flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled))}
-function silenceNeon(){if(neonActive){try{neonActive.stop()}catch{};neonActive=null}}
+function silenceNeon(){
+ if(!neonActive)return;
+ const stop=neonActive;neonActive=null;
+ try{stop()}catch{}
+}
+// High-passed electrical crackle and tiny ignition ticks, not bass synthesis.
+// No low-frequency sawtooth or downward pitch sweeps.
 function neonFlick(on,hold=160){
  if(!neonEnabled||!neonContext||neonContext.state!=='running'||document.hidden)return;
  silenceNeon();
- const now=neonContext.currentTime,lasting=on?Math.min(.58,Math.max(.055,hold/1000)):.045;
- const main=neonContext.createOscillator(),upper=neonContext.createOscillator(),out=neonContext.createGain();
- const lp=neonContext.createBiquadFilter();lp.type='lowpass';lp.frequency.value=on?900:600;
- main.type='sawtooth';main.frequency.setValueAtTime(on?112:77,now);
- main.frequency.exponentialRampToValueAtTime(on?123:55,now+lasting);
- upper.type='triangle';upper.frequency.value=on?246:122;
- const sub=neonContext.createGain();sub.gain.value=.12;upper.connect(sub);sub.connect(lp);main.connect(lp);lp.connect(out);out.connect(neonContext.destination);
- // Short electrical ignition tick, decaying buzz; never overwhelm menu audio.
- out.gain.setValueAtTime(.0001,now);
- out.gain.exponentialRampToValueAtTime(on?.021:.011,now+.006);
- if(on&&lasting>.20){out.gain.exponentialRampToValueAtTime(.009,now+.12)}
- out.gain.setTargetAtTime(.0001,now+Math.max(.018,lasting-.045),.025);
- main.start(now);upper.start(now);main.stop(now+lasting+.12);upper.stop(now+lasting+.12);
- neonActive={stop:()=>{try{out.gain.cancelScheduledValues(neonContext.currentTime);out.gain.setTargetAtTime(.0001,neonContext.currentTime,.008)}catch{}}};
+ const ac=neonContext,now=ac.currentTime;
+ const duration=on?Math.min(.85,Math.max(.035,hold/1000)):.036;
+ const count=Math.floor(ac.sampleRate*.065);
+ const buffer=ac.createBuffer(1,count,ac.sampleRate),samples=buffer.getChannelData(0);
+ for(let i=0;i<count;i++){
+  const t=i/ac.sampleRate;
+  const envelope=Math.exp(-t*(on?94:165));
+  samples[i]=(Math.random()*2-1)*envelope;
+ }
+ const noise=ac.createBufferSource();noise.buffer=buffer;
+ const hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=on?1900:2700;hp.Q.value=.65;
+ const noiseGain=ac.createGain();noiseGain.gain.value=on?.085:.045;
+ noise.connect(hp);hp.connect(noiseGain);noiseGain.connect(ac.destination);
+ noise.start(now);noise.stop(now+.065);
+ // Thin electronic ballast whine, very quiet and only while the word is lit.
+ if(on){
+  const osc=ac.createOscillator(),gain=ac.createGain();
+  osc.type='sine';osc.frequency.setValueAtTime(2350,now);
+  osc.frequency.linearRampToValueAtTime(2420,now+Math.min(.15,duration));
+  gain.gain.setValueAtTime(.0001,now);
+  gain.gain.linearRampToValueAtTime(.0025,now+.018);
+  gain.gain.setValueAtTime(.0025,now+Math.max(.02,duration-.035));
+  gain.gain.linearRampToValueAtTime(.0001,now+duration);
+  osc.connect(gain);gain.connect(ac.destination);
+  osc.start(now);osc.stop(now+duration+.02);
+  neonActive=()=>{const t=ac.currentTime;gain.gain.cancelScheduledValues(t);gain.gain.setTargetAtTime(.0001,t,.005);try{osc.stop(t+.04)}catch{}};
+ }else neonActive=null;
 }
 flickerAudioButton.addEventListener('click',async()=>{
  if(neonEnabled){neonEnabled=false;silenceNeon();neonStatus();return}
