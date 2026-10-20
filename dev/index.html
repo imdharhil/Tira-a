@@ -32,7 +32,6 @@ const menuMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp
 menuMusic.loop=true;menuMusic.preload='none';menuMusic.playbackRate=.92;menuMusic.preservesPitch=true;menuMusic.volume=.42;
 const musicToggle=document.getElementById('musicToggle'),musicStatus=document.getElementById('musicStatus');
 function musicUI(){const active=!menuMusic.paused;musicToggle.textContent=active?'♪ MUSIC ON':'♪ MUSIC OFF';musicToggle.setAttribute('aria-pressed',String(active));}
-musicToggle.addEventListener('click',async()=>{if(!menuMusic.paused){menuMusic.pause();musicStatus.textContent='';musicUI();return}musicStatus.textContent='Loading Doodle Menu…';try{await menuMusic.play();musicStatus.textContent='Doodle Menu · soft / 92% speed'}catch(e){musicStatus.textContent='Music unavailable from external source: '+e.message}musicUI()});
 menuMusic.addEventListener('error',()=>{musicStatus.textContent='Doodle Menu source unavailable. Music cannot play.';musicUI()});
 menuMusic.addEventListener('pause',musicUI);menuMusic.addEventListener('play',musicUI);
 // Six zero-gravity Core copies, gently bouncing within the viewport.
@@ -106,7 +105,7 @@ document.getElementById('flickerSetting').onchange=e=>{settings.fx=e.target.chec
 document.getElementById('introSetting').onchange=e=>{introEnabled=e.target.checked;try{localStorage.setItem(introKey,introEnabled?'on':'off')}catch{};sequenceToken++;stopWord();if(introEnabled)animateIntro()};
 function startMusic(){if(!settings.music)return;menuMusic.volume=settings.musicVolume/100;menuMusic.play().catch(()=>{musicStatus.textContent='Tap to enable music if your browser blocks autoplay.'})}
 musicToggle.onclick=()=>{settings.music=menuMusic.paused;document.getElementById('musicSetting').checked=settings.music;storeSettings();if(settings.music)startMusic();else menuMusic.pause()};
-menuMusic.volume=settings.musicVolume/100;musicToggle.textContent='♪ MUSIC ON'; // Preference ON; actual playback follows browser autoplay policy.
+menuMusic.volume=settings.musicVolume/100;musicUI(); // Display real playback state; preserve browser autoplay restrictions.
 startMusic();
 document.addEventListener('pointerdown',()=>{if(settings.music&&menuMusic.paused)startMusic()},{once:true});
 const openingSets=[
