@@ -83,20 +83,23 @@ let neonEnabled=preference.flicker!==false;
 let musicAuto=preference.music!==false;
 let soundVolume=Array.isArray(preference.volume)?preference.volume:[55,55,55,55,55];
 let musicVolume=Number.isFinite(preference.musicVolume)?preference.musicVolume:42;
-let chosenFlicker=2,activeFlicker=-1,wordTimers=[];
+let chosenFlicker=2,activeFlicker=-1,wordTimers=[],flashCount=0,flickerLimit=1;
 function saveMix(){try{localStorage.setItem(audioKey,JSON.stringify({flicker:neonEnabled,music:musicAuto,volume:soundVolume,musicVolume}))}catch{}}
 function silenceNeon(){for(const t of wordTimers)clearTimeout(t);wordTimers=[];sourceAudio.forEach(a=>{a.pause();try{a.currentTime=0}catch{}});activeFlicker=-1}
 function stopClip(i){const a=sourceAudio[i];a.pause();try{a.currentTime=0}catch{}}
 function playClip(i){if(!neonEnabled||document.hidden)return;const a=sourceAudio[i];stopClip(i);a.volume=Math.max(0,Math.min(1,Number(soundVolume[i]??55)/100));a.play().catch(()=>{document.getElementById('tiraAudioNotice').textContent='Audio did not start; click Replay after interacting with the page.'})}
 function neonStatus(){flickerAudioButton.textContent=neonEnabled?'⚡ FLICKER SOUND · ON':'⚡ FLICKER SOUND · OFF';flickerAudioButton.setAttribute('aria-pressed',String(neonEnabled));document.getElementById('autoFlicker').checked=neonEnabled}
-function beginWordAudio(){silenceNeon();chosenFlicker=2+Math.floor(Math.random()*3);playClip(0);if(Math.random()<.55)playClip(1)}
+function beginWordAudio(){silenceNeon();chosenFlicker=2+Math.floor(Math.random()*3);flashCount=0;flickerLimit=Math.random()<.43?2:1;playClip(0);if(Math.random()<.55)playClip(1)}
 function neonFlick(on,hold=160,first=false){if(!on||!neonEnabled)return;
-if(activeFlicker!==-1)return;
-if(!first&&Math.random()<.38)return; // no compulsory accent at every visual flash
+flashCount++;
+// The chosen file is exclusive for the whole word, with at most two spaced accents.
+// The light flicker file is favored near the last illuminated flashes.
+const targets=chosenFlicker===2?(flickerLimit===2?[3,5]:[5]):(flickerLimit===2?[1,5]:[4]);
+if(!targets.includes(flashCount)||activeFlicker!==-1)return;
 activeFlicker=chosenFlicker;playClip(activeFlicker);
-const thisFlicker=activeFlicker;
-const duration=Number.isFinite(sourceAudio[thisFlicker].duration)?Math.min(900,sourceAudio[thisFlicker].duration*1000):400;
-wordTimers.push(setTimeout(()=>{stopClip(thisFlicker);activeFlicker=-1},duration));
+const selected=activeFlicker;
+const duration=Number.isFinite(sourceAudio[selected].duration)?Math.min(900,sourceAudio[selected].duration*1000):400;
+wordTimers.push(setTimeout(()=>{stopClip(selected);activeFlicker=-1},duration));
 }
 flickerAudioButton.addEventListener('click',()=>{neonEnabled=!neonEnabled;if(!neonEnabled)silenceNeon();neonStatus();saveMix()});
 document.getElementById('autoFlicker').onchange=e=>{neonEnabled=e.target.checked;if(!neonEnabled)silenceNeon();neonStatus();saveMix()};
