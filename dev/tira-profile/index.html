@@ -5,7 +5,7 @@
 <script src="../profile-layer1.js"></script>
 <script>
 (()=>{'use strict';const details=document.getElementById('profileDetails'),avatars={orb:'🔵',spark:'✨',shield:'🛡️',star:'⭐'};
-function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]))}
+function escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function update(){const p=window.TiraLocalProfile?.get();if(!p){details.innerHTML='<p class="notice">Complete the Guest Profile onboarding to view your profile here.</p>';return}const r=window.TiraLocalProfile.record();details.innerHTML='<span class="pill">LOCAL GUEST</span><div class="avatar">'+(avatars[p.avatarId]||avatars.orb)+'</div><h2>'+escape(p.displayName)+'</h2><p class="small">Local ID: <code>'+escape(p.localProfileId)+'</code></p><dl><dt>Wins</dt><dd>'+r.wins+'</dd><dt>Losses</dt><dd>'+r.losses+'</dd></dl><p class="small">You can change your name and avatar anytime. Your local ID and progress stay the same.</p>';document.getElementById('editName').value=p.displayName;renderAvatars(p.avatarId)}
 let chosenAvatar=null;
 function renderAvatars(current){const options=window.TiraLocalProfile?.avatars||avatars;const holder=document.getElementById('editAvatars');if(!chosenAvatar||!Object.prototype.hasOwnProperty.call(options,chosenAvatar))chosenAvatar=current;holder.replaceChildren();for(const [key,emoji] of Object.entries(options)){const b=document.createElement('button');b.type='button';b.textContent=emoji;b.setAttribute('aria-label',key);b.setAttribute('aria-pressed',String(chosenAvatar===key));b.onclick=()=>{chosenAvatar=key;renderAvatars(current)};holder.append(b)}}
