@@ -231,4 +231,9 @@ function updateContinueMatch(){
 updateContinueMatch();
 window.addEventListener('pageshow',updateContinueMatch);
 function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
-</main></body></html>
+</main><script src="./profile-layer1.js"></script><script>
+(()=>{const banner=document.createElement('div');banner.id='tiraLocalProfileBanner';banner.style.cssText='text-align:center;font:600 12px system-ui;color:#b6e6f7;margin:8px auto;padding:6px;max-width:450px';document.querySelector('main')?.prepend(banner);
+function update(){const p=window.TiraLocalProfile?.get();if(!p){banner.textContent='';return}const r=window.TiraLocalProfile.record();banner.textContent='LOCAL GUEST · '+p.displayName+' · '+r.wins+' W / '+r.losses+' L';}
+window.addEventListener('tira-local-profile-ready',update);window.addEventListener('pageshow',update);update();
+})();
+</script></body></html>
