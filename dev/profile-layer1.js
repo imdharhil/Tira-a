@@ -22,13 +22,14 @@ function open(){
  function commit(){
  const error=panel.querySelector('#tiraProfileError');if(profile()){gate.remove();return}
  if(!crypto?.randomUUID){error.textContent='This browser cannot generate a secure local ID.';return}
- // A fresh record must not invalidate an unfinished match.
- if(hasLegacy&&selection==='new'){const snap=parse((()=>{try{return sessionStorage.getItem('corbit-dev-match')}catch{return null}})());if(snap?.g&&!snap.g.ended){error.textContent='Finish or exit the current saved match before starting a new record. Keep Progress is available.';return}}
+ // Never reset the score while a resumable match exists, even if the legacy score is absent.
+ if(selection==='new'){const snap=parse((()=>{try{return sessionStorage.getItem('corbit-dev-match')}catch{return null}})());if(snap?.g&&snap.g.ended===false){error.textContent='Finish or exit the current saved match before starting a new record. Keep Progress is available.';return}}
  const p={schemaVersion:1,accountType:'local_guest',localProfileId:crypto.randomUUID(),displayName:name,avatarId:avatar,globalPlayerId:null,createdAt:new Date().toISOString()};
  let archiveWritten=false;
  try{
   if(hasLegacy&&read(ARCHIVE)===null){localStorage.setItem(ARCHIVE,JSON.stringify({sourceKey:LEGACY,raw:legacyRaw,archivedAt:new Date().toISOString()}));archiveWritten=true}
   if(hasLegacy&&selection==='new')localStorage.setItem(LEGACY,JSON.stringify({wins:0,losses:0}));
+  // Profile is the commit marker. It must be written last.
   localStorage.setItem(PROFILE,JSON.stringify(p));
   gate.remove();window.dispatchEvent(new CustomEvent('tira-local-profile-ready',{detail:{displayName:p.displayName}}));
  }catch{
