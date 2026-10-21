@@ -167,10 +167,10 @@ const openingSets=[
  {words:['HAN','KO','KAYO'],weight:7},
  {words:['HAN','KITA'],weight:8}
 ];
-const introKey='tira-dev-intro-v1',countKey='tira-dev-open-count-v1';
-let opens=0,introOverride=null;
-try{opens=Math.max(0,Number(localStorage.getItem(countKey))||0)+1;localStorage.setItem(countKey,String(opens));const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{opens=1}
-let introEnabled=introOverride===null?opens<=20:introOverride;
+const introKey='tira-dev-intro-v1';
+let introOverride=null;
+try{const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{}
+let introEnabled=introOverride===null?true:introOverride;
 let introToken=0;
 const introDelay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function introLabel(){introButton.textContent='INTRO · '+(introEnabled?'ON':'OFF');introButton.setAttribute('aria-pressed',String(introEnabled))}
