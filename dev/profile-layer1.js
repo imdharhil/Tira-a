@@ -44,9 +44,9 @@ function open(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',open,{once:true});else open();
 function updateProfile(changes){
  const old=profile();if(!old)return {ok:false,error:'Create a guest profile first.'};
- const displayName=String(changes?.displayName??old.displayName).trim().replace(/\\s+/g,' ');
+ const displayName=String(changes?.displayName??old.displayName).trim().replace(/\s+/g,' ');
  const avatarId=String(changes?.avatarId??old.avatarId);
- if(!/^[\\p{L}\\p{N}_ -]{2,24}$/u.test(displayName))return {ok:false,error:'Name must be 2–24 characters (letters, numbers, spaces, _ or -).'};
+ if(!/^[\p{L}\p{N}_ -]{2,24}$/u.test(displayName))return {ok:false,error:'Name must be 2–24 characters (letters, numbers, spaces, _ or -).'};
  if(!Object.prototype.hasOwnProperty.call(avatars,avatarId))return {ok:false,error:'Choose a valid avatar.'};
  const next={...old,displayName,avatarId};
  try{localStorage.setItem(PROFILE,JSON.stringify(next));}
