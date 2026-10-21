@@ -38,10 +38,10 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 <h3>ON YOUR TURN</h3>
 <p><strong>ITIRA! (firing):</strong> Choose a Cell Card, then tap <strong>ITIRA!</strong>. Its number removes enemy cells first. Any amount left adds cells in your color. You draw a replacement card.</p>
 <p><strong>Example:</strong> The Core is Red 2. You use ITIRA! with +3. Two cancel the Red cells, and the remaining one makes it Blue 1.</p>
-<p><strong>Protect:</strong> Use your turn to block your opponent's next shot completely. You start with 3 Protects. You also draw a bonus card: keep it in a normal card slot or turn it into Cell Pieces.</p>
+<p><strong>Protect:</strong> Use your turn to block your opponent's next shot completely. You start with 3 Protects. You also draw a bonus card: keep it in a normal card slot or turn it into PP.</p>
 <p><strong>The strategy:</strong> Push toward 6, stop your opponent, or protect your lead. Using ITIRA! or activating Protect ends your turn.</p>
-<details><summary><strong>Cell Pieces &amp; power-ups</strong></summary>
-<p>Cell Pieces are also called <strong>PP</strong>. Earn 1 piece for each enemy cell your shot removes. Adding your own cells or hitting a Protect earns none.</p>
+<details><summary><strong>PP &amp; power-ups</strong></summary>
+<p>Earn <strong>1 PP</strong> for each enemy cell your shot removes. Adding your own cells or hitting a Protect earns none.</p>
 <p><strong>Convert a card:</strong> Tap its corner arrow to turn a normal Cell Card into pieces equal to its number. The slot stays empty until you fill it with a Protect bonus card. Only normal Cell Cards can be converted.</p>
 <p><strong>Bonus cards:</strong> If you replace a card, the old card becomes pieces. If you discard the bonus card, that bonus becomes pieces instead.</p>
 <p><strong>Gold +4:</strong> Spend 10 pieces to use ITIRA! with a +4 shot. This ends your turn.</p>
@@ -167,10 +167,10 @@ const openingSets=[
  {words:['HAN','KO','KAYO'],weight:7},
  {words:['HAN','KITA'],weight:8}
 ];
-const introKey='tira-dev-intro-v1',countKey='tira-dev-open-count-v1';
-let opens=0,introOverride=null;
-try{opens=Math.max(0,Number(localStorage.getItem(countKey))||0)+1;localStorage.setItem(countKey,String(opens));const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{opens=1}
-let introEnabled=introOverride===null?opens<=20:introOverride;
+const introKey='tira-dev-intro-v1';
+let introOverride=null;
+try{const saved=localStorage.getItem(introKey);introOverride=saved===null?null:saved==='on'}catch{}
+let introEnabled=introOverride===null?true:introOverride;
 let introToken=0;
 const introDelay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function introLabel(){introButton.textContent='INTRO · '+(introEnabled?'ON':'OFF');introButton.setAttribute('aria-pressed',String(introEnabled))}
