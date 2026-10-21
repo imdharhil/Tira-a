@@ -1,0 +1,19 @@
+(()=>{'use strict';
+const el=id=>document.getElementById(id),key='tira-core-reaction-presets-v1',names=['bounce','wiggle','squish','swipe','hold','pulse','nonchalant','startle','spin','orbit','jelly','shy','hiccup','stretch','drift'];let saved=[];try{saved=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(saved))saved=[]}catch{saved=[]}
+const label=id=>id==='hold'?'Hold & release':id[0].toUpperCase()+id.slice(1);
+const mixBoxes=()=>names.map(id=>({id,box:document.querySelector('input[aria-label="Mix '+label(id)+'"]')})).filter(x=>x.box);
+const note=t=>el('presetStatus').textContent=t;
+const index=()=>el('savedPresets').value===''?-1:Number(el('savedPresets').value);
+function render(i=-1){const list=el('savedPresets');list.replaceChildren(new Option('Choose combination',''));saved.forEach((p,j)=>list.add(new Option(p.name,String(j))));list.value=i<0?'':String(i)}
+function persist(){try{localStorage.setItem(key,JSON.stringify(saved));return true}catch{note('Browser storage is unavailable.');return false}}
+function snapshot(){return{name:el('presetName').value.trim().slice(0,40),mix:mixBoxes().filter(x=>x.box.checked).map(x=>x.id),intensity:+el('intensity').value,speed:+el('speedSlider').value,gap:+el('gapSlider').value,repeat:+el('repeatCount').value}}
+function restore(p){el('presetName').value=p.name;mixBoxes().forEach(x=>{if(x.box.checked!==p.mix.includes(x.id))x.box.click()});for(const [id,v] of [['intensity',p.intensity],['speedSlider',p.speed],['gapSlider',p.gap],['repeatCount',p.repeat]]){if(!Number.isFinite(+v))continue;el(id).value=String(v);el(id).dispatchEvent(new Event(id==='repeatCount'?'change':'input'))}note('Loaded '+p.name)}
+el('savePreset').onclick=()=>{const p=snapshot();if(!p.name||p.mix.length<2){note('Enter a name and select at least two MIX reactions.');return}if(saved.length>=50){note('Maximum 50 saved combinations.');return}saved.push(p);if(persist()){render(saved.length-1);note('Saved '+p.name)}};
+el('loadPreset').onclick=()=>{const p=saved[index()];if(p)restore(p);else note('Choose a saved combination.')};
+el('updatePreset').onclick=()=>{const i=index(),p=snapshot();if(!saved[i]||!p.name||p.mix.length<2){note('Select a saved mix, name it and choose two reactions.');return}saved[i]=p;if(persist()){render(i);note('Updated '+p.name)}};
+el('renamePreset').onclick=()=>{const i=index(),n=el('presetName').value.trim().slice(0,40);if(!saved[i]||!n){note('Choose a saved mix and enter a new name.');return}saved[i].name=n;if(persist()){render(i);note('Renamed '+n)}};
+el('deletePreset').onclick=()=>{const i=index();if(!saved[i]){note('Choose a saved mix.');return}saved.splice(i,1);if(persist()){render();note('Deleted saved mix.')}};
+el('savedPresets').onchange=()=>{const p=saved[index()];if(p)el('presetName').value=p.name};
+el('sharePresets').onclick=async()=>{if(!saved.length){note('Save a combination first.');return}const text=['TIRA! Core Reactions Lab — saved combinations',...saved.map((p,i)=>(i+1)+'. '+p.name+'\nReactions: '+p.mix.join(' + ')+'\nIntensity '+p.intensity+'%, speed '+p.speed+'%, gap '+p.gap+'ms, repeats '+p.repeat)].join('\n\n');try{await navigator.clipboard.writeText(text);note('Summary copied. Paste into ChatGPT.')}catch{const box=document.createElement('textarea');box.value=text;box.rows=8;box.style.width='100%';el('presetStatus').after(box);box.select();note('Copy the summary below and paste into ChatGPT.')}};
+render();
+})();
