@@ -68,7 +68,7 @@ const coreMix={a:42,b:42,va:1,vb:0}; // Lab #43 Spring Boing (zero-based index 4
 // Quiet Doodle Menu background track, independent from Core and combat SFX.
 // iOS Safari requires an explicit user interaction before playback.
 const bgMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
-bgMusic.loop=true;bgMusic.preload='none';bgMusic.volume=.10;bgMusic.playbackRate=.92;
+bgMusic.loop=true;bgMusic.preload='none';bgMusic.volume=.20;bgMusic.playbackRate=.92;
 const sharedMusicKey='tira-dev-shared-music-enabled-v1';
 let musicEnabled=true,musicError=false;
 try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null)musicEnabled=shared!=='off';else{const legacy=JSON.parse(localStorage.getItem('tira-dev-audio-mix-v3')||'{}');musicEnabled=legacy.music!==false}}catch{}
