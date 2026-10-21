@@ -16,7 +16,7 @@ body{overflow-x:hidden;min-height:100vh;min-height:100svh;isolation:isolate}#hal
 <p class="turn-line">Your Turn!</p>
 <p class="tagline">Don't Be the Dumbest. Outplay the Smartest!</p>
 <nav class="group" aria-label="Main menu"><button class="primary" data-open="modes">▶ PLAY</button>
-<button type="button" data-open="homeSettings">SETTINGS &amp; RULES</button>
+<a class="link" href="./tira-profile/" id="guestProfileLink">MY PROFILE</a><button type="button" data-open="homeSettings">SETTINGS &amp; RULES</button>
 <button data-open="labs">LABS</button></nav></section>
 <section class="panel hidden" id="homeSettings"><button class="back" type="button" data-back="home">← HOME</button>
 <h2>SETTINGS &amp; RULES</h2>
@@ -231,4 +231,4 @@ function updateContinueMatch(){
 updateContinueMatch();
 window.addEventListener('pageshow',updateContinueMatch);
 function show(id){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('hidden',p.id!==id))}document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.open)));document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.back)));</script>
-</main></body></html>
+</main><script src="./profile-layer1.js"></script></body></html>
