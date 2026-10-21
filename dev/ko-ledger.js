@@ -11,7 +11,7 @@ const previous=read(KEY),store=previous?.profileId===id?previous:{schema:1,profi
 if(!Array.isArray(store.processed)||whole(store.ppKO)===null||whole(store.ttKO)===null)return {ok:false,reason:'Invalid existing ledger'};
 if(store.processed.includes(matchId))return {ok:true,duplicate:true};
 if(!Number.isSafeInteger(store.ppKO+pp)||!Number.isSafeInteger(store.ttKO+(won?1:0)))return {ok:false,reason:'Counter overflow'};
-const next={...store,ppKO:store.ppKO+pp,ttKO:store.ttKO+(won?1:0),processed:[...store.processed,matchId],matches:[...(Array.isArray(store.matches)?store.matches:[]),{matchId,playedAt:new Date().toISOString(),won,opponent:typeof details.opponent==='string'?details.opponent.slice(0,48):'Computer',mode:typeof details.mode==='string'?details.mode.slice(0,32):'Practice',earnedPP:earned,spentPP:spent,remainingPP:pp,ppAwarded:pp,ttAwarded:won?1:0}].slice(-200)};
+const next={...store,ppKO:store.ppKO+pp,ttKO:store.ttKO+(won?1:0),processed:[...store.processed,matchId],matches:[...(Array.isArray(store.matches)?store.matches:[]),{matchId,playedAt:new Date().toISOString(),won,opponent:typeof details.opponent==='string'?details.opponent.slice(0,48):'Computer',mode:typeof details.mode==='string'?details.mode.slice(0,32):'Practice',earnedPP:earned,spentPP:spent,remainingPP:pp,ppAwarded:pp,ttAwarded:won?1:0,battleLog:Array.isArray(details.battleLog)?details.battleLog.filter(x=>typeof x==='string').slice(-250).map(x=>x.slice(0,320)):[]}].slice(-200)};
 localStorage.setItem(KEY,JSON.stringify(next));window.dispatchEvent(new Event('tira-ko-ledger-updated'));return {ok:true,duplicate:false}
 }catch{return {ok:false,reason:'Browser storage unavailable'}}}
 window.TiraKOLedger=Object.freeze({balances,award,history});
