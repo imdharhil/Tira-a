@@ -168,6 +168,7 @@ function makeEffect(kind){
 }
 const fxCache={};
 let effectAudioContext=null;const effectBuffers={};let audioDiagnosticShown=false;
+function playEffect(kind){
  if(!effectsEnabled())return;haptic(kind);
  try{
   // Web Audio permits precise overlapping hits without pause/seek races on mobile.
