@@ -180,7 +180,7 @@ function playEffect(kind){
   if(!effectBuffers[kind]){
    const wav=makeEffect(kind);
    // Decode once and cache the generated effect instead of rebuilding at every hit.
-   effectBuffers[kind]=ctx.decodeAudioData(wav.slice(0));
+   effectBuffers[kind]=wav.arrayBuffer().then(bytes=>ctx.decodeAudioData(bytes)).catch(error=>{delete effectBuffers[kind];throw error});
   }
   Promise.resolve(effectBuffers[kind]).then(buffer=>{
    if(!effectsEnabled()||ctx.state!=='running')return;
