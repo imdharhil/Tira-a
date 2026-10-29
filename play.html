@@ -68,6 +68,16 @@ html[data-motion=off] .card.selected{transform:none}
  #game .card{aspect-ratio:.68;padding:27px 4px 8px}
  #game .card .orb{width:min(52px,65%);font-size:21px}
 }
+</style><style id="tira-desktop-header-layout">
+/* Desktop: reserve distinct rows for PP/pause and player/opponent names. */
+@media(min-width:651px){
+ #game .top{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:16px;row-gap:10px;min-width:0}
+ #game .top>.piece-header{grid-column:1;grid-row:1;min-width:0}
+ #game .top>div:nth-child(2){grid-column:2;grid-row:1;justify-self:end}
+ #game .top>.meta{position:static;grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:0;min-width:0;width:100%;pointer-events:none}
+ #game .top>.meta span{min-width:0;overflow-wrap:anywhere;line-height:1.3}
+ #game .top>.meta span:last-child{text-align:right}
+}
 </style><style id="tira-quick-guide-style">
 #tiraQuickGuide[hidden]{display:none!important}
 #tiraQuickGuide{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:18px;background:rgba(1,9,18,.88);color:#e8f6ff;font-family:Inter,system-ui,sans-serif}
