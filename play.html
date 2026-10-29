@@ -377,21 +377,15 @@ if(g){ctx.save();if(shake>0){if(coreShakeEnabled)ctx.translate((Math.random()-.5
  const throb=1+motion*(neutral?.010*Math.sin(breath-.45)+.003*recoveryPulse:.005*urgency*Math.sin(clock*5));
  const burstTime=winTime-1.6;const overloadScale=motion===0?1:winning?(burstTime<0?1+motion*.025*Math.sin(winTime*19):burstTime<.7?1+motion*Math.sin(burstTime*48)*.068:Math.max(0,1-(burstTime-.7)/.32)):1;
  const rr=r*throb*overloadScale;
- let core=ctx.createRadialGradient(-rr*.28,-rr*.29,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(1,'#0b2137');
+ let core=ctx.createRadialGradient(-rr*.28,-rr*.29,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(.89,g.pos<0?'rgba(135,36,62,.12)':'rgba(17,80,132,.12)');core.addColorStop(1,'rgba(11,33,55,0)');
  if(motion===0||!winning||winTime<2.62){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
  // A single Core silhouette, with transparent light and a downward cast shadow.
  // The shadow is drawn on the foreground canvas so it darkens the opponent card backs below.
  ctx.save();ctx.globalAlpha=tension*.7;
  let cast=ctx.createRadialGradient(0,rr*.93,rr*.10,0,rr*.93,rr*1.42);
  cast.addColorStop(0,'rgba(0,4,12,.72)');cast.addColorStop(.56,'rgba(0,5,13,.36)');cast.addColorStop(1,'rgba(0,5,13,0)');
- ctx.translate(0,rr*.35);ctx.scale(1.06,.57);circle(0,rr*.93,rr*1.42,cast);ctx.restore();
- // Owner visual reference: only a narrow, feathered halo immediately behind the Core.
- // No wide outer ring; the Core body, inner shading, and number remain unchanged.
- ctx.save();ctx.globalAlpha=tension;
- let light=ctx.createRadialGradient(0,0,rr*.91,0,0,rr*1.16);
- light.addColorStop(0,g.pos<0?'rgba(255,105,139,.29)':'rgba(75,192,255,.29)');
- light.addColorStop(.42,g.pos<0?'rgba(255,105,139,.15)':'rgba(75,192,255,.15)');
- light.addColorStop(1,g.pos<0?'rgba(255,105,139,0)':'rgba(75,192,255,0)');
+ ctx.t // No separate external glow. The original Core's outer shell itself fades to transparency.
+gba(255,105,139,0)':'rgba(75,192,255,0)');
  circle(0,0,rr*1.16,light);ctx.restore();
  circle(0,0,rr,core);
  ctx.globalAlpha*=.18;circle(0,0,rr*.77,'#071b29');ctx.globalAlpha=tension;
