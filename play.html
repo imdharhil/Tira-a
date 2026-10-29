@@ -324,9 +324,10 @@ const target=[5,6,7,10].includes(Number(params.get('goal')))?Number(params.get('
 const steps=[
 {title:'Beat the computer!',symbol:String(target),copy:'You are BLUE. The computer is RED. Fire cards to move the shared Core to your side. Reach '+target+' first to win!'},
 {title:'Choose, then ITIRA!',symbol:'+3',copy:'Tap a numbered Cell Card, then press ITIRA! to fire it. Your shot removes red cells first, then adds blue cells. The computer takes turns too.'},
-{title:'Convert cards into PP',symbol:'PP',copy:'Tap the small convert icon at the top-right of a numbered Cell Card. Its value becomes PP (Pira Piraso). The card leaves your hand without a replacement.'},
-{title:'Use PP for special cards',symbol:'10 / 12',copy:'The number in a card’s top-right corner shows its PP cost. Gold +4 costs 10 PP and has a cooldown. Restoring one stored Protect costs 12 PP.'},
-{title:'Protect your Core',symbol:'◇',copy:'Protect can block the computer’s next shot. Activating it uses your turn and gives you a bonus draw. Watch the Protect symbols beside both player names.'}
+{title:'What is PP?',symbol:'PP',copy:'PP means Pira Piraso. It is the resource you save and spend on special actions, including Gold +4 and restoring Protect.'},
+{title:'How to earn PP',symbol:'+3 → 3 PP',copy:'Convert a numbered Cell Card to PP using its small top-right convert button. A +3 card gives 3 PP. You lose that card and do not draw a replacement.'},
+{title:'Spend your PP',symbol:'10 / 12',copy:'Gold +4 costs 10 PP and has a cooldown. Restoring one stored Protect costs 12 PP. Your PP balance appears at the top of the match.'},
+{title:'Know your special cards',symbol:'◇',copy:'Gold is a powerful +4 card. Protect blocks the computer’s next shot and grants a bonus draw when activated. Look at the top-right card icons for conversion or PP costs, and at the Protect symbols beside player names.'}
 ];
 let page=0,previousFocus=null;
 function paint(){const step=steps[page];title.textContent=step.title;copy.textContent=step.copy;symbol.textContent=step.symbol;count.textContent=(page+1)+' / '+steps.length;progress.replaceChildren(...steps.map((_,i)=>{const e=document.createElement('span');if(i<=page)e.className='active';return e}));back.disabled=page===0;next.textContent=page===steps.length-1?'START PLAYING':'NEXT'}
