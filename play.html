@@ -367,7 +367,7 @@ if(params.has('goal')&&params.get('continue')!=='1'){let hidden=false;try{hidden
 (()=>{'use strict';
 const panel=document.getElementById('tiraCoach'),label=document.getElementById('tiraCoachStep'),count=document.getElementById('tiraCoachCount'),body=document.getElementById('tiraCoachText'),next=document.getElementById('tiraCoachNext');
 const steps=[
-{label:'THIS IS THE CORE',target:'#arena',core:true,text:'This is the shared Core. You are Blue; the computer is Red. Be the first to reach the target score to win.'},
+{label:'THIS IS THE CORE',target:'#arena',core:true,text:'This is the shared Core. In this tutorial, your Core is blue and the computer’s is red. Be the first to reach the target score to win. Core colors and themes may change later.'},
 {label:'HOW THE CORE MOVES',target:'#arena',core:true,text:'Both players push the same Core in opposite directions. Example: Blue +3 → +3. Red +2 → +1. Blue +1 → +2. Red +4 → −2. First to reach the target on their side wins.'},
 {label:'SELECT A CELL CARD',target:'#game .cards .card:first-child',text:'Tap a numbered Cell Card to select it. Each number shows the strength of your next shot.'},
 {label:'PRESS ITIRA!',target:'#fire',text:'Press ITIRA! to fire your selected card. The computer then takes its turn. Try it now!'},
@@ -386,8 +386,8 @@ function start(){active=true;page=0;panel.hidden=false;paint()}
 function stop(){active=false;panel.hidden=true;clear();try{sessionStorage.setItem('tira-guided-practice-complete','1')}catch{}}
 next.addEventListener('click',()=>{if(page===steps.length-1)stop();else{page++;paint()}});
 document.getElementById('tiraCoachExit').addEventListener('click',stop);
-document.addEventListener('click',e=>{if(!active||panel.contains(e.target))return;const step=steps[page];if(page===1&&e.target.closest('#game .card-main')){page=2;requestAnimationFrame(paint)}else if(page===2&&e.target.closest('#fire')){page=3;requestAnimationFrame(paint)}else if(page===4&&e.target.closest('#game .cards .card-top-action')){page=5;requestAnimationFrame(paint)}},true);
-const observer=new MutationObserver(()=>{if(!active)return;const el=document.querySelector(steps[page].target);if(el!==highlight){clear();highlight=el;if(!steps[page].core)highlight?.classList.add('coach-focus');positionCoach()}});
+document.addEventListener('click',e=>{if(!active||panel.contains(e.target))return;const step=steps[page];if(page===2&&e.target.closest('#game .card-main')){page=3;requestAnimationFrame(paint)}else if(page===3&&e.target.closest('#fire')){page=4;requestAnimationFrame(paint)}else if(page===5&&e.target.closest('#game .cards .card-top-action')){page=6;requestAnimationFrame(paint)}},true);
+const observer=new MutationObserver(()=>{if(!active)return;const el=document.querySelector(steps[page].target);if(el!==highlight){clear();highlight=el;if(!steps[page].core)highlight?.classList.add('coach-focus');positionCoach()}else if(!panel.hidden){positionCoach()}});
 observer.observe(document.getElementById('game'),{childList:true,subtree:true});
 document.getElementById('tiraCoachLaunch')?.addEventListener('click',()=>{document.getElementById('tiraQuickGuide').hidden=true;document.body.style.overflow='';start()});
 document.getElementById('tiraCoachReopen')?.addEventListener('click',()=>{document.getElementById('menu')?.classList.add('hidden');start()});
