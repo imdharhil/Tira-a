@@ -261,9 +261,9 @@ function makeEffect(kind){
  if(kind==='explosion'){// Fusion Pop (#06): Sound Lab Explosion index 5, synthesized variant v=2
  const variant=2,base=57+(variant%8)*27,decay=Math.pow(1-f,2.4+(variant%5)*.3),sweep=1.8-1.3*f,phase=2*Math.PI*base*(sweep*t+.65*t*t/dur),tone=Math.sin(phase)*.56+Math.sin(phase*.49)*.24+Math.sin(phase*(1.8+(variant%3)*.22))*.18,crackle=Math.sin(2*Math.PI*(670+variant*113)*t)*Math.exp(-t*23)*.23,thump=Math.sin(2*Math.PI*(42+variant*3)*t)*Math.exp(-t*9)*.4;sample=(tone*decay+crackle+thump)*Math.min(1,t/.009)*.67;
  }else if(kind==='fire'||kind==='protect'){// Sound Lab Graviton Shot (#16): generated Fire variant index 15 (v=7)
- const v=7,env=Math.pow(1-f,1.5+(v%4)*.35)*Math.min(1,t/.006),start=kind==='protect'?175:120,sweep=-.4,phase=2*Math.PI*start*(t+sweep*t*t/(2*dur));
- const drive=Math.sin(phase)+(.12+.08*(v%3))*Math.sin(phase*2.03),click=Math.sin(2*Math.PI*(2200+v*145)*t)*Math.exp(-t*90)*.19,tail=Math.sin(2*Math.PI*start*.52*t)*.23;
- sample=(drive*.64+tail+click)*env*.85;
+ const v=7,env=Math.pow(1-f,1.5+(v%4)*.35)*Math.min(1,t/.006),start=kind==='protect'?85:120,sweep=-.4,phase=2*Math.PI*start*(t+sweep*t*t/(2*dur));
+ const drive=Math.sin(phase)+(.12+.08*(v%3))*Math.sin(phase*2.03),click=Math.sin(2*Math.PI*(2200+v*145)*t)*Math.exp(-t*90)*(kind==='protect'?.035:.19),tail=Math.sin(2*Math.PI*start*.52*t)*(kind==='protect'?.38:.23);
+ sample=(drive*(kind==='protect'?.49:.64)+tail+click)*env*(kind==='protect'?.72:.85);
  }else if(kind==='impact'){// Sound Lab Heavy Cell Hit (#02): synthetic Impact index 1, v=0
  const env=Math.pow(1-f,2)*Math.min(1,t/.004),base=95,phase=2*Math.PI*base*(t+1.2*t*t/dur);
  sample=(Math.sin(phase)*.55+Math.sin(phase*.48)*.30+Math.sin(2*Math.PI*1100*t)*Math.exp(-t*45)*.22+Math.sin(2*Math.PI*47*t)*Math.exp(-t*12)*.24)*env*.85;
@@ -380,13 +380,13 @@ if(g){ctx.save();if(shake>0){if(coreShakeEnabled)ctx.translate((Math.random()-.5
  const burstTime=winTime-1.6;const overloadScale=motion===0?1:winning?(burstTime<0?1+motion*.025*Math.sin(winTime*19):burstTime<.7?1+motion*Math.sin(burstTime*48)*.068:Math.max(0,1-(burstTime-.7)/.32)):1;
  const rr=r*throb*overloadScale;
  let core=ctx.createRadialGradient(0,0,rr*.03,0,0,rr);core.addColorStop(0,g.pos<0?'#ffd6df':'#d2faff');core.addColorStop(.3,g.pos<0?'#fd718e':'#42b9f5');core.addColorStop(.77,g.pos<0?'#87243e':'#115084');core.addColorStop(.89,g.pos<0?'rgba(135,36,62,.12)':'rgba(17,80,132,.12)');core.addColorStop(1,'rgba(11,33,55,0)');
- if(motion===0||!winning||winTime<2.62){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
+ if(!winning||winTime<2.62){ctx.save();ctx.globalAlpha=tension;ctx.translate(x+jitterX,y+jitterY);
  // A single Core silhouette, with transparent light and a downward cast shadow.
  // The shadow is drawn on the foreground canvas so it darkens the opponent card backs below.
- ctx.save();ctx.globalAlpha=tension*.56;
+ if(!winning||winTime<2.35){ctx.save();ctx.globalAlpha=tension*.56;
  let cast=ctx.createRadialGradient(0,rr*.93,rr*.10,0,rr*.93,rr*1.42);
  cast.addColorStop(0,'rgba(0,4,12,.72)');cast.addColorStop(.56,'rgba(0,5,13,.36)');cast.addColorStop(1,'rgba(0,5,13,0)');
- ctx.translate(0,rr*.35);ctx.scale(1.06,.57);circle(0,rr*.93,rr*1.42,cast);ctx.restore();
+ ctx.translate(0,rr*.35);ctx.scale(1.06,.57);circle(0,rr*.93,rr*1.42,cast);ctx.restore();}
  // No separate external glow. The original Core outer shell fades to transparency.
  circle(0,0,rr,core);
  ctx.globalAlpha*=.18;circle(0,0,rr*.77,'#071b29');ctx.globalAlpha=tension;
