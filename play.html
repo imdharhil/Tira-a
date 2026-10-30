@@ -326,7 +326,7 @@ if(!impactNotice)document.getElementById('shotNumberNotice').textContent='';if(i
  ctx.globalAlpha=alpha*.78;ctx.fillStyle=n.color;
  ctx.shadowColor=n.color;ctx.shadowBlur=10;
  // Keep the whole number above the Core so it cannot be obscured by its opaque surface.
- const shotNumberNotice=document.getElementById('shotNumberNotice');shotNumberNotice.textContent=n.label;shotNumberNotice.style.color=n.color;shotNumberNotice.style.opacity=String(alpha*.9);
+ const shotNumberNotice=document.getElementById('shotNumberNotice');if(numeric){shotNumberNotice.textContent=n.label;shotNumberNotice.style.color=n.color;shotNumberNotice.style.opacity=String(alpha*.9)}else{shotNumberNotice.textContent='';const turnMessage=document.getElementById('message');const messageBottom=turnMessage.getBoundingClientRect().bottom-stageBox.top;const coreTop=y-r;const noticeY=(messageBottom+coreTop)/2;ctx.fillText(n.label,x,noticeY);}
  ctx.restore();if(n.life<=0){impactNotice=null;document.getElementById('shotNumberNotice').textContent='';}
 }
 
