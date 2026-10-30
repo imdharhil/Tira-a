@@ -349,12 +349,12 @@ if(impactNotice){
  const n=impactNotice;const noticeDelta=n.lastTick===undefined?dt:Math.max(0,(t-n.lastTick)/1000);n.lastTick=t;n.life=Math.max(0,n.life-noticeDelta);
  const alpha=motion===0?1:Math.min(1,n.life/.4,(n.full-n.life)/.18);
  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
- const numeric=/^\d+$/.test(n.label),size=numeric?Math.min(w*.085,h*.105,40):Math.min(w*.085,h*.085,32);
+ const numeric=/^\d+$/.test(n.label),size=numeric?Math.min(w*.13,h*.15,58):Math.min(w*.085,h*.085,32);
  ctx.font=`900 ${Math.round(size)}px system-ui`;
  ctx.globalAlpha=alpha*.78;ctx.fillStyle=n.color;
  ctx.shadowColor=n.color;ctx.shadowBlur=10;
  // Keep the whole number above the Core so it cannot be obscured by its opaque surface.
- const turnMessage=document.getElementById('message'),messageTop=turnMessage.getBoundingClientRect().top-stageBox.top;ctx.fillText(n.label,x,messageTop+turnMessage.offsetHeight+size*.75);
+ const turnMessage=document.getElementById('message'),messageTop=turnMessage.getBoundingClientRect().top-stageBox.top;ctx.fillText(n.label,x,numeric?messageTop-size*.85:messageTop+turnMessage.offsetHeight+size*.75);
  ctx.restore();if(n.life<=0)impactNotice=null;
 }
 
