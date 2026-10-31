@@ -144,6 +144,31 @@ const effectVolumes={fire:.58,impact:.72,blocked:.66,explosion:.80};let combatSf
 function duckMusic(kind){if(!musicEnabled||bgMusic.paused)return;duckUntil=Date.now()+(kind==='explosion'?1800:kind==='blocked'?1000:kind==='impact'?550:250);bgMusic.volume=.11;if(duckTimer)clearTimeout(duckTimer);const restore=()=>{if(Date.now()<duckUntil){duckTimer=setTimeout(restore,duckUntil-Date.now());return}bgMusic.volume=.20;duckTimer=null};duckTimer=setTimeout(restore,duckUntil-Date.now())}
 const fxCache={};
 let effectAudioContext=null;const effectBuffers={};let audioDiagnosticShown=false;
+// Start downloading combat effects before the first shot, not after ITIRA is pressed.
+const combatSoundKinds=['fire','impact','blocked','explosion'];
+const combatSoundBytes={};
+for(const kind of combatSoundKinds){
+ combatSoundBytes[kind]=fetch('./assets/audio/tira-combat-'+kind+'.wav')
+  .then(response=>{if(!response.ok)throw Error('Combat WAV HTTP '+response.status);return response.arrayBuffer()});
+ // A failed preload must not cause an unhandled rejection before gameplay.
+ combatSoundBytes[kind].catch(()=>{});
+}
+function prepareCombatAudio(){
+ const Ctx=window.AudioContext||window.webkitAudioContext;
+ if(!Ctx)return;
+ if(!effectAudioContext)effectAudioContext=new Ctx();
+ const ctx=effectAudioContext;
+ if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+ for(const kind of combatSoundKinds){
+  if(effectBuffers[kind])continue;
+  effectBuffers[kind]=combatSoundBytes[kind].then(bytes=>ctx.decodeAudioData(bytes.slice(0)));
+  effectBuffers[kind].catch(()=>{});
+ }
+}
+// Unlock and decode audio on the first gesture, before gameplay actions begin.
+document.addEventListener('pointerdown',prepareCombatAudio,{passive:true});
+document.addEventListener('keydown',prepareCombatAudio);
+
 function playEffect(kind){
  haptic(kind);if(!effectsEnabled()||combatSfxVolume<=0)return;
  try{
@@ -153,11 +178,8 @@ function playEffect(kind){
   if(!effectAudioContext)effectAudioContext=new Ctx();
   const ctx=effectAudioContext;
   if(ctx.state!=='running'){ctx.resume().catch(()=>{if(!audioDiagnosticShown){audioDiagnosticShown=true;log('Tap the game to enable sound on this device')}})}
-  if(!effectBuffers[kind]){
-   const audioPath={fire:'fire',impact:'impact',blocked:'blocked',explosion:'explosion'}[kind];
-   if(!audioPath)throw Error('Unknown combat sound');
-   effectBuffers[kind]=fetch('./assets/audio/tira-combat-'+audioPath+'.wav').then(response=>{if(!response.ok)throw Error('Combat WAV HTTP '+response.status);return response.arrayBuffer()}).then(bytes=>ctx.decodeAudioData(bytes)).catch(error=>{delete effectBuffers[kind];throw error});
-  }
+  if(!effectBuffers[kind])prepareCombatAudio();
+  if(!effectBuffers[kind])throw Error('Unknown combat sound');
   Promise.resolve(effectBuffers[kind]).then(buffer=>{
    if(!effectsEnabled()||ctx.state!=='running')return;
    const src=ctx.createBufferSource(),gain=ctx.createGain();
