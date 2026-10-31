@@ -159,15 +159,22 @@ case 8:{
   const totality=clamp((cover-.58)/.42,0,1);
   if(totality>0){
     ctx.save();
-    ctx.globalAlpha=totality*.24;
-    for(let i=0;i<28;i++){
-      const angle=i*TAU/28;
-      const reach=r*(.13+.25*rand(i+71));
-      ctx.strokeStyle='rgba(230,242,255,.18)';
-      ctx.lineWidth=Math.max(.6,r*.009);
+    // Visible but translucent solar corona: never fill the Moon's face.
+    const halo=ctx.createRadialGradient(x,y,r*.98,x,y,r*1.55);
+    halo.addColorStop(0,'rgba(255,247,218,0)');
+    halo.addColorStop(.06,'rgba(255,247,218,'+(.36*totality)+')');
+    halo.addColorStop(.19,'rgba(235,243,255,'+(.19*totality)+')');
+    halo.addColorStop(.55,'rgba(202,225,255,'+(.06*totality)+')');
+    halo.addColorStop(1,'rgba(202,225,255,0)');
+    ctx.fillStyle=halo;ctx.beginPath();ctx.arc(x,y,r*1.55,0,TAU);ctx.fill();
+    for(let i=0;i<42;i++){
+      const angle=i*TAU/42;
+      const reach=r*(.12+.29*rand(i+71));
+      ctx.strokeStyle='rgba(242,246,255,'+((.12+.16*rand(i+12))*totality)+')';
+      ctx.lineWidth=Math.max(.7,r*(.006+.006*rand(i+31)));
       ctx.beginPath();
-      ctx.moveTo(x+Math.cos(angle)*r,y+Math.sin(angle)*r);
-      ctx.lineTo(x+Math.cos(angle+.025)*(r+reach),y+Math.sin(angle+.025)*(r+reach));
+      ctx.moveTo(x+Math.cos(angle)*r*1.025,y+Math.sin(angle)*r*1.025);
+      ctx.quadraticCurveTo(x+Math.cos(angle+.025)*(r+reach*.5),y+Math.sin(angle+.025)*(r+reach*.5),x+Math.cos(angle+.045)*(r+reach),y+Math.sin(angle+.045)*(r+reach));
       ctx.stroke();
     }
     ctx.restore();
