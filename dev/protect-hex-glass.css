@@ -28,8 +28,15 @@
 .card.protect-card[aria-pressed="true"] .protect-holo-underlay{
   opacity:0;animation:none;
 }
-.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{opacity:.66;animation:tiraProtectFullCardHolo 2.4s linear infinite}
-@keyframes tiraProtectFullCardHolo{from{background-position:100% 50%}to{background-position:0% 50%}}
+.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{
+  animation:tiraProtectFullCardHolo 1.8s ease-out 1 both;
+}
+@keyframes tiraProtectFullCardHolo{
+  0%{opacity:0;background-position:100% 50%}
+  20%{opacity:.66}
+  80%{opacity:.66}
+  100%{opacity:0;background-position:0% 50%}
+}
 @media(prefers-reduced-motion:reduce){
   .card.protect-card[aria-pressed="true"] .protect-holo-underlay{animation:none}
   .card.protect-card .protect-hex-glass-top{transition:none;animation:none}
