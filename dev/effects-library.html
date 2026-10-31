@@ -35,7 +35,7 @@ h1{font-size:26px;letter-spacing:.055em;margin:3px 0}h1 em{font-style:normal;col
 </style></head>
 <body><div class="wrap"><header><div><div class="tag">CORE EFFECTS / VISUAL GALLERY · BROWSER SAVES</div><h1>TIRA! — EFFECTS GALLERY</h1><div class="muted">Preview saved Core designs and build Core 1–6 sets.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
 <div class="toolbar"><input id="search" type="search" placeholder="Search saved effects" aria-label="Search saved effects"><button id="export">Export library</button><button id="import">Import library</button><input id="file" type="file" accept=".json,application/json" hidden></div>
-<div class="message" id="status" role="status" aria-live="polite"></div><div id="count" class="muted" style="margin-bottom:12px"></div><div id="list" class="list"></div>
+<section class="set-builder" aria-label="Published gallery information"><strong>Published TIRA! designs</strong><p class="set-info">Published designs are stored in the website repository and visible on any device. Your drafts stay in this browser until reviewed and published. No GitHub credentials are stored or requested by this site.</p><button id="downloadProposal" type="button">Download my publishing proposal (JSON)</button><p class="set-info">To publish: submit the JSON as a proposed update to <code>dev/effects-catalog.json</code> in the TIRA! public repository, and merge it after review. Downloading does not publish automatically.</p><p class="set-info" id="publishedStatus" role="status"></p></section><div class="message" id="status" role="status" aria-live="polite"></div><h2>Published Effects</h2><div id="publishedCount" class="muted"></div><div id="publishedList" class="list"></div><h2>My Draft Effects</h2><div id="count" class="muted" style="margin-bottom:12px"></div><div id="list" class="list"></div>
 <div class="sets-head"><h2>Core 1–6 Sets</h2><span class="muted">Assign one saved appearance to each Core value.</span></div>
 <div class="set-builder"><label for="setName">Set name</label><input id="setName" maxlength="70" placeholder="My Core Progression"><div id="setSlots" class="set-grid"></div><div class="set-actions"><button id="saveSet">Save six-value set</button><button id="clearSet">Clear slots</button><button id="exportSets">Export sets</button><button id="importSets">Import sets</button><input id="setFile" type="file" accept=".json,application/json" hidden></div><div class="set-info" id="setStatus" role="status" aria-live="polite"></div></div>
 <div class="list" id="savedSets"></div>
@@ -48,7 +48,7 @@ const fields=['value','speed','urgency','inst','move','follow'];
 const ranges={value:[1,30],speed:[0,300],urgency:[0,100],inst:[0,100],move:[0,100],follow:[0,100]};
 const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse'];
-const $=id=>document.getElementById(id);let data=[];
+const $=id=>document.getElementById(id);let data=[];let published=[];
 function status(m){$('status').textContent=m;}
 function validate(p){
   if(!p||typeof p.name!=='string'||!p.settings)return null;
@@ -58,7 +58,7 @@ function validate(p){
 }
 function persist(){try{localStorage.setItem(key,JSON.stringify(data));return true;}catch(e){status('Storage unavailable. Please export your presets.');return false;}}
 function load(){try{const raw=JSON.parse(localStorage.getItem(key)||'[]');data=Array.isArray(raw)?raw.slice(0,200).map(validate).filter(Boolean):[];}catch(e){data=[];status('Unable to read the saved library.');}render();}
-function render(){
+function render(){renderPublished();
  const query=$('search').value.trim().toLowerCase(),list=$('list');list.replaceChildren();$('count').textContent=data.length+' saved effects';
  const filtered=data.filter(p=>(p.name+' '+(p.mode?explosions:effects)[p.effect-1]).toLowerCase().includes(query));
  if(!filtered.length){const el=document.createElement('div');el.className='empty';el.textContent=data.length?'No matching presets.':'No saved effects yet. Open Effects Lab, customize an effect, then save it here.';list.append(el);return;}
@@ -83,6 +83,51 @@ function render(){
   actions.append(edit,rename,del);card.append(preview,type,title,sub,details,actions);list.append(card);
  }
 }
+// Read-only repository-backed gallery. No secrets, authentication or direct GitHub writes in the browser.
+async function loadPublished(){
+ try{
+  const response=await fetch('./effects-catalog.json',{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const catalog=await response.json();
+  if(catalog.format!=='tira-effects-catalog'||catalog.version!==1||!Array.isArray(catalog.presets))throw Error('Unsupported catalog');
+  published=catalog.presets.slice(0,200).map(validate).filter(Boolean);
+  $('publishedStatus').textContent='Loaded '+published.length+' website-published designs.';
+ }catch(e){published=[];$('publishedStatus').textContent='Could not load published designs ('+e.message+'). Local drafts are unaffected.';}
+ renderPublished();
+}
+function makeGalleryPreview(p){
+ const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
+ const orb=document.createElement('div');orb.className='preview-orb';
+ const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
+ orb.append(digit);preview.append(orb);
+ const caption=document.createElement('span');caption.className='preview-caption';caption.textContent='Illustrated preview · open in Effects Lab for original animation';preview.append(caption);
+ preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
+ return preview;
+}
+function renderPublished(){
+ const list=$('publishedList');list.replaceChildren();const query=$('search').value.trim().toLowerCase();
+ const shown=published.filter(p=>(p.name+' '+(p.mode?explosions:effects)[p.effect-1]).toLowerCase().includes(query));
+ $('publishedCount').textContent=shown.length+' published designs';
+ if(!shown.length){const item=document.createElement('p');item.className='muted';item.textContent='No matching published designs.';list.append(item);return;}
+ for(const p of shown){
+  const card=document.createElement('article');card.className='preset';
+  const title=document.createElement('h3');title.textContent=p.name;
+  const meta=document.createElement('small');meta.textContent=(p.mode?'Explosion':'Appearance')+' · '+effects[p.effect-1];
+  const actions=document.createElement('div');actions.className='actions';
+  const open=document.createElement('button');open.textContent='Open in Effects Lab';
+  open.onclick=()=>{try{localStorage.setItem(pending,JSON.stringify(p));location.href='./effects-lab.html';}catch(e){$('publishedStatus').textContent='Unable to open effect in this browser.';}};
+  const copy=document.createElement('button');copy.textContent='Copy to my drafts';
+  copy.onclick=()=>{if(data.length>=200)return status('Draft limit reached.');data.unshift({...p,id:Date.now()+'-copy'});persist();render();fillSlotChoices();status('Copied published design to your drafts.');};
+  actions.append(open,copy);card.append(makeGalleryPreview(p),title,meta,actions);list.append(card);
+ }
+}
+$('downloadProposal').onclick=()=>{
+ const combined=[...published,...data];const ids=new Set();const presets=[];
+ for(const p of combined){if(!validate(p))continue;const key=p.id||p.name;if(ids.has(key))continue;ids.add(key);presets.push(p);}
+ const blob=new Blob([JSON.stringify({format:'tira-effects-catalog',version:1,presets},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='effects-catalog-proposal.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $('publishedStatus').textContent='Proposal downloaded. It is NOT published until reviewed and merged into the repository.';
+};
 $('search').oninput=render;
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({format:'cellcore-effects-library',version:1,presets:data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cellcore-effects-library.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported '+data.length+' presets.');};
 $('import').onclick=()=>$('file').click();
@@ -106,5 +151,6 @@ $('importSets').onclick=()=>$('setFile').click();$('setFile').onchange=async e=>
 load();
 fillSlotChoices();
 readSets();
+loadPublished();
 })();
 </script></body></html>
