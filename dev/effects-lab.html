@@ -155,15 +155,21 @@ case 8:{
   softSphere(ctx,x,y,r,['#fffde8','#fff0a2','#ffa63d','#9a3f16']);
   ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.clip();
   circle(ctx,moonX,y,moonR,'#05080f');ctx.restore();
-  // Near totality a fine, softly diffused rim escapes from behind the lunar edge.
+  // Solar corona: faint, uneven rays remain behind the dark lunar disc.
   const totality=clamp((cover-.58)/.42,0,1);
   if(totality>0){
     ctx.save();
-    ctx.beginPath();ctx.arc(x,y,r*1.10,0,TAU);ctx.clip();
-    ctx.globalAlpha=.52*totality;
-    ctx.shadowColor='rgba(255,236,191,.46)';ctx.shadowBlur=r*.095;
-    ctx.strokeStyle='rgba(255,241,212,.65)';ctx.lineWidth=Math.max(.7,r*.012);
-    ctx.beginPath();ctx.arc(moonX,y,moonR+r*.014,0,TAU);ctx.stroke();
+    ctx.globalAlpha=totality*.24;
+    for(let i=0;i<28;i++){
+      const angle=i*TAU/28;
+      const reach=r*(.13+.25*rand(i+71));
+      ctx.strokeStyle='rgba(230,242,255,.18)';
+      ctx.lineWidth=Math.max(.6,r*.009);
+      ctx.beginPath();
+      ctx.moveTo(x+Math.cos(angle)*r,y+Math.sin(angle)*r);
+      ctx.lineTo(x+Math.cos(angle+.025)*(r+reach),y+Math.sin(angle+.025)*(r+reach));
+      ctx.stroke();
+    }
     ctx.restore();
   }
   break;
