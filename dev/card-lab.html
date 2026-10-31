@@ -181,6 +181,26 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 .card.cell.regular-red .orb::before{background:linear-gradient(160deg,#fff1f3b3,transparent)}
 .card.cell.regular-red .convert-indicator{color:#fff0f3}
+
+/* Gold foil candidate: premium frame treatment only.
+   Preserve gold cell symbols, proportions and card selection behavior. */
+.card.gold{
+  border-color:#c29a4c;
+  background:linear-gradient(150deg,#7b612e 0%,#47371f 13%,#30271c 35%,#271f19 70%,#171514 100%);
+  box-shadow:inset 0 1px 0 #ffe0a066,inset 0 0 0 1px #bb904433,0 9px 24px #0006;
+}
+.card.gold::before{border-color:#f6d38b85}
+.card.gold::after{
+  display:block;inset:0;width:auto;height:auto;top:0;left:0;
+  border-radius:inherit;z-index:1;pointer-events:none;
+  background:linear-gradient(108deg,transparent 28%,#f6d88b09 42%,#fff1c337 50%,#f6d88b09 58%,transparent 73%);
+  background-size:230% 100%;background-position:100% 50%;
+  opacity:.58;transition:opacity .25s;
+}
+.card.gold .card-main{position:relative;z-index:2}
+.card.gold[aria-pressed="true"]::after{animation:tiraGoldFoilSweep 1.8s ease-out 1}
+@keyframes tiraGoldFoilSweep{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+@media(prefers-reduced-motion:reduce){.card.gold[aria-pressed="true"]::after{animation:none}}
 </style>
 </head>
 <body><div class="shell">
