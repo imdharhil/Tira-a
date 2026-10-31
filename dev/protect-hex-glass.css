@@ -15,7 +15,8 @@
 }
 .card.protect-card .protect-hex-glass-top{
   z-index:2;opacity:0;
-  background:linear-gradient(105deg,rgba(128,229,249,.11) 0%,rgba(218,255,255,.75) 43%,rgba(178,157,255,.58) 50%,rgba(96,229,245,.2) 61%,rgba(128,229,249,.11) 100%);\n  background-size:270% 100%;background-position:100% 50%;
+  background:linear-gradient(105deg,rgba(128,229,249,.11) 0%,rgba(218,255,255,.75) 43%,rgba(178,157,255,.58) 50%,rgba(96,229,245,.2) 61%,rgba(128,229,249,.11) 100%);
+  background-size:270% 100%;background-position:100% 50%;
   -webkit-mask-image:url("./protect-hex-mask.svg");
   mask-image:url("./protect-hex-mask.svg");
   -webkit-mask-size:94px 81px;mask-size:94px 81px;
@@ -27,7 +28,7 @@
 .card.protect-card[aria-pressed="true"] .protect-holo-underlay{
   opacity:0;animation:none;
 }
-.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{opacity:.58;animation:tiraProtectFullCardHolo 1.65s ease-out 1}
+.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{opacity:.66;animation:tiraProtectFullCardHolo 2.4s linear infinite}
 @keyframes tiraProtectFullCardHolo{from{background-position:100% 50%}to{background-position:0% 50%}}
 @media(prefers-reduced-motion:reduce){
   .card.protect-card[aria-pressed="true"] .protect-holo-underlay{animation:none}
