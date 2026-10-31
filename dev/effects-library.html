@@ -32,6 +32,7 @@ h1{font-size:26px;letter-spacing:.055em;margin:3px 0}h1 em{font-style:normal;col
 .preset .settings{display:none}.preset details{color:#b5c5e1;font-size:12px}.preset details[open] .settings{display:flex;margin-top:9px}
 @keyframes galleryPulse{to{transform:scale(1.065);filter:brightness(1.2)}}@keyframes galleryTurn{to{transform:rotate(360deg)}}@keyframes galleryCounterTurn{to{transform:rotate(-360deg)}}@keyframes galleryBurst{50%{transform:scale(1.16);filter:brightness(1.35)}}
 @media(prefers-reduced-motion:reduce){.preview *{animation:none!important}}
+.exact-preview{height:185px;background:#080f1f;display:block}.effect-frame{width:100%;height:100%;border:0;display:block;pointer-events:none}.exact-preview:focus-within{outline:2px solid #7d9dff}
 </style></head>
 <body><div class="wrap"><header><div><div class="tag">CORE EFFECTS / VISUAL GALLERY · BROWSER SAVES</div><h1>TIRA! — EFFECTS GALLERY</h1><div class="muted">Preview saved Core designs and build Core 1–6 sets.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
 <div class="toolbar"><input id="search" type="search" placeholder="Search saved effects" aria-label="Search saved effects"><button id="export">Export library</button><button id="import">Import library</button><input id="file" type="file" accept=".json,application/json" hidden></div>
@@ -73,12 +74,8 @@ function render(){renderPublished();
   const edit=document.createElement('button');edit.textContent='Open in Effects Lab';edit.onclick=()=>{try{localStorage.setItem(pending,JSON.stringify(p));location.href='./effects-lab.html';}catch(e){status('Could not hand off preset. Export the library as backup.');}};
   const rename=document.createElement('button');rename.textContent='Rename';rename.onclick=()=>{const next=prompt('Rename preset',p.name);if(next===null)return;if(!next.trim())return status('Name cannot be empty.');p.name=next.trim().slice(0,70);persist();render();};
   const del=document.createElement('button');del.textContent='Delete';del.onclick=()=>{if(!confirm('Delete "'+p.name+'"?'))return;data=data.filter(x=>x!==p);persist();render();fillSlotChoices();status('Preset deleted.');};
-  const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
-  const orb=document.createElement('div');orb.className='preview-orb';
-  const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
-  orb.append(digit);preview.append(orb);
-  const previewCaption=document.createElement('span');previewCaption.className='preview-caption';previewCaption.textContent='Gallery illustration · Open in Effects Lab for exact animation';
-  preview.append(previewCaption);preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
+  const preview=document.createElement('div');preview.className='preview exact-preview';
+  preview.append(makeRealPreview(p));
   details.append(settings);
   actions.append(edit,rename,del);card.append(preview,type,title,sub,details,actions);list.append(card);
  }
@@ -95,15 +92,13 @@ async function loadPublished(){
  }catch(e){published=[];$('publishedStatus').textContent='Could not load published designs ('+e.message+'). Local drafts are unaffected.';}
  renderPublished();
 }
-function makeGalleryPreview(p){
- const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
- const orb=document.createElement('div');orb.className='preview-orb';
- const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
- orb.append(digit);preview.append(orb);
- const caption=document.createElement('span');caption.className='preview-caption';caption.textContent='Illustrated preview · open in Effects Lab for original animation';preview.append(caption);
- preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
- return preview;
+function makeRealPreview(p){
+ const frame=document.createElement('iframe');frame.className='effect-frame';frame.title='Actual Effects Lab preview: '+p.name;frame.loading='lazy';frame.setAttribute('sandbox','allow-scripts allow-same-origin');frame.referrerPolicy='same-origin';
+ frame.src='./effects-lab.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify({mode:p.mode,effect:p.effect,settings:p.settings}));
+ return frame;
 }
+function makeGalleryPreview(p){const preview=document.createElement('div');preview.className='preview exact-preview';preview.append(makeRealPreview(p));return preview;}
+
 function renderPublished(){
  const list=$('publishedList');list.replaceChildren();const query=$('search').value.trim().toLowerCase();
  const shown=published.filter(p=>(p.name+' '+(p.mode?explosions:effects)[p.effect-1]).toLowerCase().includes(query));
