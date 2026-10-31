@@ -58,7 +58,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
    The warning mark deliberately projects beyond its circular cell; visual preview only. */
 .card.emergency .orb.emergency-symbol{position:relative;display:block;width:clamp(62px,11vw,104px);height:auto;aspect-ratio:1;border-radius:50%;clip-path:none;overflow:visible;border:0;background:radial-gradient(circle at 30% 22%,#ffd8df 0%,#f46a7e 23%,#c72e4c 53%,#88152e 83%,#550d22 100%);box-shadow:inset -7px -10px 15px #500b25aa,0 0 15px #e43b6655,0 6px 15px #18071299;text-shadow:none;isolation:isolate}
 .card.emergency .orb.emergency-symbol::before{content:"";position:absolute;inset:8% 12% 53% 13%;border-radius:50%;background:linear-gradient(160deg,#fff0f4aa,transparent);opacity:.8;pointer-events:none}
-.card.emergency .emergency-art{position:absolute;display:block;width:145%;height:155%;max-width:none;aspect-ratio:auto;left:-23%;top:-32%;overflow:visible;filter:drop-shadow(0 2px 1px #17080f88);pointer-events:none}
+.card.emergency .emergency-art{position:absolute;display:block;width:145%;height:155%;max-width:none;aspect-ratio:auto;left:-23%;top:-32%;overflow:visible;transform:scaleY(.88);transform-origin:50% 50%;filter:drop-shadow(0 2px 1px #17080f88);pointer-events:none}
 .card.emergency .card-main{gap:10px}
 @media(max-width:470px){.card.emergency .orb.emergency-symbol{width:clamp(60px,17vw,84px)}}
 
@@ -89,7 +89,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
   border-radius:0;font-size:clamp(29px,5vw,47px);
   background:radial-gradient(circle at 30% 22%,#e5ffff 0%,#93e8ed 23%,#30aabf 53%,#146477 83%,#083344 100%);
-  box-shadow:inset -7px -10px 15px #062c38aa,0 0 15px #45b9cb55,0 6px 15px #071c2699;
+  box-shadow:inset 0 -2px 5px #062c3866,0 0 7px #45b9cb33,0 2px 5px #071c2655;
 }
 .card.gold .draw-card-symbol{
   position:relative;z-index:1;flex:none;
