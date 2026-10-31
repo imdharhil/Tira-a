@@ -221,6 +221,25 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(max-width:470px){.card .pp-cost{top:6px;right:10px;width:20px;height:20px;font-size:18px}}
 @media(max-width:470px){.card[data-id="drawfree"] .pp-cost{width:auto;min-width:20px;font-size:18px}}
 @media(max-width:470px){.card[data-id="draw"] .pp-cost{right:6px}}
+
+/* Protect charge-count artwork previews: reuse the approved teal hexagon glyph, foil, and card shell. */
+.card.protect-card .orb.protect-cluster{
+  width:clamp(62px,11vw,104px);height:auto;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  background:transparent;border:0;border-radius:0;clip-path:none;
+  box-shadow:none;overflow:visible;
+}
+.card.protect-card .protect-gem{
+  flex:0 0 auto;display:grid;place-items:center;
+  width:48%;aspect-ratio:1;clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:radial-gradient(circle at 30% 22%,#e5ffff 0%,#93e8ed 23%,#30aabf 53%,#146477 83%,#083344 100%);
+  color:#e9feff;font-size:clamp(18px,3vw,29px);font-weight:900;line-height:1;
+  -webkit-text-stroke:1px #103d4b;text-shadow:0 1px 0 #092e3c88,0 0 5px #e1ffff85;
+  filter:drop-shadow(0 2px 3px #071c2677);
+}
+.card.protect-card .protect-cluster-3{flex-wrap:wrap;align-content:center;column-gap:5px;row-gap:1px}
+.card.protect-card .protect-cluster-3 .protect-gem{width:43%}
+.card.protect-card .protect-cluster-3 .protect-gem:last-child{margin:-4px 22% 0}
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 </head>
@@ -240,6 +259,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 <button class="card cell regular-red" type="button" data-id="redcell4" aria-pressed="false"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+4</span><small class="card-name">CELL</small></span></button>
 <button class="card gold" type="button" data-id="gold" aria-pressed="false"><span class="pp-cost" aria-label="10 PP cost">10</span><span class="card-main"><span class="orb" aria-hidden="true">+4</span><small class="card-name">CELL</small></span></button>
 <button class="card protect-card" type="button" data-id="protect" aria-pressed="false"><span class="pp-cost" aria-label="12 PP recharge cost">12</span><span class="protect-holo-underlay" aria-hidden="true"></span><span class="protect-hex-glass-top" aria-hidden="true"></span><span class="card-main"><span class="orb protect-hex" aria-hidden="true">⬡</span><small class="card-name">PROTECT</small></span></button>
+<button class="card protect-card" type="button" data-id="protect2" aria-pressed="false" aria-label="Protect with 2 stored charges"><span class="pp-cost" aria-label="12 PP recharge cost">12</span><span class="protect-holo-underlay" aria-hidden="true"></span><span class="protect-hex-glass-top" aria-hidden="true"></span><span class="card-main"><span class="orb protect-cluster protect-cluster-2" aria-hidden="true"><span class="protect-gem">⬡</span><span class="protect-gem">⬡</span></span><small class="card-name">PROTECT</small></span></button>
+<button class="card protect-card" type="button" data-id="protect3" aria-pressed="false" aria-label="Protect with 3 stored charges"><span class="pp-cost" aria-label="12 PP recharge cost">12</span><span class="protect-holo-underlay" aria-hidden="true"></span><span class="protect-hex-glass-top" aria-hidden="true"></span><span class="card-main"><span class="orb protect-cluster protect-cluster-3" aria-hidden="true"><span class="protect-gem">⬡</span><span class="protect-gem">⬡</span><span class="protect-gem">⬡</span></span><small class="card-name">PROTECT</small></span></button>
 <button class="card gold" type="button" data-id="draw" aria-pressed="false"><span class="pp-cost" aria-label="5 PP cost">5</span><span class="card-main"><span class="orb draw-glyph" aria-hidden="true"><span class="draw-card-symbol"></span></span><small class="card-name">DRAW CARD</small></span></button>
 <button class="card gold" type="button" data-id="drawfree" aria-pressed="false"><span class="pp-cost" aria-label="Free draw when holding three +1 cards">FREE</span><span class="card-main"><span class="orb draw-glyph" aria-hidden="true"><span class="draw-card-symbol"></span></span><small class="card-name">DRAW CARD</small></span></button>
 <button class="card emergency" type="button" data-id="emergency" aria-pressed="false"><span class="card-main"><span class="orb emergency-symbol" aria-hidden="true"><svg class="emergency-art" viewBox="0 0 140 150" xmlns="http://www.w3.org/2000/svg" focusable="false"><defs><linearGradient id="tiraEmergencyExclamation" x1="0" x2=".82" y1="0" y2="1" objectBoundingBox="true"><stop offset="0" stop-color="#ffccd1"/><stop offset=".25" stop-color="#ff8c9b"/><stop offset=".56" stop-color="#f34763"/><stop offset="1" stop-color="#a91938"/></linearGradient><linearGradient id="tiraEmergencySheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff9f5" stop-opacity=".62"/><stop offset=".45" stop-color="#ffdce0" stop-opacity=".14"/><stop offset="1" stop-color="#ffe2e6" stop-opacity="0"/></linearGradient></defs><g transform="translate(1 0) rotate(20 70 75)" stroke="#260e18" stroke-width="5.5" stroke-linejoin="round"><path d="M47 7 Q47 4 51 4 H91 Q95 4 94 9 L86 100 Q85 105 80 105 H60 Q55 105 56 100 Z" fill="url(#tiraEmergencyExclamation)"/><path d="M51 10 H67 L62 94 H58 Z" fill="url(#tiraEmergencySheen)" stroke="none"/><path d="M57 116 Q57 112 61 112 H81 Q85 112 85 116 V143 Q85 147 81 147 H59 Q55 147 55 143 Z" fill="url(#tiraEmergencyExclamation)"/><path d="M60 117 H69 L60 141 Z" fill="url(#tiraEmergencySheen)" stroke="none"/></g></svg></span><small class="card-name">EMERGENCY</small></span></button>
@@ -263,6 +284,8 @@ redcell3:{name:'CELL',description:'Regular red visual variant of Cell 3. This Ca
 redcell4:{name:'CELL',description:'Regular red visual variant of Cell 4. This Card Library preview does not introduce a new card type or match rule.',effect:'+4 Cell Card (red art preview)',cost:'Visual preview only',turn:'Not a separate playable card',cooldown:'No new gameplay behavior',status:'Design preview · not separately playable',note:'Regular red visual variant, distinct from the Emergency card. This preview does not modify match gameplay.'},
 gold:{name:'CELL',description:'Spend 10 PP to fire a +4 attack.',effect:'Fire +4',cost:'10 PP',turn:'Uses your turn',cooldown:'5-turn cooldown',status:'Existing match card',note:'Preview matches the current Gold +4 card in play.'},
 protect:{name:'PROTECT',description:'Arm a shield that blocks the next incoming shot.',effect:'Block next shot',cost:'1 stored charge',turn:'Uses your turn',cooldown:'3 starting charges',status:'Existing match card',note:'Preview matches the current Protect card in play.'},
+protect2:{name:'PROTECT',description:'Visual preview of Protect with 2 stored charges. Two hexagons represent the charge count; this is not a separate card type.',effect:'2 stored Protect charges',cost:'12 PP per restored charge',turn:'Same Protect behavior',cooldown:'Charge capacity 3',status:'Design preview · charge-count artwork',note:'Reuses the original Protect card styling. The existing playable match tracks stored charges; no gameplay or balancing changes are included.'},
+protect3:{name:'PROTECT',description:'Visual preview of Protect with 3 stored charges. Three hexagons represent the charge count; this is not a separate card type.',effect:'3 stored Protect charges',cost:'12 PP per restored charge',turn:'Same Protect behavior',cooldown:'Charge capacity 3',status:'Design preview · charge-count artwork',note:'Reuses the original Protect card styling. The existing playable match tracks stored charges; no gameplay or balancing changes are included.'},
 emergency:{name:'EMERGENCY',description:'Hidden one-time rescue card. When no legal action is available, activate it to draw one free Cell Card; the opponent receives one ordinary Cell Card from an independent roll with the same emergency odds.',effect:'One free Cell Card each',cost:'0 PP',turn:'Emergency only',cooldown:'Once per player per match',status:'Proposed · not yet playable',note:'Only the activating player unlocks Emergency. Opponent receives a numerical card, not Emergency. Full-hand behavior and eligibility still require implementation verification.'}
 
 };
