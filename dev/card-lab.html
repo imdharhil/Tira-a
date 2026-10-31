@@ -200,6 +200,20 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .card.gold[aria-pressed="true"]::after{animation:tiraGoldFoilSweep 1.8s ease-out 1}
 @keyframes tiraGoldFoilSweep{0%{background-position:100% 50%}100%{background-position:0% 50%}}
 @media(prefers-reduced-motion:reduce){.card.gold[aria-pressed="true"]::after{animation:none}}
+
+/* PP cost only for cards with a documented standard PP activation cost.
+   Top-left to avoid the conversion indicator at top-right. */
+.card .pp-cost{
+  position:absolute;top:12px;left:11px;z-index:4;
+  padding:4px 6px;border-radius:7px;
+  border:1px solid #edce83a3;
+  color:#fff2ca;background:#3b2d1bcf;
+  font-size:clamp(9px,1.15vw,12px);font-weight:900;
+  line-height:1.1;letter-spacing:.02em;
+  box-shadow:inset 0 1px 0 #fff4c433,0 2px 5px #0006;
+  pointer-events:none;
+}
+@media(max-width:470px){.card .pp-cost{top:9px;left:8px;padding:3px 4px;font-size:9px}}
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 </head>
@@ -217,9 +231,9 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 <button class="card cell regular-red" type="button" data-id="redcell2" aria-pressed="false"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+2</span><small class="card-name">CELL</small></span></button>
 <button class="card cell regular-red" type="button" data-id="redcell3" aria-pressed="false"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+3</span><small class="card-name">CELL</small></span></button>
 <button class="card cell regular-red" type="button" data-id="redcell4" aria-pressed="false"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+4</span><small class="card-name">CELL</small></span></button>
-<button class="card gold" type="button" data-id="gold" aria-pressed="false"><span class="card-main"><span class="orb" aria-hidden="true">+4</span><small class="card-name">CELL</small></span></button>
+<button class="card gold" type="button" data-id="gold" aria-pressed="false"><span class="pp-cost" aria-label="10 PP cost">10 PP</span><span class="card-main"><span class="orb" aria-hidden="true">+4</span><small class="card-name">CELL</small></span></button>
 <button class="card protect-card" type="button" data-id="protect" aria-pressed="false"><span class="protect-holo-underlay" aria-hidden="true"></span><span class="protect-hex-glass-top" aria-hidden="true"></span><span class="card-main"><span class="orb protect-hex" aria-hidden="true">⬡</span><small class="card-name">PROTECT</small></span></button>
-<button class="card gold" type="button" data-id="draw" aria-pressed="false"><span class="card-main"><span class="orb draw-glyph" aria-hidden="true"><span class="draw-card-symbol"></span></span><small class="card-name">DRAW CARD</small></span></button>
+<button class="card gold" type="button" data-id="draw" aria-pressed="false"><span class="pp-cost" aria-label="5 PP cost">5 PP</span><span class="card-main"><span class="orb draw-glyph" aria-hidden="true"><span class="draw-card-symbol"></span></span><small class="card-name">DRAW CARD</small></span></button>
 <button class="card emergency" type="button" data-id="emergency" aria-pressed="false"><span class="card-main"><span class="orb emergency-symbol" aria-hidden="true"><svg class="emergency-art" viewBox="0 0 140 150" xmlns="http://www.w3.org/2000/svg" focusable="false"><defs><linearGradient id="tiraEmergencyExclamation" x1="0" x2=".82" y1="0" y2="1" objectBoundingBox="true"><stop offset="0" stop-color="#ffccd1"/><stop offset=".25" stop-color="#ff8c9b"/><stop offset=".56" stop-color="#f34763"/><stop offset="1" stop-color="#a91938"/></linearGradient><linearGradient id="tiraEmergencySheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff9f5" stop-opacity=".62"/><stop offset=".45" stop-color="#ffdce0" stop-opacity=".14"/><stop offset="1" stop-color="#ffe2e6" stop-opacity="0"/></linearGradient></defs><g transform="translate(1 0) rotate(20 70 75)" stroke="#260e18" stroke-width="5.5" stroke-linejoin="round"><path d="M47 7 Q47 4 51 4 H91 Q95 4 94 9 L86 100 Q85 105 80 105 H60 Q55 105 56 100 Z" fill="url(#tiraEmergencyExclamation)"/><path d="M51 10 H67 L62 94 H58 Z" fill="url(#tiraEmergencySheen)" stroke="none"/><path d="M57 116 Q57 112 61 112 H81 Q85 112 85 116 V143 Q85 147 81 147 H59 Q55 147 55 143 Z" fill="url(#tiraEmergencyExclamation)"/><path d="M60 117 H69 L60 141 Z" fill="url(#tiraEmergencySheen)" stroke="none"/></g></svg></span><small class="card-name">EMERGENCY</small></span></button>
 </div><p class="muted" style="margin:18px 0 0;font-size:13px">Select a card to inspect it. These previews use the same card styling as the match. Emergency is a design preview, not yet playable.</p>
 <div class="editor"><h2>Card Presentation Workspace</h2><div class="fields"><label class="field">Display name<input id="editName" maxlength="28" autocomplete="off"></label><label class="field">Short preview text<textarea id="editDescription" maxlength="300"></textarea></label></div><div class="actions"><button class="action primary" id="save" type="button">SAVE LOCAL DRAFT</button><button class="action" id="reset" type="button">RESET THIS CARD</button><button class="action" id="export" type="button">EXPORT DRAFTS</button></div><p id="editorStatus" class="muted" role="status" aria-live="polite">Design-only workspace. No rules or gameplay are changed.</p></div></section>
