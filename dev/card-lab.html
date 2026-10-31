@@ -222,24 +222,32 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(max-width:470px){.card[data-id="drawfree"] .pp-cost{width:auto;min-width:20px;font-size:18px}}
 @media(max-width:470px){.card[data-id="draw"] .pp-cost{right:6px}}
 
-/* Protect charge-count artwork previews: reuse the approved teal hexagon glyph, foil, and card shell. */
+/* Protect 2/3: solid stacked charges within the exact Protect 1 orb footprint.
+   Keep the card-wide holographic sweep; remove glow from charge pieces only. */
 .card.protect-card .orb.protect-cluster{
+  position:relative;
   width:clamp(62px,11vw,104px);height:auto;aspect-ratio:1;
-  display:flex;align-items:center;justify-content:center;gap:3px;
-  background:transparent;border:0;border-radius:0;clip-path:none;
-  box-shadow:none;overflow:visible;
+  display:block;overflow:hidden;isolation:isolate;
+  border:0;border-radius:0;clip-path:none;background:transparent;
+  box-shadow:none;text-shadow:none;
 }
 .card.protect-card .protect-gem{
-  flex:0 0 auto;display:grid;place-items:center;
-  width:48%;aspect-ratio:1;clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
-  background:radial-gradient(circle at 30% 22%,#e5ffff 0%,#93e8ed 23%,#30aabf 53%,#146477 83%,#083344 100%);
-  color:#e9feff;font-size:clamp(18px,3vw,29px);font-weight:900;line-height:1;
-  -webkit-text-stroke:1px #103d4b;text-shadow:0 1px 0 #092e3c88,0 0 5px #e1ffff85;
-  filter:drop-shadow(0 2px 3px #071c2677);
+  position:absolute;box-sizing:border-box;display:grid;place-items:center;
+  width:64%;height:auto;aspect-ratio:1;
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:linear-gradient(155deg,#8bdbe4 0%,#4baaba 34%,#247789 67%,#144657 100%);
+  color:#e6ffff;font-size:clamp(17px,3vw,31px);font-weight:900;line-height:1;
+  -webkit-text-stroke:1px #174a58;
+  text-shadow:none;box-shadow:none;filter:none;opacity:1;
 }
-.card.protect-card .protect-cluster-3{flex-wrap:wrap;align-content:center;column-gap:5px;row-gap:1px}
-.card.protect-card .protect-cluster-3 .protect-gem{width:43%}
-.card.protect-card .protect-cluster-3 .protect-gem:last-child{margin:-4px 22% 0}
+.card.protect-card .protect-gem::before,
+.card.protect-card .protect-gem::after{content:none}
+.card.protect-card .protect-cluster-2 .protect-gem:first-child{left:1%;top:17%;z-index:1}
+.card.protect-card .protect-cluster-2 .protect-gem:last-child{left:35%;top:17%;z-index:2}
+.card.protect-card .protect-cluster-3 .protect-gem{width:57%}
+.card.protect-card .protect-cluster-3 .protect-gem:nth-child(1){left:0;top:5%;z-index:1}
+.card.protect-card .protect-cluster-3 .protect-gem:nth-child(2){left:43%;top:5%;z-index:1}
+.card.protect-card .protect-cluster-3 .protect-gem:nth-child(3){left:21.5%;top:37%;z-index:2}
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 </head>
