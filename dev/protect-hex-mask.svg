@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 94 81" width="94" height="81">
-<g fill="#fff">
+<defs><mask id="gaps" maskUnits="userSpaceOnUse" x="0" y="0" width="94" height="81" style="mask-type:luminance"><rect width="94" height="81" fill="white"/><g fill="black">
 <path d="M0 -23 19.9 -11.5 19.9 11.5 0 23 -19.9 11.5 -19.9 -11.5Z"/>
 <path d="M47 -23 66.9 -11.5 66.9 11.5 47 23 27.1 11.5 27.1 -11.5Z"/>
 <path d="M94 -23 113.9 -11.5 113.9 11.5 94 23 74.1 11.5 74.1 -11.5Z"/>
@@ -8,4 +8,6 @@
 <path d="M0 58 19.9 69.5 19.9 92.5 0 104 -19.9 92.5 -19.9 69.5Z"/>
 <path d="M47 58 66.9 69.5 66.9 92.5 47 104 27.1 92.5 27.1 69.5Z"/>
 <path d="M94 58 113.9 69.5 113.9 92.5 94 104 74.1 92.5 74.1 69.5Z"/>
-</g></svg>
+</g></mask></defs>
+<rect width="94" height="81" fill="white" mask="url(#gaps)"/>
+</svg>
