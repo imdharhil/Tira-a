@@ -222,32 +222,36 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(max-width:470px){.card[data-id="drawfree"] .pp-cost{width:auto;min-width:20px;font-size:18px}}
 @media(max-width:470px){.card[data-id="draw"] .pp-cost{right:6px}}
 
-/* Protect charge artwork: reuse Protect 1's exact orb and glyph styling.
-   Only the library-specific grouping geometry differs. */
-.card.protect-card .protect-cluster{
-  display:grid;grid-template-columns:repeat(2,57px);
-  justify-content:center;justify-items:center;align-items:center;
-  column-gap:2px;row-gap:0;
-  width:116px;max-width:none;margin:auto;
+/* Card Library Protect artwork: one identical responsive icon size for all charges.
+   Container units prevent two full-size icons from overflowing narrow cards. */
+.card.protect-card{
+  container-type:inline-size;
+  --protect-icon-size:min(57px, calc((100cqw - 18px)/2));
 }
+.card.protect-card .card-main>.orb.protect-hex,
 .card.protect-card .protect-cluster .orb.protect-hex{
-  box-sizing:border-box;flex:none;
-  width:57px;height:57px;min-width:57px;min-height:57px;
+  box-sizing:border-box;
+  width:var(--protect-icon-size);
+  height:var(--protect-icon-size);
+  min-width:0;min-height:0;flex:none;
   aspect-ratio:1;
+  font-size:calc(38 * var(--protect-icon-size) / 57);
+}
+.card.protect-card .protect-cluster{
+  display:grid;
+  grid-template-columns:repeat(2,var(--protect-icon-size));
+  column-gap:2px;row-gap:0;
+  width:calc(2 * var(--protect-icon-size) + 2px);
+  max-width:100%;
+  margin:0 auto;
+  justify-content:center;justify-items:center;align-items:center;
 }
 .card.protect-card .protect-cluster-3 .orb.protect-hex:last-child{
-  grid-column:1 / -1;justify-self:center;width:57px;
+  grid-column:1 / -1;
+  justify-self:center;
+  margin-top:calc(-0.28 * var(--protect-icon-size));
 }
-/* The three original-size gems form a compact triangle; no shrinking. */
-.card.protect-card .protect-cluster-3{row-gap:0}
-.card.protect-card .protect-cluster-3 .orb.protect-hex:last-child{
-  margin-top:-17px;
-}
-@media(max-width:470px){
-  .card.protect-card .protect-cluster .orb.protect-hex{
-    width:57px;height:57px;min-width:57px;min-height:57px;
-  }
-}
+
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 </head>
