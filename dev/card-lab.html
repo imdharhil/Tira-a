@@ -141,14 +141,11 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   box-shadow:0 2px 3px #39220b44;
 }
 .card.gold:is([data-id="draw"],[data-id="drawfree"]) .draw-card-symbol::after{
-  /* Reuse the earlier outlined draw-card motif as a print on the front card. */
-  content:"";position:absolute;box-sizing:border-box;
-  width:12px;height:16px;inset:7px auto auto 6px;
-  border:2px solid #8c5a20;border-radius:2px;
-  background:linear-gradient(145deg,#fff7dc,#e8bd60);
-  box-shadow:2px -3px 0 -1px #f8e3ad,2px -3px 0 1px #8c5a20;
-  transform:rotate(-4deg);
-  opacity:1;
+  /* Foil reflection on the existing front card, NOT a third card outline. */
+  content:"";position:absolute;pointer-events:none;
+  inset:3px 3px 3px 3px;border:0;border-radius:2px;
+  background:linear-gradient(128deg,#fffbea70 0%,#fffbea10 40%,transparent 41%,transparent 100%);
+  box-shadow:none;transform:none;opacity:.8;
 }
 
 /* Conversion indicator — regular numbered Cell Cards only.
