@@ -226,7 +226,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
    Preserve hexagon artwork and white symbol; Protect 1 stays untouched. */
 .card.protect-card:has(.protect-cluster){container-type:inline-size}
 .card.protect-card .protect-cluster{
-  --protect-size:76.66px;
+  --protect-size:min(76.66px, calc((100cqw - 14px) / 1.88));
   --protect-pitch:calc(var(--protect-size) * 0.94);
   position:relative;
   display:grid;
@@ -249,8 +249,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 .card.protect-card .protect-cluster .protect-symbol{
   display:grid;place-items:center;
-  width:49px;height:52px;
-  font-size:52px;line-height:1;
+  width:calc(var(--protect-size) * 0.639186);height:calc(var(--protect-size) * 0.67832);
+  font-size:calc(var(--protect-size) * 0.67832);line-height:1;
   color:inherit;
 }
 .card.protect-card .protect-cluster-3{
@@ -261,14 +261,6 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   justify-self:center;
   margin-top:calc(var(--protect-size) * -0.43);
   z-index:1;
-}
-/* Scale the complete 2/3-icon composition as one unit in narrow cards,
-   maintaining the 76.66px/49x52px original geometry at full width. */
-@container (max-width: 165px){
-  .card.protect-card .protect-cluster{
-    transform:scale(calc((100cqw - 14px) / 165));
-    transform-origin:center center;
-  }
 }
 
 </style>
