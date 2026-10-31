@@ -222,20 +222,23 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(max-width:470px){.card[data-id="drawfree"] .pp-cost{width:auto;min-width:20px;font-size:18px}}
 @media(max-width:470px){.card[data-id="draw"] .pp-cost{right:6px}}
 
-/* Protect 2/3 only: preserve original hexagon artwork and white symbol.
-   Full-size dimensions are 76.66px; narrow cards scale both uniformly. */
+/* Protect 2 and 3: screenshot-reference compact arrangement.
+   Preserve hexagon artwork and white symbol; Protect 1 stays untouched. */
 .card.protect-card:has(.protect-cluster){container-type:inline-size}
 .card.protect-card .protect-cluster{
-  --protect-size:min(76.66px, calc((100cqw - 18px)/2));
+  --protect-size:76.66px;
+  --protect-pitch:calc(var(--protect-size) * 0.94);
+  position:relative;
   display:grid;
-  grid-template-columns:repeat(2,var(--protect-size));
-  gap:2px;
-  width:calc(2 * var(--protect-size) + 2px);
-  max-width:100%;
-  margin:0 auto;
-  align-items:center;
+  grid-template-columns:repeat(2,var(--protect-pitch));
+  grid-template-rows:var(--protect-size);
   justify-content:center;
   justify-items:center;
+  align-items:start;
+  width:calc(2 * var(--protect-pitch));
+  height:var(--protect-size);
+  margin:0 auto;
+  overflow:visible;
 }
 .card.protect-card .protect-cluster .orb.protect-hex{
   box-sizing:border-box;
@@ -246,14 +249,26 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 .card.protect-card .protect-cluster .protect-symbol{
   display:grid;place-items:center;
-  width:calc(var(--protect-size) * 0.639186);
-  height:calc(var(--protect-size) * 0.67832);
-  font-size:calc(var(--protect-size) * 0.67832);
-  line-height:1;
+  width:49px;height:52px;
+  font-size:52px;line-height:1;
   color:inherit;
 }
+.card.protect-card .protect-cluster-3{
+  height:calc(var(--protect-size) * 1.55);
+}
 .card.protect-card .protect-cluster-3 .orb.protect-hex:last-child{
-  grid-column:1 / -1;justify-self:center;
+  grid-column:1 / -1;
+  justify-self:center;
+  margin-top:calc(var(--protect-size) * -0.43);
+  z-index:1;
+}
+/* Scale the complete 2/3-icon composition as one unit in narrow cards,
+   maintaining the 76.66px/49x52px original geometry at full width. */
+@container (max-width: 165px){
+  .card.protect-card .protect-cluster{
+    transform:scale(calc((100cqw - 14px) / 165));
+    transform-origin:center center;
+  }
 }
 
 </style>
