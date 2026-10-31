@@ -9,12 +9,12 @@
   position:absolute;inset:0;border-radius:inherit;pointer-events:none;
 }
 .card.protect-card .protect-holo-underlay{
-  z-index:1;opacity:.15;
+  z-index:1;opacity:0;
   background:linear-gradient(108deg,transparent 22%,#baffff0a 35%,#bcffff72 49%,#b5afff4a 53%,#64eeee36 63%,transparent 78%);
   background-size:270% 100%;background-position:100% 50%;
 }
 .card.protect-card .protect-hex-glass-top{
-  z-index:2;opacity:.19;
+  z-index:2;opacity:0;
   background:linear-gradient(145deg,#eaffff78,#76dbe822 42%,#ada8ff38 70%,#eaffff2e);
   -webkit-mask-image:url("./protect-hex-mask.svg");
   mask-image:url("./protect-hex-mask.svg");
@@ -25,11 +25,17 @@
 }
 .card.protect-card .card-main{position:relative;z-index:3}
 .card.protect-card[aria-pressed="true"] .protect-holo-underlay{
-  opacity:.66;animation:tiraProtectFullCardHolo 1.65s ease-out 1;
+  opacity:.48;animation:tiraProtectFullCardHolo 1.65s ease-out 1;
 }
-.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{opacity:.37}
+.card.protect-card[aria-pressed="true"] .protect-hex-glass-top{opacity:.28}
 @keyframes tiraProtectFullCardHolo{from{background-position:100% 50%}to{background-position:0% 50%}}
 @media(prefers-reduced-motion:reduce){
   .card.protect-card[aria-pressed="true"] .protect-holo-underlay{animation:none}
   .card.protect-card .protect-hex-glass-top{transition:none}
 }
+
+/* Preserve the solid portrait card and clear edge above any activation pattern. */
+.card.protect-card{overflow:hidden;background:linear-gradient(145deg,#19445b,#102b40 80%)}
+.card.protect-card::before{z-index:5;pointer-events:none}
+.card.protect-card .protect-hex-glass-top{background:linear-gradient(145deg,#c6faff55,#77dce722 42%,#8fc6f533 70%,#eaffff1b)}
+.card.protect-card .card-main{z-index:4}
