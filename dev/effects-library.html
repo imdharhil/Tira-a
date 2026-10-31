@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELL//CORE — Effects Library</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TIRA! — Effects Gallery</title><style>
 :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%)}
 .wrap{max-width:1120px;margin:auto;padding:26px}header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
@@ -17,14 +17,29 @@ h1{font-size:26px;letter-spacing:.055em;margin:3px 0}h1 em{font-style:normal;col
 .set-slot label{font-weight:700;font-size:13px}.set-slot select,.set-builder input{min-width:0;width:100%;background:#0a1526;color:#e9f4ff;border:1px solid #426180;border-radius:8px;padding:10px;font:inherit}
 .set-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.set-info{color:#aec9e0;font-size:12px;margin:8px 0}
 @media(max-width:750px){.set-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.set-grid{grid-template-columns:1fr}}
+
+/* Gallery previews are lightweight visual representations, not the Effects Lab renderer. */
+.preview{height:174px;border-radius:12px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 50%,#273e64,#080e1b 64%);display:grid;place-items:center;isolation:isolate}
+.preview-orb{height:116px;width:116px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 34% 25%,hsl(var(--hue) 95% 75%),hsl(var(--hue) 75% 43%) 48%,#08152d 83%);box-shadow:0 0 35px hsl(var(--hue) 90% 60% / .4),inset -12px -16px 22px #060e2acc;animation:galleryPulse var(--duration) ease-in-out infinite alternate}
+.preview-orb::after{content:"";position:absolute;inset:-12px;border:2px solid hsl(var(--hue) 90% 65% / .45);border-radius:50%;box-shadow:0 0 23px hsl(var(--hue) 90% 60% / .3);animation:galleryTurn calc(var(--duration) * 1.4) linear infinite}
+.preview-number{position:relative;z-index:1;font-weight:900;font-size:27px;color:white;text-shadow:0 2px 9px #02091c}
+.preview.black-hole .preview-orb{background:radial-gradient(circle,#020408 0 32%,#080c1f 35%,#fff0bc 39%,#fa9c6d 43%,#4c67ed 52%,transparent 66%);box-shadow:0 0 36px #6e86ff77;animation:galleryTurn var(--duration) linear infinite}
+.preview.black-hole .preview-orb::after{inset:-16px;border:6px solid transparent;border-top-color:#e5bbfa9c;border-bottom-color:#7cd5ff7c;box-shadow:none}
+.preview.black-hole .preview-number{animation:galleryCounterTurn var(--duration) linear infinite}
+.preview.explosion .preview-orb{background:radial-gradient(circle,#fff6c9 0%,#e18c54 28%,#a7358e 55%,transparent 73%);animation:galleryBurst var(--duration) ease-in-out infinite}
+.preview.explosion .preview-orb::after{border-style:dashed}
+.preview-caption{position:absolute;bottom:8px;left:10px;font-size:10px;color:#a8bedf;letter-spacing:.04em}
+.preset .settings{display:none}.preset details{color:#b5c5e1;font-size:12px}.preset details[open] .settings{display:flex;margin-top:9px}
+@keyframes galleryPulse{to{transform:scale(1.065);filter:brightness(1.2)}}@keyframes galleryTurn{to{transform:rotate(360deg)}}@keyframes galleryCounterTurn{to{transform:rotate(-360deg)}}@keyframes galleryBurst{50%{transform:scale(1.16);filter:brightness(1.35)}}
+@media(prefers-reduced-motion:reduce){.preview *{animation:none!important}}
 </style></head>
-<body><div class="wrap"><header><div><div class="tag">SAVED CORE EFFECTS / LOCAL DESIGN LIBRARY</div><h1>CELL<em>//</em>CORE — EFFECTS LIBRARY</h1><div class="muted">A separate space for saved Effects Lab designs.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
+<body><div class="wrap"><header><div><div class="tag">CORE EFFECTS / VISUAL GALLERY · BROWSER SAVES</div><h1>TIRA! — EFFECTS GALLERY</h1><div class="muted">Preview saved Core designs and build Core 1–6 sets.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
 <div class="toolbar"><input id="search" type="search" placeholder="Search saved effects" aria-label="Search saved effects"><button id="export">Export library</button><button id="import">Import library</button><input id="file" type="file" accept=".json,application/json" hidden></div>
 <div class="message" id="status" role="status" aria-live="polite"></div><div id="count" class="muted" style="margin-bottom:12px"></div><div id="list" class="list"></div>
 <div class="sets-head"><h2>Core 1–6 Sets</h2><span class="muted">Assign one saved appearance to each Core value.</span></div>
 <div class="set-builder"><label for="setName">Set name</label><input id="setName" maxlength="70" placeholder="My Core Progression"><div id="setSlots" class="set-grid"></div><div class="set-actions"><button id="saveSet">Save six-value set</button><button id="clearSet">Clear slots</button><button id="exportSets">Export sets</button><button id="importSets">Import sets</button><input id="setFile" type="file" accept=".json,application/json" hidden></div><div class="set-info" id="setStatus" role="status" aria-live="polite"></div></div>
 <div class="list" id="savedSets"></div>
-<p class="muted" style="margin-top:22px">Presets use browser storage. Keep both HTML files in the same folder and open them in the same browser. Export JSON backups for portability; some browsers restrict local-file storage sharing.</p></div>
+<p class="muted" style="margin-top:22px">Saved presets and sets currently live in this browser only, not on the website server. Export JSON backups to preserve or transfer them. Publishing designs for all visitors requires a separate reviewed repository update or an authenticated storage service.</p></div>
 <script>
 (()=>{'use strict';
 const key='cellcore-effects-library-v1',pending='cellcore-effects-pending-load';
@@ -52,13 +67,20 @@ function render(){
   const type=document.createElement('span');type.className='pill';type.textContent=p.mode?'Explosion':'Appearance';
   const title=document.createElement('h3');title.textContent=p.name;
   const sub=document.createElement('small');sub.textContent=String(p.effect).padStart(2,'0')+' · '+(p.mode?explosions:effects)[p.effect-1];
-  const settings=document.createElement('div');settings.className='settings';
+  const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='View settings';details.append(summary);const settings=document.createElement('div');settings.className='settings';
   fields.forEach((k,i)=>{const chip=document.createElement('span');chip.textContent=labels[i]+': '+(k==='speed'?(p.settings[k]/100).toFixed(2)+'×':p.settings[k]);settings.append(chip);});
   const actions=document.createElement('div');actions.className='actions';
   const edit=document.createElement('button');edit.textContent='Open in Effects Lab';edit.onclick=()=>{try{localStorage.setItem(pending,JSON.stringify(p));location.href='./effects-lab.html';}catch(e){status('Could not hand off preset. Export the library as backup.');}};
   const rename=document.createElement('button');rename.textContent='Rename';rename.onclick=()=>{const next=prompt('Rename preset',p.name);if(next===null)return;if(!next.trim())return status('Name cannot be empty.');p.name=next.trim().slice(0,70);persist();render();};
   const del=document.createElement('button');del.textContent='Delete';del.onclick=()=>{if(!confirm('Delete "'+p.name+'"?'))return;data=data.filter(x=>x!==p);persist();render();fillSlotChoices();status('Preset deleted.');};
-  actions.append(edit,rename,del);card.append(type,title,sub,settings,actions);list.append(card);
+  const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
+  const orb=document.createElement('div');orb.className='preview-orb';
+  const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
+  orb.append(digit);preview.append(orb);
+  const previewCaption=document.createElement('span');previewCaption.className='preview-caption';previewCaption.textContent='Gallery illustration · Open in Effects Lab for exact animation';
+  preview.append(previewCaption);preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
+  details.append(settings);
+  actions.append(edit,rename,del);card.append(preview,type,title,sub,details,actions);list.append(card);
  }
 }
 $('search').oninput=render;
