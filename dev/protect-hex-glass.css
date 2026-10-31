@@ -1,0 +1,31 @@
+/* TIRA! Protect Card — standalone hex-glass overlay candidate.
+   HTML dependency: existing .card.protect-card with .card-main child.
+   No JavaScript, gameplay or additional image files required.
+   Hexagons are translucent glass panels; the spaces between stay clear. */
+.card.protect-card{isolation:isolate}
+.card.protect-card::after{
+  content:"";display:block;position:absolute;z-index:1;
+  inset:11px;width:auto;height:auto;top:11px;left:11px;
+  border-radius:8px;pointer-events:none;
+  background-image:
+    linear-gradient(108deg,transparent 32%,rgba(179,255,252,.02) 42%,rgba(208,255,252,.46) 50%,rgba(117,237,242,.04) 57%,transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='92' viewBox='0 0 80 92'%3E%3Cpolygon points='20,3 37,13 37,33 20,43 3,33 3,13' fill='%2382e7ee' fill-opacity='.12' stroke='%23c5ffff' stroke-opacity='.30' stroke-width='1.1'/%3E%3Cpolygon points='60,26 77,36 77,56 60,66 43,56 43,36' fill='%2350b9d9' fill-opacity='.19' stroke='%23cbffff' stroke-opacity='.40' stroke-width='1.1'/%3E%3Cpolygon points='20,49 37,59 37,79 20,89 3,79 3,59' fill='%23c4fffa' fill-opacity='.09' stroke='%23c5ffff' stroke-opacity='.30' stroke-width='1.1'/%3E%3C/svg%3E");
+  background-size:240% 100%,80px 92px;
+  background-position:100% 50%,center center;
+  background-repeat:no-repeat,repeat;
+  opacity:.72;
+  -webkit-mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.30) 0%,#000 77%);
+  mask-image:radial-gradient(ellipse at center,rgba(0,0,0,.30) 0%,#000 77%);
+}
+.card.protect-card .card-main{position:relative;z-index:2}
+.card.protect-card[aria-pressed="true"]::after{
+  opacity:.92;
+  animation:tiraProtectHexGlassSweep 1.65s ease-out 1;
+}
+@keyframes tiraProtectHexGlassSweep{
+  from{background-position:100% 50%,center center}
+  to{background-position:0% 50%,center center}
+}
+@media(prefers-reduced-motion:reduce){
+  .card.protect-card[aria-pressed="true"]::after{animation:none}
+}
