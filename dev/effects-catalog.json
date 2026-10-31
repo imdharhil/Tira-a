@@ -79,11 +79,11 @@
       "mode": 0,
       "effect": 13,
       "settings": {
-        "value": 25,
-        "speed": 300,
+        "value": 23,
+        "speed": 88,
         "urgency": 100,
         "inst": 100,
-        "move": 90,
+        "move": 100,
         "follow": 100
       }
     }
