@@ -150,6 +150,101 @@ html[data-motion=off] .card.selected{transform:none}
 @media(max-width:650px){#game .protect-card .protect-duplicates{width:min(100%,106px);height:96px}#game .protect-card .protect-duplicates .protect-hex{width:52px;height:52px}#game .protect-card .protect-duplicates.count-2 .protect-hex{top:22px}#game .protect-card .protect-duplicates.count-3 .protect-hex:nth-child(3){top:43px}}
 .emergency-card small{color:#ffacb5!important}
 @media(max-width:470px){.emergency-card .orb.emergency-symbol{width:clamp(60px,17vw,84px)}}
+</style><style id="tira-public-card-library-visual-v1">
+/* Approved Card Library art for the PUBLIC root match (not /dev).
+   Match logic, 6-slot structure, existing charge overlays and click targets unchanged. */
+#game .cards .card:not(.emergency-card){
+  background:linear-gradient(145deg,#153a56,#10273b 55%,#0a1b2c);
+  border-color:#2c526d;border-radius:13px;
+  box-shadow:inset 0 1px 0 #7bbce42e,0 9px 24px #0005
+}
+#game .cards .card:not(.emergency-card)::before{border-color:#70bce51c}
+#game .cards .card .card-main{position:relative;z-index:2}
+#game .cards .card:not(.emergency-card) .card-main>.orb{
+  position:relative;isolation:isolate;display:grid;place-items:center;
+  width:min(76px,86%);height:auto;aspect-ratio:1;flex-shrink:0;
+  border:0;border-radius:50%;clip-path:none;font-size:clamp(22px,3vw,33px);
+  font-weight:900;line-height:1;color:#fff;
+  background:radial-gradient(circle at 30% 22%,#e0faff,#76d9ff 23%,#278cdb 53%,#12539f 83%,#082b61);
+  box-shadow:inset -7px -10px 15px #072850aa,0 0 15px #279efa55,0 6px 15px #07162c99;
+  -webkit-text-stroke:1.4px #152334;paint-order:stroke fill;
+  text-shadow:0 2px 0 #07182b88,0 0 7px #f8ffff77
+}
+#game .cards .card:not(.emergency-card) .card-main>.orb::before{
+  content:"";position:absolute;inset:8% 12% 53% 13%;z-index:-1;
+  border-radius:50%;background:linear-gradient(160deg,#ffffffb3,transparent);
+  opacity:.7;pointer-events:none
+}
+#game .cards .card.gold{
+  border-color:#c29a4c;
+  background:linear-gradient(150deg,#7b612e,#47371f 13%,#30271c 35%,#271f19 70%,#171514);
+  box-shadow:inset 0 1px 0 #ffe0a066,inset 0 0 0 1px #bb904433,0 9px 24px #0006
+}
+#game .cards .card.gold::before{border-color:#f6d38b85}
+#game .cards .card.gold::after{
+  content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(108deg,transparent 28%,#f6d88b09 42%,#fff1c337 50%,#f6d88b09 58%,transparent 73%);
+  background-size:230% 100%;background-position:100% 50%;opacity:.58
+}
+#game .cards .card.gold.selected::after{animation:tiraPublicGoldSweep 1.8s ease-out 1}
+@keyframes tiraPublicGoldSweep{from{background-position:100% 50%}to{background-position:0% 50%}}
+#game .cards .card.gold .card-main>.orb{
+  background:radial-gradient(circle at 30% 22%,#fff8db,#ffe09a 23%,#dfac43 53%,#9c651b 83%,#55360f);
+  box-shadow:inset -7px -10px 15px #593708aa,0 0 15px #e5b34855,0 6px 15px #2b180899;
+  -webkit-text-stroke:1.4px #493015
+}
+#game .cards .card.gold .draw-card-symbol{
+  position:relative;z-index:1;box-sizing:border-box;display:block;
+  width:29px;height:37px;border:3px solid #50330f;border-radius:5px;
+  transform:translate(-3px,3px) rotate(-7deg);
+  background:linear-gradient(145deg,#fff9e8,#f3d58b 40%,#d89d36);
+  box-shadow:inset 0 0 0 2px #fff2c9,0 2px 3px #39220b55;
+  filter:drop-shadow(0 1px 1px #55310e88)
+}
+#game .cards .card.gold .draw-card-symbol::before{
+  content:"";position:absolute;z-index:-1;inset:-8px -8px 7px 7px;
+  border:3px solid #50330f;border-radius:5px;
+  background:linear-gradient(150deg,#ffe8a4,#bb8027);box-shadow:0 2px 3px #39220b44
+}
+#game .cards .card.gold .draw-card-symbol::after{
+  content:"";position:absolute;pointer-events:none;inset:3px;border:0;border-radius:2px;
+  background:linear-gradient(128deg,#fffbea70,#fffbea10 40%,transparent 41%);box-shadow:none
+}
+#game .cards .card.protect-card{
+  background:linear-gradient(145deg,#19445b,#102b40 80%);border-color:#4682a2
+}
+/* Protect stock uses existing live charge-count DOM; preserve count and opacity semantics. */
+#game .cards .protect-card .protect-stock-icon.orb.protect-hex{
+  background:radial-gradient(circle at 30% 22%,#e5ffff,#93e8ed 23%,#30aabf 53%,#146477 83%,#083344);
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  border-radius:0;box-shadow:inset 0 -2px 5px #062c3866,0 2px 5px #071c2655;
+  filter:none;-webkit-text-stroke:1.4px #103d4b;
+  text-shadow:0 2px 0 #092e3c88,0 0 7px #e1ffff85
+}
+#game .cards .protect-card .protect-stock-icon.orb.protect-hex::before{display:none;content:none}
+#game .cards .protect-card .protect-centered-glyph{font-size:.52em;transform:none}
+#game .cards .card .card-top-action,
+#game .cards .card.selected .card-top-action{
+  top:6px;right:6px;border:0;border-radius:0;background:transparent;
+  color:#fff0bd;-webkit-text-stroke:.75px #35230e;paint-order:stroke fill;
+  box-shadow:none;text-shadow:0 1px 2px #1a1208,0 0 5px #bd8f3a66;
+  font-size:20px;font-weight:900;line-height:1
+}
+#game .cards .card .card-top-action.gold-action{border:0;background:transparent;color:#fff0bd}
+#game .cards .protect-card .card-top-action{color:#dcfaff;-webkit-text-stroke:.75px #123648}
+#game .cards .card:nth-child(-n+3) .card-top-action{
+  color:transparent;-webkit-text-stroke:0;font-size:0;
+  background-image:url("data:image/webp;base64,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");background-position:center;background-size:23px 23px;background-repeat:no-repeat;
+  filter:drop-shadow(0 1px 1px #071b2f)
+}
+#game .cards .card:nth-child(6) .draw-price{font-size:18px;width:auto;min-width:27px}
+#game .cards .card:nth-child(6) .draw-price:not(:empty){white-space:nowrap}
+#game .cards .card:not(.emergency-card) .card-main>small{font-size:10px;letter-spacing:.07em;font-weight:800;color:#a8c6db}
+@media(max-width:650px){
+  #game .cards .card:not(.emergency-card) .card-main>.orb{width:min(62px,80%)}
+  #game .cards .card:nth-child(6) .draw-price{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){#game .cards .card.gold.selected::after{animation:none}}
 </style></head><body><main id="game"><div class="stage"><div class="top"><div id="topPieces" class="piece-header" aria-label="Your PP">PP <strong>0</strong></div><div class="msg" id="message">YOUR TURN</div><div class="meta"><span class="red opponent-status" id="redState">COMPUTER</span></div></div><div class="opponent-hand" aria-label="Opponent face-down card edges"><div class="opponent-card-back"></div><div class="opponent-card-back"></div><div class="opponent-card-back"></div><div class="opponent-card-back"></div><div class="opponent-card-back"></div><div class="opponent-card-back"></div></div><canvas id="arena" aria-label="Shared Core ITIRA! (firing) arena"></canvas><div class="shot-number-notice" id="shotNumberNotice" aria-hidden="true"></div></div><div class="cards" id="cards"></div><div class="controls"><button class="action" id="fire" title="ITIRA! (firing)" aria-label="ITIRA! (firing)">ITIRA!</button></div><div class="hint" id="hint">Choose a card, then use ITIRA! (firing), or spend a turn preparing a Protect.</div></main>
 <div class="screen hidden" id="menu"><div class="panel"><h2>PAUSED</h2><p>Return to your match or go back to TIRA! Home.</p><button class="menuBtn primary" id="continueGame">▶ RESUME GAME</button><button class="menuBtn" id="settingsBtn">⚙ IN-MATCH SETTINGS</button><button class="menuBtn" id="homeBtn">EXIT TO TIRA! HOME</button><details class="dev-disclosure" hidden><summary>DEVELOPER TOOLS</summary><button class="menuBtn" id="debugBtn">COMBAT DEBUG LOG</button><section id="buildInfo" aria-label="Build information" style="margin:16px 0;padding:12px;border:1px solid #32536a;border-radius:10px;text-align:left;font-size:12px;line-height:1.6"><strong>BUILD INFORMATION · DEVELOPMENT</strong><div>Build: <code>dev-20261019-haptic-trial-27</code></div><div>Loaded file fingerprint: <code id="buildFingerprint">calculating…</code></div><div>Build changes:</div><ul style="margin:4px 0 0;padding-left:20px"><li>Core remains steady at zero; shaking grows progressively from 1 through the winning threshold.</li><li>Core number follows 28% of Core displacement, rounded to whole pixels for crisp readability.</li><li>Added on-page build identification and changelog.</li><li>Opponent Cell Pieces are hidden from the play screen; internal AI resources are unchanged.</li><li>Turn indicator displays YOUR TURN or the current opponent name + TURN, without turn numbers.</li><li>Removed redundant active-Protect shield emoji from player status labels; existing Protect visual effects and mechanics remain intact.</li><li>Numerical Cell Cards can now be converted to equal Cell Pieces without ending the turn.</li><li>Cell Piece counter updates after conversion and destruction. Every 12 pieces automatically restores one stored Protect if capacity allows.</li><li>Protect displays its 12-piece restoration threshold. Gold +4 still uses the existing Gold inventory; its Cell Piece price is not defined.</li><li>Gold +4 now costs 10 match Cell Pieces each use; prior win-based Gold inventory removed from gameplay.</li><li>Gold shows a 10-piece cost badge, Protect shows a 12-piece restoration indicator.</li><li>Core overload now triggers Fusion Pop (#06) with EQ −11/−11/−11 dB and +15 dB boost.</li><li>Dev combat SFX: Graviton Shot on ITIRA! (firing), Heavy Cell Hit on impact, Core Shutdown when Protect blocks, with independent EQ and boost profiles.</li><li>Core gameplay Shake mixer trial: Core Wobble (#06) 70% + Rising Pressure (#05) 40%, softness 100%, EQ +1/−11/−3 dB, booster +3 dB, default loudness 25%; charge speeds 0/11.50/5.45/8.20/9.25/6.90/12.00 Hz.</li><li>Previous Critical Warning gameplay trial: EQ bass +4 dB, mid −5 dB, high +12 dB, boost +13 dB; 60% softness; speeds 0, 2.80, 5.45, 8.20, 9.25, 10.50, 12.00 Hz; loudness default 65%.</li><li>Gameplay Settings now include a browser-saved Core Shake Loudness control (0–100%, default 65%).</li><li>Core zero sound attempts to start when gameplay opens; Safari autoplay blocking shows a one-tap Enable Core Sound control.</li><li>Core now has Critical Warning audio with per-charge speed and softness, plus a stable hum at zero. Started after gameplay interaction.</li><li>Discarded bonus Cell Cards and Cell Cards replaced in bonus swaps now award their face value as Cell Pieces, without extra draws.</li><li>Core arithmetic now preserves the actual sum (for example 3+4=7 and 5+4=9), while reaching or exceeding the target still wins.</li><li>Corrected Cell Pieces: earn only for opponent cells destroyed, never for adding friendly cells; blocked shots earn zero.</li><li>Cards changed to upright portrait proportions with clearer card framing.</li><li>Card control redesign: convert via top-right refresh icons with confirmation and no free replacement card; Gold/Protect costs are tappable badges.</li><li>ITIRA! button moved above cards, card styling refined, and empty converted slots cannot be used for ITIRA!.</li><li>Fixed JavaScript syntax that stopped shot resolution and gameplay.</li><li>Separated Dev home and game into two pages; match starts in the game page.</li><li>Moved Cell Piece count into the top-left HUD and removed duplicate title and Core status text.</li><li>Six card slots: three Cell Cards, Gold +4, Protect, and Coming Soon.</li><li>Convert Cell Cards to pieces using actions inside their slots; restore Protect manually inside its slot for 12 pieces, without ending a turn.</li></ul><small>Fingerprint identifies the HTML loaded in this browser, not a Git commit or deployment time.</small></section></details><details class="dev-disclosure"><summary>LOCAL MATCH RECORD</summary><p id="record">Wins 0 · Losses 0</p><p class="muted">Saved in this browser. Profile integration is planned.</p></details></div></div>
 <div class="screen hidden" id="settingsScreen"><div class="panel"><h2>IN-MATCH SETTINGS</h2><div class="option"><label>Background Music</label><button class="smallbtn" id="musicToggle" type="button" aria-pressed="false" title="Background music at 10% volume">♪ OFF</button></div><div class="option"><label for="coreShakeEnabled">Core shaking</label><input type="checkbox" id="coreShakeEnabled" checked></div><div class="option"><label for="coreSoundEnabled">Core sound</label><input type="checkbox" id="coreSoundEnabled" checked></div><div class="option"><label for="coreVolume">Core volume: <strong id="coreVolumeValue">65%</strong></label><input id="coreVolume" type="range" min="0" max="100" step="5" value="65" style="width:100%;accent-color:#65c7f6" aria-label="Core volume"></div><div class="option"><label for="hapticEnable">Vibration</label><input type="checkbox" id="hapticEnable" checked><p id="vibrationSupport" class="muted" hidden>Unavailable on this browser.</p></div><div class="option"><label for="effects">Animation intensity</label><select id="effects"><option value="full">Full</option><option value="reduced">Reduced</option><option value="off">Off</option></select></div><button class="menuBtn" data-back>BACK</button></div></div>
