@@ -153,11 +153,9 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .card.cell .convert-indicator{
   position:absolute;top:12px;right:12px;z-index:2;
   display:grid;place-items:center;width:23px;height:23px;
-  border:1px solid #8bdbf0a6;border-radius:7px;
-  background:linear-gradient(145deg,#285e7f,#0e2d49);
-  box-shadow:inset 0 1px 0 #e7fbff44,0 2px 5px #020c1699;
-  color:#dcf8ff;font-size:17px;font-weight:800;line-height:1;
-  text-shadow:0 1px 2px #071b2f;pointer-events:none;
+  border:0;border-radius:0;background:transparent;box-shadow:none;
+  color:#dcf8ff;font-size:17px;font-weight:900;line-height:1;
+  text-shadow:0 1px 2px #071b2f,0 0 5px #4bc6f466;pointer-events:none;
 }
 @media(max-width:470px){
   .card.cell .convert-indicator{top:10px;right:10px;width:20px;height:20px;font-size:15px;border-radius:6px}
@@ -165,8 +163,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* Optical glyph alignment only; badge geometry and placement stay unchanged. */
 .card.cell .convert-indicator .convert-mark{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;font-size:12px;font-weight:900;line-height:8px;
-  transform:translateY(-1px);
+  gap:0;font-size:15px;font-weight:900;line-height:8px;
+  -webkit-text-stroke:.45px currentColor;transform:translateY(-1px);
 }
 </style>
 </head>
