@@ -98,6 +98,27 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(max-width:470px){
   .card:not(.emergency) .orb,.card.gold .orb.draw-glyph{width:clamp(60px,17vw,84px)}
 }
+
+/* Symbol outlines: dark, crisp ink edge like Emergency and Gold Draw.
+   Outline the glyphs, NOT the borderless colored orbs. */
+.card.cell .orb,.card.gold[data-id="gold"] .orb,.card.protect-card .orb.protect-hex{
+  -webkit-text-stroke:1.65px #152334;
+  paint-order:stroke fill;
+  text-shadow:0 2px 0 #07182b88,0 0 7px #f8ffff77;
+}
+.card.gold[data-id="gold"] .orb{
+  -webkit-text-stroke:1.65px #493015;
+  text-shadow:0 2px 0 #33210b88,0 0 7px #fff2c28a;
+}
+.card.protect-card .orb.protect-hex{
+  -webkit-text-stroke:1.65px #103d4b;
+  text-shadow:0 2px 0 #092e3c88,0 0 7px #e1ffff85;
+}
+/* Gold Draw's card glyph already has an outlined edge; keep its geometry,
+   with the same subtle dimensional shadow as the other symbols. */
+.card.gold[data-id="draw"] .draw-card-symbol{
+  filter:drop-shadow(0 1px 1px #55310e88);
+}
 </style>
 </head>
 <body><div class="shell">
