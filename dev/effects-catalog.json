@@ -1,0 +1,91 @@
+{
+  "format": "tira-effects-catalog",
+  "version": 1,
+  "description": "Owner-shared six Black Hole presets. Website-published; changes require reviewed GitHub commits.",
+  "presets": [
+    {
+      "id": "published-black-hole-1",
+      "name": "1",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 1,
+        "speed": 110,
+        "urgency": 25,
+        "inst": 50,
+        "move": 20,
+        "follow": 50
+      }
+    },
+    {
+      "id": "published-black-hole-2",
+      "name": "2",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 6,
+        "speed": 150,
+        "urgency": 40,
+        "inst": 60,
+        "move": 30,
+        "follow": 60
+      }
+    },
+    {
+      "id": "published-black-hole-3",
+      "name": "3",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 11,
+        "speed": 190,
+        "urgency": 55,
+        "inst": 70,
+        "move": 45,
+        "follow": 65
+      }
+    },
+    {
+      "id": "published-black-hole-4",
+      "name": "4",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 14,
+        "speed": 210,
+        "urgency": 70,
+        "inst": 70,
+        "move": 60,
+        "follow": 70
+      }
+    },
+    {
+      "id": "published-black-hole-5",
+      "name": "5",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 18,
+        "speed": 270,
+        "urgency": 90,
+        "inst": 80,
+        "move": 70,
+        "follow": 80
+      }
+    },
+    {
+      "id": "published-black-hole-6",
+      "name": "6",
+      "mode": 0,
+      "effect": 13,
+      "settings": {
+        "value": 25,
+        "speed": 300,
+        "urgency": 100,
+        "inst": 100,
+        "move": 90,
+        "follow": 100
+      }
+    }
+  ]
+}

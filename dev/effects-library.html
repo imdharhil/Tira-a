@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELL//CORE — Effects Library</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TIRA! — Effects Gallery</title><style>
 :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%)}
 .wrap{max-width:1120px;margin:auto;padding:26px}header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
@@ -17,14 +17,29 @@ h1{font-size:26px;letter-spacing:.055em;margin:3px 0}h1 em{font-style:normal;col
 .set-slot label{font-weight:700;font-size:13px}.set-slot select,.set-builder input{min-width:0;width:100%;background:#0a1526;color:#e9f4ff;border:1px solid #426180;border-radius:8px;padding:10px;font:inherit}
 .set-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.set-info{color:#aec9e0;font-size:12px;margin:8px 0}
 @media(max-width:750px){.set-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.set-grid{grid-template-columns:1fr}}
+
+/* Gallery previews are lightweight visual representations, not the Effects Lab renderer. */
+.preview{height:174px;border-radius:12px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 50%,#273e64,#080e1b 64%);display:grid;place-items:center;isolation:isolate}
+.preview-orb{height:116px;width:116px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 34% 25%,hsl(var(--hue) 95% 75%),hsl(var(--hue) 75% 43%) 48%,#08152d 83%);box-shadow:0 0 35px hsl(var(--hue) 90% 60% / .4),inset -12px -16px 22px #060e2acc;animation:galleryPulse var(--duration) ease-in-out infinite alternate}
+.preview-orb::after{content:"";position:absolute;inset:-12px;border:2px solid hsl(var(--hue) 90% 65% / .45);border-radius:50%;box-shadow:0 0 23px hsl(var(--hue) 90% 60% / .3);animation:galleryTurn calc(var(--duration) * 1.4) linear infinite}
+.preview-number{position:relative;z-index:1;font-weight:900;font-size:27px;color:white;text-shadow:0 2px 9px #02091c}
+.preview.black-hole .preview-orb{background:radial-gradient(circle,#020408 0 32%,#080c1f 35%,#fff0bc 39%,#fa9c6d 43%,#4c67ed 52%,transparent 66%);box-shadow:0 0 36px #6e86ff77;animation:galleryTurn var(--duration) linear infinite}
+.preview.black-hole .preview-orb::after{inset:-16px;border:6px solid transparent;border-top-color:#e5bbfa9c;border-bottom-color:#7cd5ff7c;box-shadow:none}
+.preview.black-hole .preview-number{animation:galleryCounterTurn var(--duration) linear infinite}
+.preview.explosion .preview-orb{background:radial-gradient(circle,#fff6c9 0%,#e18c54 28%,#a7358e 55%,transparent 73%);animation:galleryBurst var(--duration) ease-in-out infinite}
+.preview.explosion .preview-orb::after{border-style:dashed}
+.preview-caption{position:absolute;bottom:8px;left:10px;font-size:10px;color:#a8bedf;letter-spacing:.04em}
+.preset .settings{display:none}.preset details{color:#b5c5e1;font-size:12px}.preset details[open] .settings{display:flex;margin-top:9px}
+@keyframes galleryPulse{to{transform:scale(1.065);filter:brightness(1.2)}}@keyframes galleryTurn{to{transform:rotate(360deg)}}@keyframes galleryCounterTurn{to{transform:rotate(-360deg)}}@keyframes galleryBurst{50%{transform:scale(1.16);filter:brightness(1.35)}}
+@media(prefers-reduced-motion:reduce){.preview *{animation:none!important}}
 </style></head>
-<body><div class="wrap"><header><div><div class="tag">SAVED CORE EFFECTS / LOCAL DESIGN LIBRARY</div><h1>CELL<em>//</em>CORE — EFFECTS LIBRARY</h1><div class="muted">A separate space for saved Effects Lab designs.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
+<body><div class="wrap"><header><div><div class="tag">CORE EFFECTS / VISUAL GALLERY · BROWSER SAVES</div><h1>TIRA! — EFFECTS GALLERY</h1><div class="muted">Preview saved Core designs and build Core 1–6 sets.</div></div><a class="nav" href="./effects-lab.html">← Effects Lab</a></header>
 <div class="toolbar"><input id="search" type="search" placeholder="Search saved effects" aria-label="Search saved effects"><button id="export">Export library</button><button id="import">Import library</button><input id="file" type="file" accept=".json,application/json" hidden></div>
-<div class="message" id="status" role="status" aria-live="polite"></div><div id="count" class="muted" style="margin-bottom:12px"></div><div id="list" class="list"></div>
+<section class="set-builder" aria-label="Published gallery information"><strong>Published TIRA! designs</strong><p class="set-info">Published designs are stored in the website repository and visible on any device. Your drafts stay in this browser until reviewed and published. No GitHub credentials are stored or requested by this site.</p><button id="downloadProposal" type="button">Download my publishing proposal (JSON)</button><p class="set-info">To publish: submit the JSON as a proposed update to <code>dev/effects-catalog.json</code> in the TIRA! public repository, and merge it after review. Downloading does not publish automatically.</p><p class="set-info" id="publishedStatus" role="status"></p></section><div class="message" id="status" role="status" aria-live="polite"></div><h2>Published Effects</h2><div id="publishedCount" class="muted"></div><div id="publishedList" class="list"></div><h2>My Draft Effects</h2><div id="count" class="muted" style="margin-bottom:12px"></div><div id="list" class="list"></div>
 <div class="sets-head"><h2>Core 1–6 Sets</h2><span class="muted">Assign one saved appearance to each Core value.</span></div>
 <div class="set-builder"><label for="setName">Set name</label><input id="setName" maxlength="70" placeholder="My Core Progression"><div id="setSlots" class="set-grid"></div><div class="set-actions"><button id="saveSet">Save six-value set</button><button id="clearSet">Clear slots</button><button id="exportSets">Export sets</button><button id="importSets">Import sets</button><input id="setFile" type="file" accept=".json,application/json" hidden></div><div class="set-info" id="setStatus" role="status" aria-live="polite"></div></div>
 <div class="list" id="savedSets"></div>
-<p class="muted" style="margin-top:22px">Presets use browser storage. Keep both HTML files in the same folder and open them in the same browser. Export JSON backups for portability; some browsers restrict local-file storage sharing.</p></div>
+<p class="muted" style="margin-top:22px">Saved presets and sets currently live in this browser only, not on the website server. Export JSON backups to preserve or transfer them. Publishing designs for all visitors requires a separate reviewed repository update or an authenticated storage service.</p></div>
 <script>
 (()=>{'use strict';
 const key='cellcore-effects-library-v1',pending='cellcore-effects-pending-load';
@@ -33,7 +48,7 @@ const fields=['value','speed','urgency','inst','move','follow'];
 const ranges={value:[1,30],speed:[0,300],urgency:[0,100],inst:[0,100],move:[0,100],follow:[0,100]};
 const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse'];
-const $=id=>document.getElementById(id);let data=[];
+const $=id=>document.getElementById(id);let data=[];let published=[];
 function status(m){$('status').textContent=m;}
 function validate(p){
   if(!p||typeof p.name!=='string'||!p.settings)return null;
@@ -43,7 +58,7 @@ function validate(p){
 }
 function persist(){try{localStorage.setItem(key,JSON.stringify(data));return true;}catch(e){status('Storage unavailable. Please export your presets.');return false;}}
 function load(){try{const raw=JSON.parse(localStorage.getItem(key)||'[]');data=Array.isArray(raw)?raw.slice(0,200).map(validate).filter(Boolean):[];}catch(e){data=[];status('Unable to read the saved library.');}render();}
-function render(){
+function render(){renderPublished();
  const query=$('search').value.trim().toLowerCase(),list=$('list');list.replaceChildren();$('count').textContent=data.length+' saved effects';
  const filtered=data.filter(p=>(p.name+' '+(p.mode?explosions:effects)[p.effect-1]).toLowerCase().includes(query));
  if(!filtered.length){const el=document.createElement('div');el.className='empty';el.textContent=data.length?'No matching presets.':'No saved effects yet. Open Effects Lab, customize an effect, then save it here.';list.append(el);return;}
@@ -52,15 +67,67 @@ function render(){
   const type=document.createElement('span');type.className='pill';type.textContent=p.mode?'Explosion':'Appearance';
   const title=document.createElement('h3');title.textContent=p.name;
   const sub=document.createElement('small');sub.textContent=String(p.effect).padStart(2,'0')+' · '+(p.mode?explosions:effects)[p.effect-1];
-  const settings=document.createElement('div');settings.className='settings';
+  const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='View settings';details.append(summary);const settings=document.createElement('div');settings.className='settings';
   fields.forEach((k,i)=>{const chip=document.createElement('span');chip.textContent=labels[i]+': '+(k==='speed'?(p.settings[k]/100).toFixed(2)+'×':p.settings[k]);settings.append(chip);});
   const actions=document.createElement('div');actions.className='actions';
   const edit=document.createElement('button');edit.textContent='Open in Effects Lab';edit.onclick=()=>{try{localStorage.setItem(pending,JSON.stringify(p));location.href='./effects-lab.html';}catch(e){status('Could not hand off preset. Export the library as backup.');}};
   const rename=document.createElement('button');rename.textContent='Rename';rename.onclick=()=>{const next=prompt('Rename preset',p.name);if(next===null)return;if(!next.trim())return status('Name cannot be empty.');p.name=next.trim().slice(0,70);persist();render();};
   const del=document.createElement('button');del.textContent='Delete';del.onclick=()=>{if(!confirm('Delete "'+p.name+'"?'))return;data=data.filter(x=>x!==p);persist();render();fillSlotChoices();status('Preset deleted.');};
-  actions.append(edit,rename,del);card.append(type,title,sub,settings,actions);list.append(card);
+  const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
+  const orb=document.createElement('div');orb.className='preview-orb';
+  const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
+  orb.append(digit);preview.append(orb);
+  const previewCaption=document.createElement('span');previewCaption.className='preview-caption';previewCaption.textContent='Gallery illustration · Open in Effects Lab for exact animation';
+  preview.append(previewCaption);preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
+  details.append(settings);
+  actions.append(edit,rename,del);card.append(preview,type,title,sub,details,actions);list.append(card);
  }
 }
+// Read-only repository-backed gallery. No secrets, authentication or direct GitHub writes in the browser.
+async function loadPublished(){
+ try{
+  const response=await fetch('./effects-catalog.json',{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const catalog=await response.json();
+  if(catalog.format!=='tira-effects-catalog'||catalog.version!==1||!Array.isArray(catalog.presets))throw Error('Unsupported catalog');
+  published=catalog.presets.slice(0,200).map(validate).filter(Boolean);
+  $('publishedStatus').textContent='Loaded '+published.length+' website-published designs.';
+ }catch(e){published=[];$('publishedStatus').textContent='Could not load published designs ('+e.message+'). Local drafts are unaffected.';}
+ renderPublished();
+}
+function makeGalleryPreview(p){
+ const preview=document.createElement('div');preview.className='preview'+(p.mode?' explosion':p.effect===13?' black-hole':'');
+ const orb=document.createElement('div');orb.className='preview-orb';
+ const digit=document.createElement('span');digit.className='preview-number';digit.textContent=String(p.settings.value);
+ orb.append(digit);preview.append(orb);
+ const caption=document.createElement('span');caption.className='preview-caption';caption.textContent='Illustrated preview · open in Effects Lab for original animation';preview.append(caption);
+ preview.style.setProperty('--hue',String((p.effect*31+170)%360));preview.style.setProperty('--duration',String(Math.max(.9,4-p.settings.speed/100))+'s');
+ return preview;
+}
+function renderPublished(){
+ const list=$('publishedList');list.replaceChildren();const query=$('search').value.trim().toLowerCase();
+ const shown=published.filter(p=>(p.name+' '+(p.mode?explosions:effects)[p.effect-1]).toLowerCase().includes(query));
+ $('publishedCount').textContent=shown.length+' published designs';
+ if(!shown.length){const item=document.createElement('p');item.className='muted';item.textContent='No matching published designs.';list.append(item);return;}
+ for(const p of shown){
+  const card=document.createElement('article');card.className='preset';
+  const title=document.createElement('h3');title.textContent=p.name;
+  const meta=document.createElement('small');meta.textContent=(p.mode?'Explosion':'Appearance')+' · '+effects[p.effect-1];
+  const actions=document.createElement('div');actions.className='actions';
+  const open=document.createElement('button');open.textContent='Open in Effects Lab';
+  open.onclick=()=>{try{localStorage.setItem(pending,JSON.stringify(p));location.href='./effects-lab.html';}catch(e){$('publishedStatus').textContent='Unable to open effect in this browser.';}};
+  const copy=document.createElement('button');copy.textContent='Copy to my drafts';
+  copy.onclick=()=>{if(data.length>=200)return status('Draft limit reached.');data.unshift({...p,id:Date.now()+'-copy'});persist();render();fillSlotChoices();status('Copied published design to your drafts.');};
+  actions.append(open,copy);card.append(makeGalleryPreview(p),title,meta,actions);list.append(card);
+ }
+}
+$('downloadProposal').onclick=()=>{
+ const combined=[...published,...data];const ids=new Set();const presets=[];
+ for(const p of combined){if(!validate(p))continue;const key=p.id||p.name;if(ids.has(key))continue;ids.add(key);presets.push(p);}
+ const blob=new Blob([JSON.stringify({format:'tira-effects-catalog',version:1,presets},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='effects-catalog-proposal.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $('publishedStatus').textContent='Proposal downloaded. It is NOT published until reviewed and merged into the repository.';
+};
 $('search').oninput=render;
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({format:'cellcore-effects-library',version:1,presets:data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cellcore-effects-library.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status('Exported '+data.length+' presets.');};
 $('import').onclick=()=>$('file').click();
@@ -84,5 +151,6 @@ $('importSets').onclick=()=>$('setFile').click();$('setFile').onchange=async e=>
 load();
 fillSlotChoices();
 readSets();
+loadPublished();
 })();
 </script></body></html>
