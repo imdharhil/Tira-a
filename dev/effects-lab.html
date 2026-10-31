@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TIRA! — Effects Lab v10.64</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%);min-height:100vh}.wrap{max-width:1330px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}h1{font-size:25px;letter-spacing:.09em;margin:0}h1 em{font-style:normal;color:#7d9dff}.tag{font-size:11px;letter-spacing:.13em;color:#9ab3eb}button,select,input{font:inherit}button{color:#dfe8ff;border:1px solid #304268;background:#131f38;border-radius:10px;padding:10px 13px;cursor:pointer}button:hover{background:#243960}button.active{border-color:#7cb9ff;background:#1c4163;color:white}.panel{border:1px solid #293653;border-radius:18px;background:linear-gradient(160deg,#121c31,#0d1424);padding:17px}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;margin-top:20px}.left{display:flex;flex-direction:column;gap:15px}.controls{display:flex;flex-wrap:wrap;gap:8px}.field{display:grid;gap:6px;margin:13px 0}.field label{display:flex;justify-content:space-between;color:#adbee2;font-size:13px}input[type=range]{width:100%;accent-color:#77b6ff}select{background:#10192b;color:#e9f1ff;border:1px solid #334665;padding:9px;border-radius:9px;width:100%}.gridbuttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.gridbuttons button{text-align:left;font-size:12px;padding:9px}.gridbuttons strong{color:#8bd4ff}.stagegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.viewport{position:relative;aspect-ratio:1.23;min-height:280px;overflow:hidden;border-radius:15px;background:radial-gradient(circle at center,#162944,#080f1f 60%,#070b13 100%);border:1px solid #253856}.viewport canvas{width:100%;height:100%;display:block}.viewport .top{position:absolute;top:12px;left:14px;font-size:11px;letter-spacing:.12em;color:#bbcaf1;pointer-events:none}.viewport .bottom{position:absolute;bottom:12px;left:14px;font-size:11px;color:#8c9dbd;pointer-events:none}.titlebar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}h2{font-size:16px;margin:0}.muted{color:#91a5c8;font-size:12px}footer{margin-top:16px;color:#8b9ab7;font-size:12px;line-height:1.65}.checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.check{border:1px solid #344360;border-radius:9px;padding:8px 12px;font-size:12px;color:#afd1ed}@media(max-width:900px){main{grid-template-columns:1fr}.stagegrid{grid-template-columns:1fr}.viewport{aspect-ratio:1.25}}@media(min-width:900px){.left{max-height:calc(100vh - 130px);overflow:auto;padding-right:3px}}
+.library-list{display:grid;gap:8px;max-height:300px;overflow:auto;margin:12px 0}.library-entry{border:1px solid #344360;border-radius:10px;padding:10px;display:grid;gap:7px}.library-entry .actions{display:flex;gap:6px;flex-wrap:wrap}.library-entry button{font-size:12px;padding:6px 9px}.library-entry strong{font-size:13px}.library-entry small{color:#9ab3eb}.lib-feedback{font-size:12px;color:#a7d5ee;min-height:18px}.lib-name{background:#10192b;color:#e9f1ff;border:1px solid #334665;border-radius:9px;padding:9px;width:100%}
+.page-nav{color:#a8ceff;text-decoration:none;font-size:12px}.page-nav:hover{text-decoration:underline}</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.64 • local HTML • Effects Library is a separate page</div></header>
+<main>
+<aside class="left">
+<section class="panel">
+<h2>Experiment mode</h2>
+<div class="controls" style="margin-top:12px"><button id="appearance" class="active">Appearance 01–14</button><button id="explosion">Explosion 01–13</button></div>
+<div class="field"><label>Core value <output id="valueLabel">5</output></label><input id="value" type="range" min="1" max="30" value="5"></div>
+<div class="field"><label>Animation speed / pull speed <output id="speedLabel">1.70×</output></label><input id="speed" type="range" min="0" max="300" value="170"></div>
+<div class="field"><label>Urgency / pull range <output id="urgencyLabel">0%</output></label><input id="urgency" type="range" min="0" max="100" value="0"></div>
+<div class="field"><label>Instability / spin <output id="instLabel">87%</output></label><input id="inst" type="range" min="0" max="100" value="87"></div>
+<div class="field"><label>Movement / stretch <output id="moveLabel">100%</output></label><input id="move" type="range" min="0" max="100" value="100"></div>
+<div class="field"><label>Number follow / captured count <output id="followLabel">18%</output></label><input id="follow" type="range" min="0" max="100" value="18"></div>
+<div class="controls"><button id="death">Preview identity destruction</button><button id="restore">Restore Core</button></div>
+<div class="controls"><button id="pause">Pause</button><button id="restart">Restart / replay</button></div>
+</section>
+<section class="panel" id="libraryPanel">
+<div class="titlebar"><h2>Save an Effect</h2><a class="page-nav" href="./effects-library.html">Open Effects Library →</a></div>
+<div class="muted">Experiment here. Manage saved presets on the separate Effects Library page.</div>
+<div class="field"><label for="librarySide">Save preview</label><select id="librarySide"><option value="A">Left (A)</option><option value="B" selected>Right (B)</option></select></div>
+<div class="field"><label for="libraryName">Preset name</label><input class="lib-name" id="libraryName" maxlength="70" placeholder="Name this effect"></div>
+<div class="controls"><button id="librarySave">Save to Effects Library</button></div>
+<div class="lib-feedback" id="libraryFeedback" role="status" aria-live="polite"></div>
+<span id="libraryCount" hidden></span><div id="libraryList" hidden></div>
+<button id="libraryExport" hidden></button><button id="libraryImportButton" hidden></button><input id="libraryImportFile" type="file" hidden>
+</section>
+<section class="panel"><div class="titlebar"><h2>Numbered experiments</h2><span class="muted">A/B selection</span></div><div id="effects" class="gridbuttons"></div></section>
+<section class="panel"><h2>Comparison</h2><div class="field"><label>Left</label><select id="choiceA"></select></div><div class="field"><label>Right</label><select id="choiceB"></select></div><button id="swap">Swap A ↔ B</button><div class="muted" style="margin-top:14px">Black Hole: Instability controls spin speed (very slow to very fast). Movement controls resistance and star stretching (0% = clean infall). Core value and urgency retain the behavior of this uploaded version.</div></section>
+</aside>
+<section class="panel"><div class="titlebar"><h2>Live side-by-side preview</h2><span class="muted" id="modeLabel">Core appearance</span></div><div class="stagegrid"><div class="viewport"><canvas id="canvasA"></canvas><div class="top">A / <span id="aName"></span></div><div class="bottom">Identity behavior + identity destruction</div></div><div class="viewport"><canvas id="canvasB"></canvas><div class="top">B / <span id="bName"></span></div><div class="bottom">Same value · independent appearance</div></div></div><div class="checks"><span class="check">✓ offline</span><span class="check">✓ comparison retained</span><span class="check">✓ value-driven urgency</span><span class="check">✓ identity destruction</span></div><footer id="note">Select an effect for design notes.</footer></section>
+</main>
+<footer>This revision focuses on the requested rebuild areas: #05 Liquid Surface, #08 Solar Eclipse, #10 Cracking, #11 Planet Spin, #13 Black Hole, #14 Bubble, and more distinct destruction identities. Classic gameplay is not modified.</footer>
+</div>
+<script>
+(()=>{'use strict';
+const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble'];
+const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse'];
+const notes={1:'Pure Core keeps the default tremor identity.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface is rebuilt around thicker water masses and reflective liquid motion.',6:'Corona starts at a true 2× animation clock and speeds up as Core Value and Urgency Boost rise together. The general Speed slider does not affect it.',8:'Solar Eclipse now uses value-driven coverage: the number determines how much the Moon covers the Core.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.'};
+const $=id=>document.getElementById(id);
+const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
+let bhSpinTime=0, bhPullTime=0;
+const TAU=Math.PI*2;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const mix=(a,b,x)=>a+(b-a)*x;
+const easeOut=x=>1-Math.pow(1-x,3);
+function rand(n){const x=Math.sin(n*127.13+78.23)*43758.5453123;return x-Math.floor(x)}
+function names(){return state.mode?explosions:appearance}
+function rebuild(){const arr=names();$('effects').replaceChildren();for(const side of ['A','B']){const sel=$('choice'+side);sel.replaceChildren();arr.forEach((n,i)=>{const op=document.createElement('option');op.value=i+1;op.textContent=String(i+1).padStart(2,'0')+' · '+n;sel.append(op)});sel.value=state[side]}arr.forEach((name,i)=>{const n=i+1,b=document.createElement('button');b.innerHTML='<strong>'+String(n).padStart(2,'0')+'</strong> '+name;b.className=state.A===n?'active':'';b.onclick=()=>{state.A=n;$('choiceA').value=n;state.burstStart=state.t;rebuild()};$('effects').append(b)});$('modeLabel').textContent=state.mode?'Explosion experiments':'Core appearance';$('aName').textContent=String(state.A).padStart(2,'0')+' '+arr[state.A-1];$('bName').textContent=String(state.B).padStart(2,'0')+' '+arr[state.B-1];$('note').textContent=state.mode?'Explosion mode remains experimental. Identity destruction preview is the primary review path.':(notes[state.A]||'This slot remains a supporting cosmetic variant.');}
+$('appearance').onclick=()=>{state.mode=0;state.deathStart=null;$('appearance').classList.add('active');$('explosion').classList.remove('active');rebuild()};
+$('explosion').onclick=()=>{state.mode=1;state.deathStart=null;state.burstStart=state.t;$('explosion').classList.add('active');$('appearance').classList.remove('active');rebuild()};
+for(const side of ['A','B']) $('choice'+side).onchange=e=>{state[side]=+e.target.value;state.deathStart=null;state.burstStart=state.t;rebuild()};
+$('swap').onclick=()=>{[state.A,state.B]=[state.B,state.A];rebuild()};
+$('pause').onclick=()=>{state.playing=!state.playing;$('pause').textContent=state.playing?'Pause':'Play'};
+$('restart').onclick=()=>{bhSpinTime=0;bhPullTime=0;state.t=0;state.view.A.identityTime=0;state.view.B.identityTime=0;state.burstStart=0;state.deathStart=null;state.playing=true;$('pause').textContent='Pause'};
+$('death').onclick=()=>{state.mode=0;state.deathStart=state.t;$('appearance').classList.add('active');$('explosion').classList.remove('active');rebuild()};
+$('restore').onclick=()=>{state.deathStart=null};
+for(const [id,l,format] of [['value','valueLabel',x=>x],['speed','speedLabel',x=>(x/100).toFixed(2)+'×'],['urgency','urgencyLabel',x=>x+'%'],['inst','instLabel',x=>x+'%'],['move','moveLabel',x=>x+'%'],['follow','followLabel',x=>x+'%']]) $(id).oninput=e=>{$(l).textContent=format(+e.target.value)};
+function circle(ctx,x,y,r,fill){ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=fill;ctx.fill()}
+function ellipse(ctx,x,y,rx,ry,fill,rot=0){ctx.beginPath();ctx.ellipse(x,y,rx,ry,rot,0,TAU);ctx.fillStyle=fill;ctx.fill()}
+function radial(ctx,x,y,ix,iy,radius,stops){const g=ctx.createRadialGradient(ix,iy,radius*.02,x,y,radius);for(const [at,color] of stops)g.addColorStop(at,color);return g}
+function glow(ctx,x,y,r,stops){circle(ctx,x,y,r,radial(ctx,x,y,x-r*.18,y-r*.24,r,stops))}
+function clipCircle(ctx,x,y,r,draw){ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.clip();draw();ctx.restore()}
+function softSphere(ctx,x,y,r,p){circle(ctx,x,y,r,radial(ctx,x,y,x-r*.28,y-r*.34,r,[[0,p[0]],[.3,p[1]],[.7,p[2]],[1,p[3]]]))}
+function starField(ctx,x,y,r,t,amount=120,alpha=.9){for(let i=0;i<amount;i++){const a=rand(i*9+7)*TAU,d=Math.sqrt(rand(i*19+51))*r,xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d,s=.25+rand(i*11+21)*1.5;ctx.globalAlpha=(.2+.6*(.5+.5*Math.sin(t*.45+i*3.7)))*alpha;circle(ctx,xx,yy,s,'#edf6ff')}ctx.globalAlpha=1}
+function stressFor(value){const power=clamp((value-1)/29,0,1);const boost=+$('urgency').value/100;return {power,boost,stress:clamp(power*0.85+boost*0.35,0,1)}}
+function taperedLeaf(ctx,x,y,len,thick,rot,fill){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.beginPath();ctx.moveTo(-len*.5,0);ctx.quadraticCurveTo(-len*.15,-thick*.65,len*.5,0);ctx.quadraticCurveTo(-len*.15,thick*.65,-len*.5,0);ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.restore()}
+function drawWaterMass(ctx,x,y,r,t,seed,alpha){const rot=t*.18+seed*1.17;ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.beginPath();ctx.moveTo(-r*.92,-r*.08);ctx.bezierCurveTo(-r*.55,-r*.45,-r*.08,-r*.42,r*.28,-r*.08);ctx.bezierCurveTo(r*.58,r*.16,r*.48,r*.42,r*.08,r*.35);ctx.bezierCurveTo(-r*.32,r*.28,-r*.55,.1,-r*.92,-r*.08);ctx.closePath();const g=ctx.createLinearGradient(-r,-r*.2,r,r*.25);g.addColorStop(0,`rgba(255,255,255,${alpha*.28})`);g.addColorStop(.25,`rgba(194,234,255,${alpha*.62})`);g.addColorStop(.68,`rgba(73,161,228,${alpha*.88})`);g.addColorStop(1,`rgba(9,58,139,${alpha*.72})`);ctx.fillStyle=g;ctx.fill();ctx.restore()}
+function drawPlanetPatch(ctx,x,y,len,thick,rot,color,depth){ctx.save();ctx.globalAlpha=.15+.6*depth;taperedLeaf(ctx,x,y,len,thick,rot,color);ctx.restore()}
+function drawCrackLine(ctx,x1,y1,x2,y2,w,d){ctx.strokeStyle=`rgba(4,11,26,${.72*d})`;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.strokeStyle=`rgba(213,237,255,${.15*d})`;ctx.lineWidth=Math.max(.4,w*.18);ctx.stroke()}
+function breathCycle(t,value){
+  const u=+$('urgency').value/100;
+  const v=clamp((value-1)/29,0,1);
+  // Fixed 3× clock is handled by the per-preview renderer. Value and urgency shorten the cycle dramatically at peak pressure.
+  const pressure=clamp(v*.5 + u*.5,0,1);
+  const period=mix(4.2,0.82,pressure);
+  const phase=((t/period)%1+1)%1;
+  const strain=clamp(pressure*.9 + u*.1,0,1);
+  const smoothstep=a=>a*a*(3-2*a);
+  let air;
+  if(phase<.31){
+    const q=phase/.31;
+    // A struggling inhale catches, then forces itself open.
+    if(strain>0 && q>.42 && q<.60){
+      const stalled=smoothstep(.42);
+      air=mix(smoothstep(q),stalled,strain*.84);
+    }else air=smoothstep(q);
+  }else if(phase<.37){air=1;} // full inhale briefly held
+  else if(phase<.79){air=1-smoothstep((phase-.37)/.42);} // quicker exhale under pressure
+  else air=0; // short empty pause before next breath
+  return {air,strain,pressure,phase};
+}
+function drawAppearance(ctx,n,x,y,r,t,value,opts={}){const {power,stress}=stressFor(value);switch(n){
+case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
+case 2:{glow(ctx,x,y,r*1.32,[[0,'rgba(182,248,255,.82)'],[.52,'rgba(91,169,255,.25)'],[1,'rgba(37,79,190,0)']]);softSphere(ctx,x,y,r*.96,['#ffffff','#c9f3ff','#3a7dd6','#08111f']);break;}
+case 3:{softSphere(ctx,x,y,r,['#faffff','#9fe7fb','#1e4f84','#091220']);clipCircle(ctx,x,y,r*.96,()=>{for(let i=0;i<4;i++){const a=t*(i%2?-.7:.78)+i*TAU/4;ellipse(ctx,x+Math.cos(a)*r*.42,y+Math.sin(a*1.2)*r*.36,11,11,i%2?'#ffb679':'#d7faff')}glow(ctx,x,y,r*.21,[[0,'white'],[.5,'#b8ecff'],[1,'#267bd7']])});break;}
+case 4:{glow(ctx,x,y,r*1.36,[[0,'rgba(146,108,255,.08)'],[.55,'rgba(77,111,255,.16)'],[1,'transparent']]);softSphere(ctx,x,y,r,['#d8d6ff','#616cf2','#0a1038','#030511']);clipCircle(ctx,x,y,r,()=>{circle(ctx,x,y,r,'#050717');ctx.globalCompositeOperation='screen';for(let i=0;i<8;i++){const a=t*.06*(i%2?1:-1)+i*1.41,rr=r*(.22+.08*i/8+.05*Math.sin(t*.4+i)),xx=x+Math.cos(a)*r*(.16+.42*rand(i+50)),yy=y+Math.sin(a*1.24)*r*(.12+.29*rand(i+70));glow(ctx,xx,yy,rr,[[0,i%3===0?'rgba(255,117,190,.28)':i%3===1?'rgba(107,190,255,.28)':'rgba(122,92,255,.3)'],[.56,'rgba(74,44,166,.15)'],[1,'transparent']])}ctx.globalCompositeOperation='source-over';starField(ctx,x,y,r,t,170,.85)});break;}
+case 5:{
+  // A continuous fluid surface: layered waves and sliding highlights, no orbiting blobs.
+  glow(ctx,x,y,r*1.11,[[0,'rgba(129,218,255,.12)'],[1,'transparent']]);
+  circle(ctx,x,y,r,'#06334d');
+  clipCircle(ctx,x,y,r,()=>{
+    const back=ctx.createLinearGradient(x-r,y-r,x+r,y+r);
+    back.addColorStop(0,'#99edff');back.addColorStop(.33,'#238dbb');back.addColorStop(.7,'#07557e');back.addColorStop(1,'#032c48');
+    ctx.fillStyle=back;ctx.fillRect(x-r,y-r,r*2,r*2);
+    for(let layer=0;layer<7;layer++){
+      const level=y-r*.94+layer*r*.32;
+      const amp=r*(.035+.022*(layer%3));
+      const phase=t*(.42+.07*layer)+layer*1.37;
+      const wave=(xx)=>level+Math.sin((xx-x)/r*3.2+phase)*amp+Math.sin((xx-x)/r*6.4-phase*.71)*amp*.35;
+      ctx.beginPath();ctx.moveTo(x-r,y+r);
+      ctx.lineTo(x-r,wave(x-r));
+      for(let j=0;j<=70;j++){const xx=x-r+2*r*j/70;ctx.lineTo(xx,wave(xx));}
+      ctx.lineTo(x+r,y+r);ctx.closePath();
+      ctx.fillStyle=['rgba(3,33,67,.16)','rgba(5,102,151,.25)','rgba(8,139,173,.24)','rgba(21,160,192,.18)','rgba(2,34,72,.21)','rgba(5,83,125,.25)','rgba(1,28,54,.27)'][layer];ctx.fill();
+      ctx.beginPath();for(let j=0;j<=70;j++){const xx=x-r+2*r*j/70;const yy=wave(xx);if(j===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);}
+      ctx.strokeStyle=`rgba(215,252,255,${.07+.035*(layer%3)})`;ctx.lineWidth=.65;ctx.stroke();
+    }
+    // Reflections distort with the fluid rather than rotating around the center.
+    const light=ctx.createLinearGradient(x-r,y-r,x+r,y+r);
+    light.addColorStop(0,'rgba(245,255,255,.39)');light.addColorStop(.35,'rgba(203,251,255,.085)');light.addColorStop(.65,'rgba(11,57,91,0)');light.addColorStop(1,'rgba(0,10,31,.42)');
+    ctx.fillStyle=light;ctx.fillRect(x-r,y-r,r*2,r*2);
+    for(let i=0;i<4;i++){
+      const xx=x+r*(-.71+i*.42)+Math.sin(t*.38+i*2)*r*.075;
+      const yy=y-r*.72+i*r*.43+Math.sin(t*.7+i)*r*.035;
+      ctx.beginPath();ctx.ellipse(xx,yy,r*(.16+.025*i),r*.012,Math.sin(t*.3+i)*.14,0,TAU);
+      ctx.strokeStyle=`rgba(234,255,255,${.10+.055*(i%2)})`;ctx.lineWidth=.95;ctx.stroke();
+    }
+  });
+  ctx.strokeStyle='rgba(180,246,255,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,r*.995,0,TAU);ctx.stroke();
+  break;
+}
+case 6:{const coronaLevel=opts.coronaLevel ?? stress;const heat=.26+.74*coronaLevel;const pumpRate=.7+coronaLevel*1.7;const pumpAmp=.08+coronaLevel*.92;const pumpWave=.5+.5*Math.sin(t*pumpRate);const pump=pumpWave*pumpAmp;glow(ctx,x,y,r*(1.24+.16*heat+.18*pump),[[0,`rgba(255,248,194,${.62+.22*pump})`],[.24,`rgba(255,214,132,${.18+.28*heat+.1*pump})`],[.58,`rgba(255,146,52,${.12+.18*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.46+.2*heat+.22*pump),[[0,'rgba(255,214,132,0)'],[.5,`rgba(255,186,98,${.04+.12*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.82+.24*heat+.16*pump),[[0,'rgba(255,230,177,0)'],[.62,`rgba(255,176,82,${.02+.07*heat+.06*pump})`],[1,'transparent']]);softSphere(ctx,x,y,r*(1+.006+.028*pump),['#fff8d9','#ffd48a','#8b3a34','#14070a']);clipCircle(ctx,x,y,r*.98,()=>{for(let i=0;i<6;i++){const rr=r*(.42+i*.1);glow(ctx,x+r*.09*Math.sin(t*(.55+coronaLevel*.9)+i),y-r*.06*Math.cos(t*(.52+coronaLevel*.8)+i*1.3),rr,[[0,'rgba(255,255,255,0)'],[.56,`rgba(255,196,112,${(.024+.016*i)*(.45+1.1*heat+1.0*pump)})`],[1,'transparent']])}});break;}
+case 7:{glow(ctx,x,y,r*(1.02+.09*Math.sin(t*2.5)),[[0,'rgba(255,255,255,.96)'],[.37,'rgba(104,218,255,.8)'],[.82,'rgba(29,73,127,.62)'],[1,'rgba(2,10,23,.6)']]);break;}
+case 8:{const cover=opts.eclipseCover ?? stress;const shift=mix(2.15,.02,cover)*r;glow(ctx,x,y,r*1.36,[[0,'rgba(255,230,177,.25)'],[.72,'rgba(255,144,30,.17)'],[1,'transparent']]);softSphere(ctx,x,y,r,['#fffde8','#fff0a2','#ffa63d','#9a3f16']);if(cover>.58)glow(ctx,x,y,r*(1.06+.05*cover),[[.78,'rgba(255,224,166,0)'],[.94,`rgba(255,230,188,${Math.max(0,(cover-.55)*1.2)})`],[1,'rgba(255,226,185,0)']]);ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.clip();circle(ctx,x+shift,y,r*1.02,'#05080f');ctx.restore();break;}
+case 9:{
+  // Inhale is the expanding phase; exhale relaxes quickly under pressure.
+  const b=breathCycle(t,value);
+  softSphere(ctx,x,y,r*(.948+.064*b.air+.018*b.strain*b.air),['#ffffff','#c4f5ff','#2d8cc2','#0d2740']);
+  // A diffused atmospheric highlight follows the intake and intensifies under strain.
+  glow(ctx,x-r*.17,y-r*.18,r*(.39+.06*b.air+.036*b.strain),[[0,`rgba(224,251,255,${.09+.12*b.air+.07*b.strain})`],[1,'transparent']]);
+  break;
+}
+case 10:{softSphere(ctx,x,y,r,['#f7fcff','#d2ecff','#4d87cf','#091d39']);const crackLevel=stress;clipCircle(ctx,x,y,r,()=>{if(crackLevel>.08){for(let i=0;i<4+Math.floor(crackLevel*4);i++){const ang=i*1.61+t*.02+i*.19;const x1=x+Math.cos(ang)*r*.1,y1=y+Math.sin(ang)*r*.1,x2=x+Math.cos(ang+.12*Math.sin(i+t))*r*(.42+.34*crackLevel),y2=y+Math.sin(ang+.08*Math.cos(i+t))*r*(.42+.34*crackLevel);drawCrackLine(ctx,x1,y1,x2,y2,.9+crackLevel*2.3,crackLevel);if(crackLevel>.38){const bx=mix(x1,x2,.6),by=mix(y1,y2,.6),ba=ang+(i%2?.65:-.65);drawCrackLine(ctx,bx,by,bx+Math.cos(ba)*r*(.08+.18*crackLevel),by+Math.sin(ba)*r*(.08+.18*crackLevel),.7+crackLevel*1.4,crackLevel*.85)}}}if(crackLevel>.72){ctx.globalCompositeOperation='multiply';for(let i=0;i<3;i++){const a=i*2.1+.3,sep=r*(crackLevel-.72)*.12;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a-.08)*r,y+Math.sin(a-.08)*r);ctx.lineTo(x+Math.cos(a+.08)*r,y+Math.sin(a+.08)*r);ctx.closePath();ctx.fillStyle='rgba(7,14,31,.24)';ctx.fill();ctx.translate(Math.cos(a)*sep,Math.sin(a)*sep)}ctx.globalCompositeOperation='source-over';}});break;}
+case 11:{const spin=t*(.28+power*.95);softSphere(ctx,x,y,r,['#f7fbff','#c3ecff','#347bc6','#0a2142']);clipCircle(ctx,x,y,r,()=>{for(let j=0;j<10;j++){const lat=-.8+j*.18;const yy=y+lat*r*.78;for(let i=0;i<5;i++){const phase=spin+j*.32+i*.95;const depth=Math.max(0,Math.cos(phase));if(depth<.02)continue;const xx=x+Math.sin(phase)*r*.78;const len=r*(.18+.25*rand(j*7+i))*depth;const thick=r*(.04+.04*rand(i+j))*depth;drawPlanetPatch(ctx,xx,yy+Math.sin(phase*1.7+j)*r*.02,len,thick,Math.sin(lat*2.2)*.3,'rgba(110,205,228,.85)',depth);if(i%2===0)drawPlanetPatch(ctx,xx-r*.03,yy-r*.01,len*.75,thick*.65,Math.sin(lat*2.2)*.25,'rgba(26,110,160,.8)',depth*.8)}}const shade=ctx.createLinearGradient(x-r,y,x+r,y);shade.addColorStop(0,'rgba(0,0,0,.56)');shade.addColorStop(.4,'rgba(0,0,0,.05)');shade.addColorStop(1,'rgba(0,0,0,.62)');circle(ctx,x,y,r,shade)});break;}
+case 12:{glow(ctx,x,y,r*1.34,[[0,'rgba(255,237,189,.88)'],[.55,'rgba(255,123,46,.62)'],[.84,'rgba(194,28,68,.24)'],[1,'transparent']]);softSphere(ctx,x,y,r*(.975+.028*Math.sin(t*4.1)),['#fff4d4','#ffc97a','#a12a4f','#11050d']);break;}
+case 13:{
+  const urgency=+$('urgency').value/100;
+  const threat=urgency; // pull speed must not affect the ring or rotation
+  const holeR=r*mix(.9,.36,power); // core value alone controls hole size
+  // Incoming stars are now drawn in the full-panel renderer, not duplicated here.
+  const shadow=ctx.createRadialGradient(x,y,holeR*.88,x,y,holeR*1.49);
+  shadow.addColorStop(0,'rgba(0,0,0,0)');shadow.addColorStop(.4,'rgba(0,0,0,.58)');
+  shadow.addColorStop(.75,'rgba(17,28,75,.17)');shadow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=shadow;ctx.beginPath();ctx.arc(x,y,holeR*1.49,0,TAU);ctx.fill();
+  const ring=ctx.createRadialGradient(x,y,holeR*.985,x,y,holeR*1.18);
+  ring.addColorStop(0,'rgba(0,0,0,0)');ring.addColorStop(.08,`rgba(246,250,255,${.83+.15*threat})`);
+  ring.addColorStop(.14,`rgba(161,200,255,${.50+.23*threat})`);
+  ring.addColorStop(.32,`rgba(97,108,245,${.17+.14*threat})`);
+  ring.addColorStop(1,'rgba(10,26,91,0)');
+  ctx.fillStyle=ring;ctx.beginPath();ctx.arc(x,y,holeR*1.18,0,TAU);ctx.fill();
+  // Keep the horizon clean; avoid a thick ring or outline feel.
+  circle(ctx,x,y,holeR,'#000000'); // absolute dark, perfectly round void
+  break;
+}
+case 14:{const tension=stress;const rr=r*(1+.02*tension);const overallAlpha=.22-.09*tension;circle(ctx,x,y,rr,radial(ctx,x,y,x-r*.2,y-r*.25,rr,[[0,`rgba(255,255,255,${overallAlpha})`],[.22,`rgba(170,183,228,${.12-.04*tension})`],[.55,`rgba(16,33,82,${.56-.18*tension})`],[.85,`rgba(17,45,92,${.66-.16*tension})`],[1,`rgba(240,247,255,${.4-.16*tension})`]]));clipCircle(ctx,x,y,rr,()=>{glow(ctx,x+r*.55,y+r*.38,r*.58,[[0,'rgba(80,242,248,.42)'],[.52,'rgba(69,164,217,.18)'],[1,'transparent']]);glow(ctx,x-r*.1,y+r*.78,r*.54,[[0,'rgba(255,68,231,.36)'],[.48,'rgba(175,116,255,.16)'],[1,'transparent']]);glow(ctx,x-r*.44,y-r*.42,r*.5,[[0,'rgba(255,255,255,.16)'],[1,'transparent']]);ctx.save();ctx.translate(x,y);ctx.rotate(-.32+Math.sin(t*.22)*.04);ellipse(ctx,-r*.32,-r*.68,r*.42,r*.08,'rgba(255,255,255,.54)',-.22);ellipse(ctx,r*.54,r*.49,r*.15,r*.04,'rgba(255,255,255,.44)',-.55);ellipse(ctx,-r*.03,r*.86,r*.075,r*.022,'rgba(255,255,255,.52)');ctx.restore();if(tension>.72){glow(ctx,x+r*.56,y-r*.35,r*(.1+.03*Math.sin(t*4)),[[0,`rgba(255,255,255,${(tension-.72)*1.4})`],[.35,`rgba(230,244,255,${(tension-.72)*.9})`],[1,'transparent']]);ctx.strokeStyle=`rgba(255,255,255,${(tension-.72)*.55})`;ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(x,y,rr*.98,-.95,-.52);ctx.stroke();}});break;}
+}}
+function drawIdentityDeath(ctx,n,x,y,r,elapsed,value){const q=clamp(elapsed/1.5,0,1),u=easeOut(q);if(q>=1)return;const draw=(id,scale=1,alpha=1)=>{ctx.save();ctx.globalAlpha*=alpha;ctx.translate(x,y);ctx.scale(scale,scale);drawAppearance(ctx,id,0,0,r,elapsed*2+1,value);ctx.restore()};ctx.save();switch(n){
+case 14:{if(q<.08)draw(14,1+q*.15,1-q*3);const rupture=-.72;for(let i=0;i<5;i++){const rr=r*(1+.02*i)*(1-q*.12);ctx.beginPath();ctx.arc(x,y,rr,rupture+u*.9+i*.03,rupture+TAU-u*1.35-i*.05);ctx.lineWidth=(3.6-i*.55)*(1-q);ctx.strokeStyle=['rgba(242,252,255,.72)','rgba(176,236,255,.6)','rgba(215,117,239,.36)','rgba(70,214,245,.48)','rgba(255,255,255,.22)'][i];ctx.stroke()}for(let i=0;i<9;i++){const a=rupture+i*.45,dist=r*(1+u*.8);circle(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.012+.01*rand(i))*(1-q),'rgba(176,237,255,.28)')}break;}
+case 13:{for(let i=0;i<24;i++){const a=i*TAU/24+elapsed*1.3,rr=r*(1.55-u*1.48);circle(ctx,x+Math.cos(a)*rr,y+Math.sin(a)*rr*.72,Math.max(.1,2.1*(1-q)),'rgba(214,194,255,.22)')}draw(13,Math.max(.01,1-u*.98),1-q*.9);break;}
+case 5:{if(q<.22)draw(5,1+q*.08,1-q*3);for(let i=0;i<18;i++){const a=i*2.399+elapsed*.4,dist=r*(.18+u*(.65+rand(i)*.72));ellipse(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.05+rand(i)*.05)*(1-q),r*.028*(1-q),'rgba(115,207,255,.72)',a)}break;}
+case 8:{draw(8,1,1-q*.8);circle(ctx,x,y,r*(.36+u*.74),`rgba(3,5,13,${Math.min(.96,u*1.2)})`);glow(ctx,x,y,r*(1.05+.1*(1-q)),[[.7,'rgba(255,232,192,0)'],[.93,`rgba(255,234,196,${(1-q)*.5})`],[1,'transparent']]);break;}
+case 9:{
+  // Sudden expansion, then a slow shrinking fade until it is gone.
+  const snap = clamp(q/.11,0,1);
+  const linger = clamp((q-.11)/.89,0,1);
+  const scale = q<.11 ? 1 + .34*snap : 1.34*(1-linger) + .02*linger;
+  const alpha = q<.11 ? 1 : 1-linger;
+  draw(9,scale,alpha);
+  if(q>.08){
+    glow(ctx,x,y,r*(1.08 + .18*(1-linger)),[[0,`rgba(220,248,255,${.10*(1-linger)})`],[.55,`rgba(123,214,255,${.08*(1-linger)})`],[1,'transparent']]);
+  }
+  break;
+}
+case 10:{if(q<.16)draw(10,1,1-q*4);for(let i=0;i<7;i++){const a=i*TAU/7+.22,dist=r*(.15+u*1.06),rot=a+u*1.3;ctx.save();ctx.translate(x+Math.cos(a)*dist,y+Math.sin(a)*dist);ctx.rotate(rot);ctx.beginPath();ctx.moveTo(-r*.16,-r*.1);ctx.lineTo(r*.18,-r*.12);ctx.lineTo(r*.12,r*.15);ctx.lineTo(-r*.12,r*.12);ctx.closePath();ctx.fillStyle=`rgba(125,197,248,${1-q})`;ctx.fill();ctx.strokeStyle=`rgba(8,18,42,${1-q})`;ctx.lineWidth=1.4;ctx.stroke();ctx.restore()}break;}
+case 11:{ctx.save();ctx.translate(x,y);ctx.rotate(u*2.2);ctx.translate(-x,-y);if(q<.3)draw(11,1,1-q*2.2);ctx.restore();for(let i=0;i<9;i++){const a=i*TAU/9+u*1.9,dist=r*(.22+u*.92);taperedLeaf(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.2*(1-q),r*.06*(1-q),a,'rgba(87,176,218,.7)')}break;}
+case 4:{draw(4,Math.max(.03,1-u*.95),1-q*.8);break;}
+case 12:{if(q<.18)draw(12,1+q*.08,1-q*3);for(let i=0;i<12;i++){const a=i*TAU/12+rand(i),dist=r*(.24+u*(.6+rand(i)*.5));glow(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.08*(1-q),[[0,'rgba(255,178,93,.85)'],[1,'transparent']])}break;}
+case 6:{if(q<.18)draw(6,1+q*.08,1-q*3);for(let i=0;i<12;i++){const a=i*TAU/12+rand(i),dist=r*(.26+u*(.56+rand(i)*.42));glow(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.09*(1-q),[[0,'rgba(255,196,111,.65)'],[1,'transparent']])}break;}
+case 3:{if(q<.15)draw(3,1+q*.05,1-q*3);for(let i=0;i<12;i++){const a=i*TAU/12+rand(i),dist=r*(.2+u*(.62+rand(i)*.4));glow(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.08*(1-q),[[0,'rgba(172,239,255,.75)'],[1,'transparent']])}break;}
+default:{if(q<.18)draw(n===1?1:n,1,1-q*3);for(let i=0;i<8;i++){const a=i*TAU/8+.3,dist=r*(.18+u*.9);ctx.beginPath();ctx.moveTo(x+Math.cos(a)*dist,y+Math.sin(a)*dist);ctx.lineTo(x+Math.cos(a+.12)*(dist+r*.12*(1-q)),y+Math.sin(a+.12)*(dist+r*.12*(1-q)));ctx.lineTo(x+Math.cos(a-.1)*(dist+r*.14*(1-q)),y+Math.sin(a-.1)*(dist+r*.14*(1-q)));ctx.closePath();ctx.fillStyle=`rgba(132,204,248,${1-q})`;ctx.fill()}break;}
+}ctx.restore();}
+function burst(ctx,n,x,y,r,t,value){const p=clamp((t-state.burstStart)/1.9,0,1),u=easeOut(p);if(p>=1)return;ctx.save();if(p<.2){ctx.globalAlpha=1-p*4;drawAppearance(ctx,n===14?14:n,x,y,r*(1+p*.06),t,value)}switch(n){case 13:{for(let i=0;i<22;i++){const a=i*TAU/22+t*.8,rr=r*(1.5-u*1.35);circle(ctx,x+Math.cos(a)*rr,y+Math.sin(a)*rr*.72,Math.max(.2,2.2*(1-p)),'rgba(214,194,255,.22)')}break;}case 14:{for(let i=0;i<5;i++){const rr=r*(1+.02*i)*(1-p*.12);ctx.beginPath();ctx.arc(x,y,rr,-.7+u*.7+i*.03,-.7+TAU-u*1.1-i*.05);ctx.lineWidth=(3.3-i*.5)*(1-p);ctx.strokeStyle=['rgba(242,252,255,.72)','rgba(176,236,255,.6)','rgba(215,117,239,.36)','rgba(70,214,245,.48)','rgba(255,255,255,.22)'][i];ctx.stroke()}break;}case 5:{for(let i=0;i<18;i++){const a=i*2.399+t*.3,dist=r*(.15+u*(.55+rand(i)*.82));ellipse(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.05+rand(i)*.05)*(1-p),r*.028*(1-p),'rgba(115,207,255,.72)',a)}break;}case 10:{for(let i=0;i<7;i++){const a=i*TAU/7+.22,dist=r*(.15+u*.92);ctx.save();ctx.translate(x+Math.cos(a)*dist,y+Math.sin(a)*dist);ctx.rotate(a+u*1.1);ctx.beginPath();ctx.moveTo(-r*.15,-r*.09);ctx.lineTo(r*.17,-r*.11);ctx.lineTo(r*.1,r*.14);ctx.lineTo(-r*.12,r*.1);ctx.closePath();ctx.fillStyle=`rgba(125,197,248,${1-p})`;ctx.fill();ctx.restore()}break;}default:{for(let i=0;i<10;i++){const a=i*TAU/10+n*.17,dist=r*(.2+u*(.75+rand(i)*.55));glow(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.06*(1-p),[[0,n===6||n===12?'rgba(255,178,93,.78)':'rgba(172,239,255,.68)'],[1,'transparent']])}break;}}ctx.restore();}
+const bhParticleCache=new Map();
+function getBHParticles(w,h){
+  const key=Math.round(w)+'x'+Math.round(h);
+  if(bhParticleCache.has(key))return bhParticleCache.get(key);
+  const pts=[];
+  const step=9, cols=Math.ceil(w/step),rows=Math.ceil(h/step);
+  for(let iy=0;iy<rows;iy++)for(let ix=0;ix<cols;ix++){
+    const i=iy*cols+ix;
+    pts.push({x:(ix+.08+.84*rand(i+40001))*step,
+      y:(iy+.08+.84*rand(i+51001))*step,
+      phase:rand(i+62001), size:rand(i+73001)>.955?1.5:1,
+      bright:.36+.56*rand(i+84001), warm:rand(i+95001)>.9});
+  }
+  if(bhParticleCache.size>4)bhParticleCache.clear();
+  bhParticleCache.set(key,pts);return pts;
+}
+function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStrength,movement,follow){
+  // One starfield. Urgency governs range; Follow selects a fraction of stars in that range.
+  // Instability drives a bounded clockwise edge spiral, never a rotation of the whole field.
+  const reach=horizon+r*(.065+1.45*urgency); // 0% = tiny but nonzero band outside horizon
+  const points=getBHParticles(w,h);
+  const rate=.53; // fixed particle cycle: pull strength never changes animation time
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  for(let i=0;i<points.length;i++){
+    const p=points[i],dx=p.x-cx,dy=p.y-cy,dist=Math.hypot(dx,dy);
+    if(dist<=horizon)continue;
+    let px=p.x,py=p.y,alpha=p.bright;
+    // Number Follow is only a COUNT fraction of eligible stars; it never changes reach.
+    if(dist<reach && follow>0 && rand(i+203741)<follow){
+      const near=1-clamp((dist-horizon)/(reach-horizon),0,1);
+      // Resistance is deliberately different for individual stars: some catch,
+      // others slip in easily. At Movement 0 there is no catching or stretching.
+      const stubborn=movement*(.22+.78*rand(i+71403));
+      const cycle=(t*rate*(.58+near*1.50)/(1+.42*stubborn)+p.phase)%1;
+      let progress=cycle;
+      const catchStart=.30+.11*p.phase;
+      const catchEnd=catchStart+.19*stubborn;
+      let strain=0;
+      if(stubborn>.001 && cycle>catchStart){
+        if(cycle<catchEnd){
+          const u=(cycle-catchStart)/Math.max(.001,catchEnd-catchStart);
+          // Short elastic hesitation before breaking free.
+          progress=catchStart+(cycle-catchStart)*(.20+.10*u);
+          strain=Math.sin(Math.PI*u)*stubborn;
+        }else{
+          // Catch-up motion still reaches the horizon at the end of each cycle.
+          const held=catchStart+(catchEnd-catchStart)*.30;
+          const u=(cycle-catchEnd)/Math.max(.001,1-catchEnd);
+          progress=held+(1-held)*u*u*(2-u);
+          strain=(1-u)*stubborn*.9;
+        }
+      }
+      const pullStrength=clamp(+$('speed').value/170,0,1.765);
+      const angle0=Math.atan2(dy,dx);
+      const spin=clamp(spinStrength,0,1);
+      // Softer spiral pull. The star always keeps moving inward, while gaining
+      // a controlled clockwise bend near the horizon. No full orbit ring.
+      function spiralPose(q){
+        q=clamp(q,0,1);
+        const eased=q*q*(3-2*q);
+        const straight=1-Math.pow(1-eased,Math.max(.08,pullStrength));
+        const rr=horizon+(dist-horizon)*(1-straight);
+        if(spin<=.0001){
+          return {r:rr,a:angle0};
+        }
+        const edgeBias=1-clamp((rr-horizon)/Math.max(2,(dist-horizon)*.52),0,1);
+        // Build angle gradually, strongest only near the edge; capped below a full turn.
+        const turn=spin*(.10 + .95*Math.pow(edgeBias,1.55))*eased*(.20 + .36*TAU);
+        return {r:rr,a:angle0+turn};
+      }
+      const pos=spiralPose(progress);
+      px=cx+Math.cos(pos.a)*pos.r;py=cy+Math.sin(pos.a)*pos.r;
+      alpha*=clamp((pos.r-horizon)/3.2,0,1);
+      if(alpha<.012)continue;
+      // Trail samples the SAME path as the star. No fabricated radial shortcut
+      // and no extra particle layer. Movement adds a little more trail length.
+      const trailSpan=(.012+.034*spin+.02*movement)*(.45+.55*rand(i+8012));
+      if((spin>.01||strain>.10) && progress>.32 && p.phase>.20){
+        ctx.beginPath();
+        const segments=6;
+        for(let j=segments;j>=0;j--){
+          const tail=spiralPose(Math.max(0,progress-trailSpan*j/segments));
+          const tx=cx+Math.cos(tail.a)*tail.r,ty=cy+Math.sin(tail.a)*tail.r;
+          if(j===segments)ctx.moveTo(tx,ty);else ctx.lineTo(tx,ty);
+        }
+        ctx.strokeStyle=`rgba(${p.warm?'248,212,239':'184,206,255'},${alpha*(.08+.12*Math.max(spin,strain))})`;
+        ctx.lineWidth=.18+.11*Math.max(spin,strain);
+        ctx.lineCap='round';ctx.stroke();
+      }
+    }
+    if(alpha>.015){
+      ctx.fillStyle=p.warm?`rgba(255,242,216,${alpha})`:`rgba(231,241,255,${alpha})`;
+      ctx.fillRect(Math.round(px),Math.round(py),p.size,p.size);
+    }
+  }
+  ctx.restore();
+}
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.round(bounds.width*dpr),H=Math.round(bounds.height*dpr);if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+    const b=breathCycle(cosmeticT,number);
+    // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
+    const sxB=1+.036*b.air+.012*b.strain;
+    const syB=1+.062*b.air+.022*b.strain;
+    const lean=b.strain*.017;
+    const heave=-r*(.016*b.air+.028*b.strain*Math.max(0,Math.sin(cosmeticT*(1.65+b.pressure*5.1))));
+    ctx.translate(cx,cy+heave);
+    ctx.transform(1,0,lean,1,0,0);
+    ctx.scale(sxB,syB);
+    ctx.translate(-cx,-cy);
+  }
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
+bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
+bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}render('canvasA',state.A,state.t);render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
+rebuild();
+// Offline Effects Library: named presets are separate from gameplay and the source effects.
+const libraryKey='cellcore-effects-library-v1';
+const libSliders=['value','speed','urgency','inst','move','follow'];
+let library=[];
+function validatePreset(p){
+  if(!p||typeof p!=='object'||typeof p.name!=='string'||!p.settings||typeof p.settings!=='object')return null;
+  const mode=Number(p.mode),effect=Number(p.effect);
+  if(!Number.isInteger(mode)||(mode!==0&&mode!==1)||!Number.isInteger(effect)||effect<1||effect>(mode?13:14))return null;
+  const settings={};
+  for(const k of libSliders){const input=$(k),v=Number(p.settings[k]);if(!Number.isFinite(v))return null;settings[k]=Math.max(Number(input.min),Math.min(Number(input.max),v));}
+  return {id:typeof p.id==='string'?p.id.slice(0,64):'',name:p.name.trim().slice(0,70)||'Unnamed preset',mode,effect,settings};
+}
+function libraryStatus(message){$('libraryFeedback').textContent=message;}
+function persistLibrary(){try{localStorage.setItem(libraryKey,JSON.stringify(library));return true}catch(e){libraryStatus('Browser storage unavailable. Export the library to keep a copy.');return false}}
+function readLibrary(){try{const raw=JSON.parse(localStorage.getItem(libraryKey)||'[]');if(Array.isArray(raw))library=raw.slice(0,200).map(validatePreset).filter(Boolean)}catch(e){library=[];libraryStatus('Could not read saved presets; storage may be blocked.')}renderLibrary()}
+function renderLibrary(){
+  const list=$('libraryList');list.replaceChildren();$('libraryCount').textContent=library.length+' saved';
+  if(!library.length){const msg=document.createElement('p');msg.className='muted';msg.textContent='No saved effects yet.';list.append(msg);return}
+  for(const p of library){
+    const card=document.createElement('div');card.className='library-entry';
+    const title=document.createElement('strong');title.textContent=p.name;
+    const meta=document.createElement('small');meta.textContent=(p.mode?'Explosion':'Appearance')+' '+String(p.effect).padStart(2,'0')+' · '+(p.mode?explosions:appearance)[p.effect-1];
+    const actions=document.createElement('div');actions.className='actions';
+    const load=document.createElement('button');load.textContent='Load';load.onclick=()=>loadPreset(p);
+    const rename=document.createElement('button');rename.textContent='Rename';rename.onclick=()=>{const newName=prompt('Rename this preset:',p.name);if(newName===null)return;if(!newName.trim()){libraryStatus('Preset name cannot be empty.');return}p.name=newName.trim().slice(0,70);persistLibrary();renderLibrary()};
+    const del=document.createElement('button');del.textContent='Delete';del.onclick=()=>{if(!confirm('Delete preset "'+p.name+'"?'))return;library=library.filter(item=>item!==p);persistLibrary();renderLibrary();libraryStatus('Preset deleted.')};
+    actions.append(load,rename,del);card.append(title,meta,actions);list.append(card);
+  }
+}
+function loadPreset(p){
+  const checked=validatePreset(p);if(!checked)return libraryStatus('Invalid preset.');
+  state.mode=checked.mode;
+  state.deathStart=null;state.burstStart=state.t;
+  $('appearance').classList.toggle('active',!state.mode);$('explosion').classList.toggle('active',!!state.mode);
+  const side=$('librarySide').value;state[side]=checked.effect;
+  for(const k of libSliders){$(k).value=checked.settings[k];$(k).dispatchEvent(new Event('input',{bubbles:true}))}
+  rebuild();libraryStatus('Loaded "'+checked.name+'" into '+side+'.');
+}
+$('librarySave').onclick=()=>{
+  if(library.length>=200)return libraryStatus('Library limit reached (200 presets). Export and remove old presets.');
+  const side=$('librarySide').value,mode=state.mode,effect=state[side];
+  const name=$('libraryName').value.trim()||((mode?explosions:appearance)[effect-1]+' preset');
+  const settings={};for(const k of libSliders)settings[k]=Number($(k).value);
+  library.unshift({id:String(Date.now())+'-'+Math.random().toString(36).slice(2,9),name:name.slice(0,70),mode,effect,settings});
+  const saved=persistLibrary();renderLibrary();libraryStatus(saved?'Saved "'+name+'" locally.':'Preset added for this session. Export to keep it.');
+};
+$('libraryExport').onclick=()=>{
+  const blob=new Blob([JSON.stringify({format:'cellcore-effects-library',version:1,presets:library},null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='cellcore-effects-library.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);libraryStatus('Exported '+library.length+' preset(s).');
+};
+$('libraryImportButton').onclick=()=>$('libraryImportFile').click();
+$('libraryImportFile').onchange=async e=>{
+  const file=e.target.files&&e.target.files[0];e.target.value='';if(!file)return;
+  if(file.size>500000)return libraryStatus('Import is too large.');
+  try{
+    const data=JSON.parse(await file.text());if(!data||data.format!=='cellcore-effects-library'||data.version!==1||!Array.isArray(data.presets))throw Error('Invalid library format');
+    const valid=data.presets.slice(0,200).map(validatePreset).filter(Boolean);
+    if(!valid.length)throw Error('No valid presets found');
+    const existing=new Set(library.map(p=>p.id));const incoming=valid.filter(p=>!p.id||!existing.has(p.id));
+    const remaining=Math.max(0,200-library.length);library.push(...incoming.slice(0,remaining));persistLibrary();renderLibrary();libraryStatus('Imported '+Math.min(incoming.length,remaining)+' preset(s). Existing presets kept.');
+  }catch(err){libraryStatus('Import failed: '+err.message)}
+};
+readLibrary();
+try{
+  const pending=JSON.parse(localStorage.getItem('cellcore-effects-pending-load')||'null');
+  if(pending){localStorage.removeItem('cellcore-effects-pending-load');const checked=validatePreset(pending);if(checked){$('librarySide').value='A';loadPreset(checked);libraryStatus('Editing "'+checked.name+'". Save to keep a new copy.');}}
+}catch(e){}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
