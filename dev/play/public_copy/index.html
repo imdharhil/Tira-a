@@ -301,12 +301,12 @@ function publicCopyTacticalDecision(){
   if(canGold)choices.push({type:'gold',value:4,score:scoreFire(4)-9}); // PP opportunity cost
   // Protect is defensive and consumes a turn. Never choose it instead of an immediate win.
   if(ai.shields>0&&!ai.armed){
-    const imminent=pos>=goal-3;
-    const pressure=pos>=2;
+    const strongest=Math.max(0,...cards.map(c=>c.value),canGold?4:0);
     const hasWinningShot=!shield&&choices.some(c=>c.score>=10000);
-    if(!hasWinningShot&&(imminent||pressure&&ai.shields>1)){
-      const score=imminent?35+pos*3:10+pos;
-      choices.push({type:'protect',score});
+    // Reserve Protect for severe danger when firing cannot meaningfully reduce it.
+    // Prevent the repeated Protect loops seen in the battle logs.
+    if(!hasWinningShot&&!shield&&pos>=goal-1&&strongest<=1){
+      choices.push({type:'protect',score:14});
     }
   }
   // Allow a conversion to fund Gold +4 when it changes the action quality.
