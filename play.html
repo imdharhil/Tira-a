@@ -218,6 +218,17 @@ function coreWav(c){
  return new Blob([buffer],{type:'audio/wav'});
 }
 const coreSoundUrls=Array(7).fill(null);
+let corePrewarmIndex=0;
+function prewarmCoreSound(){
+ if(corePrewarmIndex>=coreSoundUrls.length)return;
+ const charge=corePrewarmIndex++;
+ try{if(!coreSoundUrls[charge])coreSoundUrls[charge]=URL.createObjectURL(coreWav(charge))}catch{}
+ if(corePrewarmIndex<coreSoundUrls.length)setTimeout(prewarmCoreSound,0);
+}
+// Prepare all seven Core charge sounds outside shot resolution so subsequent
+// RED and BLUE hits do not synthesize long WAVs on the animation thread.
+if(typeof requestIdleCallback==='function')requestIdleCallback(prewarmCoreSound,{timeout:1000});
+else setTimeout(prewarmCoreSound,0);
 function updateCoreSound(){
  if(!coreSoundEnabled){coreAudio.pause();audioStart.style.display='none';return}
  if(!g||!coreSoundReady||(g.ended&&phase!=='over')){coreAudio.pause();return}
