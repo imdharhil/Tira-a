@@ -170,7 +170,7 @@ const coreMix={a:42,b:42,va:1,vb:0}; // Lab #43 Spring Boing (zero-based index 4
 // Quiet Doodle Menu background track, independent from Core and combat SFX.
 // iOS Safari requires an explicit user interaction before playback.
 const bgMusic=new Audio('https://opengameart.org/sites/default/files/doodle.mp3');
-bgMusic.loop=true;bgMusic.preload='none';bgMusic.volume=.10;bgMusic.playbackRate=.92;
+bgMusic.loop=true;bgMusic.preload='auto';bgMusic.volume=.10;bgMusic.playbackRate=.92;
 const sharedMusicKey='tira-dev-shared-music-enabled-v1';
 let musicEnabled=true,musicError=false;
 try{const shared=localStorage.getItem(sharedMusicKey);if(shared!==null)musicEnabled=shared!=='off';else{const legacy=JSON.parse(localStorage.getItem('tira-dev-audio-mix-v3')||'{}');musicEnabled=legacy.music!==false}}catch{}
@@ -222,12 +222,13 @@ function coreWav(c){
  for(let k=0;k<n;k++){const offset=44+k*2,x=v.getInt16(offset,true)/32768;bass+=.035*(x-bass);trebleCut+=.32*(x-trebleCut);const low=bass,mid=trebleCut-bass,high=x-trebleCut;v.setInt16(offset,Math.round(Math.tanh((low*lg+mid*mg+high*hg)*gain)*32767),true)}
  return new Blob([buffer],{type:'audio/wav'});
 }
+const coreSoundUrls=Array(7).fill(null);
 function updateCoreSound(){
  if(!coreSoundEnabled){coreAudio.pause();audioStart.style.display='none';return}
  if(!g||!coreSoundReady||(g.ended&&phase!=='over')){coreAudio.pause();return}
  const charge=Math.min(6,Math.max(0,Math.abs(g.pos)));if(charge===coreSoundCharge&&!coreAudio.paused)return;
  coreAudio.pause();coreSoundCharge=charge;const attempt=++audioAttempt;
- const old=coreSoundURL;coreSoundURL=URL.createObjectURL(coreWav(charge));coreAudio.src=coreSoundURL;coreAudio.load();if(old)URL.revokeObjectURL(old);
+ coreSoundURL=coreSoundUrls[charge]||(coreSoundUrls[charge]=URL.createObjectURL(coreWav(charge)));coreAudio.src=coreSoundURL;
  coreAudio.play().then(()=>{if(attempt===audioAttempt)audioStart.style.display='none'}).catch(()=>{if(attempt===audioAttempt){coreSoundReady=false;audioStart.style.display='block'}});
 }
 document.addEventListener('pointerdown',e=>{if(coreSoundEnabled&&g&&!g.ended&&!audioStart.contains(e.target)&&(coreAudio.paused||!coreSoundReady)){coreSoundReady=true;coreSoundCharge=-1;updateCoreSound()}},{passive:true});
