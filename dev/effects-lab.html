@@ -276,99 +276,72 @@ function cosmosNew(c,x,y,r,t,p){
 }
 
 function waterNew(c,x,y,r,t,p,controls={}){
- // Liquid Surface only. Reference: glassy water lobes splitting into substantial fragments.
+ // Liquid Surface ONLY: Instability controls cohesion (gravity-like containment);
+ // Movement controls vibration, independent of the flowing refraction clock.
  const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
  const urgency=clamp(controls.urgency??0,0,1);
- const breakup=clamp((inst-.13)/.87,0,1),cohesion=1-breakup;
- const flow=t*.54,rate=5+move*16,energy=clamp(p*.55+urgency*.45,0,1);
- const shakeX=Math.sin(t*rate)*r*.024*move,shakeY=Math.cos(t*rate*1.23)*r*.018*move;
- // Shape is connected and rounded when cohesive; instability forms big necks and protrusions.
- const edge=a=>r*(1+.018*Math.sin(3*a-flow*.76)+.014*Math.sin(5*a+flow*.61)
-   +breakup*(.115*Math.sin(4*a-flow*.84)+.09*Math.sin(7*a+flow*1.18)
-   +.06*Math.sin(11*a-flow*.67)));
- // One shared material style across body and detached fragments: translucent glassy water.
- function material(px,py,rx,ry,rot,alpha){
-  c.save();c.translate(px,py);c.rotate(rot);
-  c.scale(rx,ry);
-  const fill=c.createRadialGradient(-.31,-.42,.07,.08,.07,1.17);
-  fill.addColorStop(0,'rgba(213,250,255,'+(.62*alpha)+')');
-  fill.addColorStop(.24,'rgba(106,204,231,'+(.52*alpha)+')');
-  fill.addColorStop(.52,'rgba(33,123,174,'+(.71*alpha)+')');
-  fill.addColorStop(.81,'rgba(7,50,96,'+(.66*alpha)+')');
-  fill.addColorStop(1,'rgba(5,31,66,'+(.23*alpha)+')');
-  c.fillStyle=fill;c.beginPath();c.arc(0,0,1,0,TAU);c.fill();
-  const light=c.createRadialGradient(-.42,-.58,0,-.38,-.55,.56);
-  light.addColorStop(0,'rgba(243,255,255,'+(.54*alpha)+')');
-  light.addColorStop(.27,'rgba(199,248,255,'+(.24*alpha)+')');
-  light.addColorStop(1,'rgba(199,248,255,0)');
-  c.fillStyle=light;c.beginPath();c.ellipse(-.24,-.33,.62,.42,-.24,0,TAU);c.fill();
-  c.strokeStyle='rgba(187,246,255,'+(.28*alpha)+')';c.lineWidth=.014;
-  c.beginPath();c.ellipse(0,0,.975,.975,0,-2.45,-.13);c.stroke();
-  c.restore();
- }
- c.save();c.translate(shakeX,shakeY);
- // Organic main body, not a flat gradient sphere.
- c.save();c.beginPath();
- for(let i=0;i<=180;i++){
-  const a=i*TAU/180,rad=edge(a);
-  const px=x+Math.cos(a)*rad,py=y+Math.sin(a)*rad;
-  if(i)c.lineTo(px,py);else c.moveTo(px,py);
+ const cohesion=1-inst,looseness=inst*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ const flow=t*.64;
+ // Movement is vibration strength and frequency, not fluid drift speed.
+ const vibrationRate=5+move*16;
+ const vibrationX=Math.sin(t*vibrationRate)*r*.030*move;
+ const vibrationY=Math.sin(t*vibrationRate*1.31+.7)*r*.023*move;
+ // Stable water at 0 instability; progressively less-contained irregular water at 100.
+ const wobble=a=>1+(.003+.034*looseness)*Math.sin(3*a-flow*.83)
+   +(.002+.029*looseness)*Math.sin(5*a+flow*.57)
+   +(.001+.019*looseness)*Math.sin(8*a-flow*1.18+a*.4)
+   +move*.009*Math.sin(12*a-t*vibrationRate*.72);
+ c.save();c.translate(vibrationX,vibrationY);c.beginPath();
+ for(let k=0;k<=144;k++){
+  const angle=k*TAU/144,dist=r*wobble(angle);
+  if(k)c.lineTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
+  else c.moveTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
  }
  c.closePath();c.clip();
- const body=c.createRadialGradient(x-r*.32,y-r*.36,r*.08,x+r*.12,y+r*.15,r*1.27);
- body.addColorStop(0,'rgba(200,247,255,.83)');
- body.addColorStop(.22,'rgba(84,187,215,.86)');
- body.addColorStop(.52,'rgba(31,118,163,.88)');
- body.addColorStop(.77,'rgba(8,60,109,.86)');
- body.addColorStop(1,'rgba(5,29,69,.65)');
- c.fillStyle=body;c.fillRect(x-r*1.4,y-r*1.4,r*2.8,r*2.8);
- // Water-to-glass folds: broad curved lighting lobes move with the fluid.
+ // Low-contrast transparent body; avoid a solid permanent white hotspot.
+ const base=c.createRadialGradient(x-r*.26,y-r*.27,r*.07,x+r*.12,y+r*.16,r*1.16);
+ base.addColorStop(0,'rgba(89,177,210,.71)');
+ base.addColorStop(.26,'rgba(39,128,176,.79)');
+ base.addColorStop(.6,'rgba(15,88,143,.66)');
+ base.addColorStop(.84,'rgba(8,55,107,.30)');
+ base.addColorStop(1,'rgba(5,28,69,0)');
+ c.fillStyle=base;c.fillRect(x-r*1.25,y-r*1.25,r*2.5,r*2.5);
+ // Broad but faint translucent caustic sheets. Each drifts along a different path.
  for(let i=0;i<5;i++){
-  const a=flow*(.62+.13*i)+i*TAU/5;
-  const px=x+Math.cos(a)*r*(.36+.13*Math.sin(a*1.6));
-  const py=y+Math.sin(a)*r*(.37+.11*Math.cos(a*1.1));
-  c.save();c.translate(px,py);c.rotate(a+.28);
-  c.scale(r*(.29+.10*Math.sin(a*.84)**2),r*(.17+.04*Math.cos(a*.63)**2));
-  const fold=c.createRadialGradient(-.20,-.29,.05,0,0,1.1);
-  fold.addColorStop(0,'rgba(239,255,255,'+(.23+.18*energy)+')');
-  fold.addColorStop(.32,'rgba(163,233,250,.18)');
-  fold.addColorStop(.67,'rgba(22,93,148,.11)');
-  fold.addColorStop(1,'rgba(6,42,98,0)');
-  c.fillStyle=fold;c.beginPath();c.arc(0,0,1,0,TAU);c.fill();c.restore();
+  const a=flow*(.73+.08*i)+i*1.61;
+  const px=x+r*(.48*Math.sin(a)+.09*looseness*Math.sin(2.1*a));
+  const py=y+r*(.39*Math.cos(a*.87)+.06*looseness*Math.sin(a*1.6));
+  const rx=r*(.23+.08*Math.sin(a*.8+i)**2);
+  const ry=rx*(.36+.12*Math.cos(a*.7+i)**2);
+  c.save();c.translate(px,py);c.rotate(.35*Math.sin(a*.61));
+  c.scale(1,ry/rx);
+  const caustic=c.createRadialGradient(-rx*.22,0,0,0,0,rx);
+  caustic.addColorStop(0,'rgba(190,245,253,'+(.06+.08*energy)+')');
+  caustic.addColorStop(.36,'rgba(127,221,243,.055)');
+  caustic.addColorStop(1,'rgba(110,219,245,0)');
+  c.fillStyle=caustic;c.beginPath();c.arc(0,0,rx,0,TAU);c.fill();
+  c.restore();
  }
- // Glancing light tracks surface flow rather than sitting in a static white circle.
- const highlightAngle=flow*.73;
- const hx=x+r*(-.18+.27*Math.sin(highlightAngle));
- const hy=y+r*(-.28+.18*Math.cos(highlightAngle*.87));
- c.save();c.translate(hx,hy);c.rotate(highlightAngle*.3);
- c.scale(r*.36,r*.21);
- const gleam=c.createRadialGradient(-.1,-.14,0,0,0,1);
- gleam.addColorStop(0,'rgba(241,255,255,.33)');
- gleam.addColorStop(.32,'rgba(187,238,251,.15)');
- gleam.addColorStop(1,'rgba(133,212,238,0)');
- c.fillStyle=gleam;c.beginPath();c.arc(0,0,1,0,TAU);c.fill();c.restore();
- c.restore();
- // Surface-connected glossy lobes create pinched water necks.
- for(let i=0;i<7;i++){
-  const angle=i*2.399963+flow*(.20+.05*(i%3));
-  const size=r*(.19+.08*Math.sin(i*2.3+flow*.32)**2);
-  const reach=r*(.65+breakup*.22+.05*Math.sin(flow+i));
-  const px=x+Math.cos(angle)*reach,py=y+Math.sin(angle)*reach;
-  material(px,py,size*(1+.30*breakup),size*(.72+.18*Math.sin(angle)),angle*.27,.37+.43*breakup);
+ // Refracted light bands: displaced translucent sheets, not circular bubble blobs.
+ for(let i=0;i<3;i++){
+  const a=flow*(.55+.13*i)+i*2.3;
+  const px=x+r*(.29*Math.sin(a)+.08*Math.sin(a*2+inst));
+  const py=y+r*(.31*Math.cos(a*.89));
+  const sx=r*(.39+.06*looseness),sy=r*(.085+.05*looseness);
+  c.save();c.translate(px,py);c.rotate(-.45+Math.sin(a*.67)*(.22+.25*looseness));c.scale(1,sy/sx);
+  const lens=c.createRadialGradient(-sx*.3,0,0,0,0,sx);
+  lens.addColorStop(0,'rgba(218,252,255,'+(.045+.08*energy)+')');
+  lens.addColorStop(.35,'rgba(159,225,243,.06)');
+  lens.addColorStop(1,'rgba(115,208,234,0)');
+  c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- // Breakup is made of large visibly separated water chunks, not tiny particles.
- if(breakup>0){
-  const pieces=Math.round(2+12*breakup);
-  for(let i=0;i<pieces;i++){
-   const a=i*2.399963+flow*(.20+.045*(i%4));
-   const life=(flow*(.18+.023*(i%5))+i*.6180339)%1;
-   const size=r*(.055+.085*((i*7%11)/11))*(.55+.45*breakup)*(1-.40*life);
-   const gap=r*(.06+.52*breakup)*life;
-   const distance=r*(.84+.16*Math.sin(a*3+flow)) +gap;
-   const px=x+Math.cos(a)*distance,py=y+Math.sin(a)*distance;
-   material(px,py,size*(1.2+life*.9),size*(.68+.3*Math.sin(i+flow)**2),a+.25*Math.sin(flow+i),(.28+.67*breakup)*(1-.48*life));
-  }
- }
+ // A moving, soft light sweep; no static glass-like shine.
+ const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
+ const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*looseness));
+ shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
+ shine.addColorStop(.43,'rgba(177,236,250,.055)');
+ shine.addColorStop(1,'rgba(170,231,247,0)');
+ c.fillStyle=shine;c.fillRect(x-r,y-r,r*2,r*2);
  c.restore();
 }
 function fractureNew(c,x,y,r,t,p){
