@@ -655,13 +655,6 @@ function shatterNew(c,x,y,r,q,controls={}){
    const sz=cell*(.45+.65*rand(i+429))*(1-.7*u);
    c.fillRect(snappedX,snappedY,Math.max(.5,sz),Math.max(.5,sz));
   }
-  // A short square shockwave confirms the actual breakup without introducing circles.
-  if(release<.6){
-   c.globalAlpha=(1-release/.6)*(.20+.28*urgency);
-   const edge=r*(.74+release*1.1);
-   c.strokeStyle='#2de2e6';c.lineWidth=cell*.48;
-   c.strokeRect(x-edge,y-edge,edge*2,edge*2);
-  }
  }
  c.restore();
 }
