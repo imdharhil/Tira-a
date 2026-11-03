@@ -10,12 +10,10 @@
 .library-list{display:grid;gap:8px;max-height:300px;overflow:auto;margin:12px 0}.library-entry{border:1px solid #344360;border-radius:10px;padding:10px;display:grid;gap:7px}.library-entry .actions{display:flex;gap:6px;flex-wrap:wrap}.library-entry button{font-size:12px;padding:6px 9px}.library-entry strong{font-size:13px}.library-entry small{color:#9ab3eb}.lib-feedback{font-size:12px;color:#a7d5ee;min-height:18px}.lib-name{background:#10192b;color:#e9f1ff;border:1px solid #334665;border-radius:9px;padding:9px;width:100%}
 .page-nav{color:#a8ceff;text-decoration:none;font-size:12px}.page-nav:hover{text-decoration:underline}@media all{body.effect-embed{min-height:0;background:#080f1f;overflow:hidden}body.effect-embed .wrap{padding:0;max-width:none}body.effect-embed header,body.effect-embed .left,body.effect-embed footer,body.effect-embed .titlebar,body.effect-embed .checks,body.effect-embed .stagegrid .viewport:nth-child(2){display:none!important}body.effect-embed main{display:block;margin:0}body.effect-embed main>.panel{padding:0;border:0;background:none;border-radius:0}body.effect-embed .stagegrid{display:block}body.effect-embed .viewport{aspect-ratio:auto;min-height:0;height:100vh;border:0;border-radius:0}body.effect-embed .viewport .top,body.effect-embed .viewport .bottom{display:none}}
 
-/* Opt-in retro preview; original appearance and explosion algorithms stay intact. */
+/* Background choices only. Never modify canvas resolution or add pixel/CRT filtering. */
 body.retro-pixel .viewport{background:radial-gradient(ellipse at 50% 24%,#231b4b 0%,#100e2b 49%,#05091a 100%)}
 body.retro-arcade .viewport{background:linear-gradient(180deg,#0b1431 0%,#251345 45%,#130b29 64%,#060916 100%)}
-body.retro-pixel .viewport canvas,body.retro-arcade .viewport canvas{image-rendering:pixelated;image-rendering:crisp-edges}
-body.retro-arcade .viewport::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(2,3,14,.14) 4px);opacity:.5}
-body.retro-arcade .viewport.liquid-smooth::after{display:none}
+body.retro-neon .viewport{background:#080f25}
 .retro-description{font-size:11px;line-height:1.5;color:#9eb6d6;margin:3px 0 0}
 </style>
 </head>
@@ -27,9 +25,8 @@ body.retro-arcade .viewport.liquid-smooth::after{display:none}
 <section class="panel">
 <h2>Experiment mode</h2>
 <div class="controls" style="margin-top:12px"><button id="appearance" class="active">Appearance 01–15</button><button id="explosion">Explosion 01–14</button></div>
-<div class="field"><label for="retroStyle">Retro presentation (both previews)</label><select id="retroStyle"><option value="off">Original / unchanged</option><option value="pixel">Pixel shading</option><option value="arcade">Neon arcade + pixel shading</option></select></div>
-<div class="field" id="retroDetail" hidden><label for="pixelSize">Pixel block size <output id="pixelSizeLabel">4×</output></label><input type="range" id="pixelSize" min="2" max="8" step="1" value="4"></div>
-<p class="retro-description">Preview-only visual filter. Does not replace any Core or explosion effect, alter the mechanics, or change saved preset formats.</p>
+<div class="field"><label for="retroStyle">Background (both previews)</label><select id="retroStyle"><option value="off">Original</option><option value="pixel">Retro Twilight</option><option value="arcade">Neon Arcade Grid</option><option value="neon">Neon Glow Arcade</option></select></div>
+<p class="retro-description">Four backgrounds only. No pixel filter, scanlines, or changes to Core appearances, explosions, gameplay, or saved presets.</p>
 <div class="field"><label>Core value <output id="valueLabel">5</output></label><input id="value" type="range" min="1" max="30" value="5"></div>
 <div class="field"><label>Animation speed / pull speed <output id="speedLabel">1.70×</output></label><input id="speed" type="range" min="0" max="300" value="170"></div>
 <div class="field"><label>Urgency / pull range <output id="urgencyLabel">0%</output></label><input id="urgency" type="range" min="0" max="100" value="0"></div>
@@ -66,16 +63,15 @@ const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embed
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
 let bhSpinTime=0, bhPullTime=0;
 const TAU=Math.PI*2;
-let retroStyle='off',pixelSize=4;
+let retroStyle='off';
 $('retroStyle').addEventListener('change',e=>{
   retroStyle=e.target.value;
-  $('retroDetail').hidden=retroStyle==='off';
   document.body.classList.toggle('retro-pixel',retroStyle==='pixel');
   document.body.classList.toggle('retro-arcade',retroStyle==='arcade');
+  document.body.classList.toggle('retro-neon',retroStyle==='neon');
 });
-$('pixelSize').addEventListener('input',e=>{pixelSize=+e.target.value;$('pixelSizeLabel').textContent=pixelSize+'×'});
-function drawLiquidNeonBackground(ctx,w,h,t){
-  // Liquid Surface only: smooth neon arcade scene, without pixel scaling or CRT scanlines.
+function drawNeonGlowBackground(ctx,w,h,t){
+  // Available to every appearance and explosion, independent of Core style.
   const horizon=h*.64;
   ctx.save();
   const base=ctx.createLinearGradient(0,0,0,h);
@@ -285,6 +281,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
  const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
  const urgency=clamp(controls.urgency??0,0,1);
  const cohesion=1-inst,looseness=inst*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ // Droplets emerge as gravity-like cohesion weakens; zero until instability passes 28%.
+ const shed=clamp((inst-.28)/.72,0,1);
  const flow=t*.64;
  // Movement is vibration strength and frequency, not fluid drift speed.
  const vibrationRate=5+move*16;
@@ -294,7 +292,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
  const wobble=a=>1+(.003+.034*looseness)*Math.sin(3*a-flow*.83)
    +(.002+.029*looseness)*Math.sin(5*a+flow*.57)
    +(.001+.019*looseness)*Math.sin(8*a-flow*1.18+a*.4)
-   +move*.009*Math.sin(12*a-t*vibrationRate*.72);
+   +move*.009*Math.sin(12*a-t*vibrationRate*.72)
+   +shed*.035*Math.sin(14*a+flow*1.4);
  c.save();c.translate(vibrationX,vibrationY);c.beginPath();
  for(let k=0;k<=144;k++){
   const angle=k*TAU/144,dist=r*wobble(angle);
@@ -303,7 +302,9 @@ function waterNew(c,x,y,r,t,p,controls={}){
  }
  c.closePath();c.clip();
  // Low-contrast transparent body; avoid a solid permanent white hotspot.
- const base=c.createRadialGradient(x-r*.26,y-r*.27,r*.07,x+r*.12,y+r*.16,r*1.16);
+ const baseX=x-r*.13+r*.13*Math.sin(flow*.93);
+ const baseY=y-r*.12+r*.12*Math.cos(flow*.79);
+ const base=c.createRadialGradient(baseX,baseY,r*.07,x+r*.12,y+r*.16,r*1.16);
  base.addColorStop(0,'rgba(89,177,210,.71)');
  base.addColorStop(.26,'rgba(39,128,176,.79)');
  base.addColorStop(.6,'rgba(15,88,143,.66)');
@@ -339,14 +340,40 @@ function waterNew(c,x,y,r,t,p,controls={}){
   lens.addColorStop(1,'rgba(115,208,234,0)');
   c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- // A moving, soft light sweep; no static glass-like shine.
- const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
- const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*looseness));
- shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
- shine.addColorStop(.43,'rgba(177,236,250,.055)');
- shine.addColorStop(1,'rgba(170,231,247,0)');
- c.fillStyle=shine;c.fillRect(x-r,y-r,r*2,r*2);
- c.restore();
+ // Light belongs to the water: its elliptical soft volume drifts, tilts and stretches with flow.
+ const glowPhase=flow*.92;
+ const glowX=x+r*(-.16+.18*Math.sin(glowPhase))+looseness*r*.05*Math.sin(glowPhase*1.7);
+ const glowY=y+r*(-.12+.14*Math.cos(glowPhase*.83))+looseness*r*.04*Math.cos(glowPhase*1.35);
+ const glowRX=r*(.24+.08*move+.08*looseness);
+ const glowRY=r*(.18+.04*move+.10*looseness);
+ c.save();c.translate(glowX,glowY);
+ c.rotate(.18*Math.sin(glowPhase*.7)+looseness*.22*Math.sin(glowPhase*1.2));
+ c.scale(1,glowRY/glowRX);
+ const liquidGlow=c.createRadialGradient(-glowRX*.18,-glowRX*.12,0,0,0,glowRX);
+ liquidGlow.addColorStop(0,'rgba(218,248,255,'+(.09+.08*energy)+')');
+ liquidGlow.addColorStop(.34,'rgba(180,232,246,.06)');
+ liquidGlow.addColorStop(1,'rgba(180,232,246,0)');
+ c.fillStyle=liquidGlow;c.beginPath();c.arc(0,0,glowRX,0,TAU);c.fill();c.restore();
+ c.restore(); // Drop water clip before shedding droplets beyond the edge.
+ // Liquid fragments stay visible beyond the water boundary; deterministic and cyclic.
+ if(shed>0){
+  const count=Math.round(5+22*shed);
+  for(let i=0;i<count;i++){
+   const angle=i*2.39996323+flow*(.14+.018*(i%5));
+   const lifetime=(flow*(.28+.025*(i%4))+i*.6180339)%1;
+   const edge=r*wobble(angle);
+   const drift=r*(.03+.31*shed)*lifetime;
+   const px=x+Math.cos(angle)*(edge+drift)+vibrationX*.24;
+   const py=y+Math.sin(angle)*(edge+drift)+vibrationY*.24;
+   const radius=r*(.006+.013*shed)*(1-.55*lifetime);
+   const g=c.createRadialGradient(px-radius*.25,py-radius*.25,0,px,py,radius*2.8);
+   const alpha=(.14+.42*shed)*(1-lifetime);
+   g.addColorStop(0,'rgba(204,247,255,'+alpha+')');
+   g.addColorStop(.38,'rgba(87,201,231,'+(alpha*.66)+')');
+   g.addColorStop(1,'rgba(58,166,210,0)');
+   c.fillStyle=g;c.beginPath();c.arc(px,py,radius*2.8,0,TAU);c.fill();
+  }
+ }
 }
 function fractureNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8fcff','#c5e9ff','#4a80c3','#09182f']);if(p<.08)return;clipCircle(c,x,y,r,()=>{for(let j=0;j<9;j++){let amount=clamp((p-.08-j*.055)*1.8,0,1);if(!amount)continue;let a=j*2.399,pts=[];for(let k=0;k<=8;k++){let d=r*(.06+.86*amount*k/8),angle=a+Math.sin(j*7+k*11)*.07;pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d])}pxLine(c,pts,'rgba(5,10,27,.9)',1+2.4*p);pxLine(c,pts.map(v=>[v[0]+1,v[1]-1]),'rgba(215,242,255,.32)',.7);if(p>.4){let v=pts[5],a2=a+(j%2?.7:-.7);pxLine(c,[v,[v[0]+Math.cos(a2)*r*.3*p,v[1]+Math.sin(a2)*r*.3*p]],'rgba(10,20,40,.85)',1.3)}}})}
@@ -456,7 +483,7 @@ function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStren
   }
   ctx.restore();
 }
-function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const smoothLiquid=!state.mode&&n===5;canvas.parentElement.classList.toggle('liquid-smooth',smoothLiquid);canvas.style.imageRendering=smoothLiquid?'auto':'';const dpr=Math.min(devicePixelRatio||1,2),scale=(smoothLiquid||retroStyle==='off')?dpr:1/pixelSize,W=Math.max(1,Math.round(bounds.width*scale)),H=Math.max(1,Math.round(bounds.height*scale));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=smoothLiquid||retroStyle==='off';const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(smoothLiquid)drawLiquidNeonBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
     const b=breathCycle(cosmeticT,number);
     // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
     const sxB=1+.036*b.air+.012*b.strain;
