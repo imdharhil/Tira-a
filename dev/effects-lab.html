@@ -15,6 +15,7 @@ body.retro-pixel .viewport{background:radial-gradient(ellipse at 50% 24%,#231b4b
 body.retro-arcade .viewport{background:linear-gradient(180deg,#0b1431 0%,#251345 45%,#130b29 64%,#060916 100%)}
 body.retro-pixel .viewport canvas,body.retro-arcade .viewport canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 body.retro-arcade .viewport::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(2,3,14,.14) 4px);opacity:.5}
+body.retro-arcade .viewport.liquid-smooth::after{display:none}
 .retro-description{font-size:11px;line-height:1.5;color:#9eb6d6;margin:3px 0 0}
 </style>
 </head>
@@ -59,7 +60,7 @@ body.retro-arcade .viewport::after{content:"";position:absolute;inset:0;pointer-
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface is rebuilt around thicker water masses and reflective liquid motion.',6:'Corona starts at a true 2× animation clock and speeds up as Core Value and Urgency Boost rise together. The general Speed slider does not affect it.',8:'Solar Eclipse now uses value-driven coverage: the number determines how much the Moon covers the Core.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.'};
+const notes={1:'Pure Core keeps the default tremor identity.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona starts at a true 2× animation clock and speeds up as Core Value and Urgency Boost rise together. The general Speed slider does not affect it.',8:'Solar Eclipse now uses value-driven coverage: the number determines how much the Moon covers the Core.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
@@ -73,6 +74,41 @@ $('retroStyle').addEventListener('change',e=>{
   document.body.classList.toggle('retro-arcade',retroStyle==='arcade');
 });
 $('pixelSize').addEventListener('input',e=>{pixelSize=+e.target.value;$('pixelSizeLabel').textContent=pixelSize+'×'});
+function drawLiquidNeonBackground(ctx,w,h,t){
+  // Liquid Surface only: smooth neon arcade scene, without pixel scaling or CRT scanlines.
+  const horizon=h*.64;
+  ctx.save();
+  const base=ctx.createLinearGradient(0,0,0,h);
+  base.addColorStop(0,'#080f25');
+  base.addColorStop(.58,'#171039');
+  base.addColorStop(1,'#06142d');
+  ctx.fillStyle=base;ctx.fillRect(0,0,w,h);
+  const pulse=.88+.12*Math.sin(t*.24);
+  const halo=ctx.createRadialGradient(w*.5,h*.45,0,w*.5,h*.45,w*.64);
+  halo.addColorStop(0,'rgba(33,111,204,.13)');
+  halo.addColorStop(.51,'rgba(117,40,178,.08)');
+  halo.addColorStop(1,'rgba(4,9,27,0)');
+  ctx.fillStyle=halo;ctx.fillRect(0,0,w,h);
+  const haze=ctx.createLinearGradient(0,horizon-h*.18,0,horizon+h*.16);
+  haze.addColorStop(0,'rgba(234,55,202,0)');
+  haze.addColorStop(.47,'rgba(221,59,207,'+(.13*pulse)+')');
+  haze.addColorStop(.64,'rgba(46,194,251,.09)');
+  haze.addColorStop(1,'rgba(46,194,251,0)');
+  ctx.fillStyle=haze;ctx.fillRect(0,horizon-h*.18,w,h*.34);
+  // Smooth perspective geometry; never rendered through the low-resolution pixel canvas.
+  ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(w,horizon);
+  ctx.strokeStyle='rgba(246,106,217,.31)';ctx.lineWidth=1.1;ctx.stroke();
+  ctx.lineWidth=.75;ctx.strokeStyle='rgba(59,216,255,.16)';
+  for(let i=-10;i<=10;i++){
+    ctx.beginPath();ctx.moveTo(w*.5+i*w*.007,horizon);
+    ctx.lineTo(w*.5+i*w*.15,h);ctx.stroke();
+  }
+  for(let i=1;i<=10;i++){
+    const q=i/10,y=horizon+(h-horizon)*q*q;
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();
+  }
+  ctx.restore();
+}
 function drawRetroGrid(ctx,w,h){
   const horizon=h*.55;
   ctx.save();
@@ -420,7 +456,7 @@ function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStren
   }
   ctx.restore();
 }
-function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),scale=retroStyle==='off'?dpr:1/pixelSize,W=Math.max(1,Math.round(bounds.width*scale)),H=Math.max(1,Math.round(bounds.height*scale));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=retroStyle==='off';const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const smoothLiquid=!state.mode&&n===5;canvas.parentElement.classList.toggle('liquid-smooth',smoothLiquid);canvas.style.imageRendering=smoothLiquid?'auto':'';const dpr=Math.min(devicePixelRatio||1,2),scale=(smoothLiquid||retroStyle==='off')?dpr:1/pixelSize,W=Math.max(1,Math.round(bounds.width*scale)),H=Math.max(1,Math.round(bounds.height*scale));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=smoothLiquid||retroStyle==='off';const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(smoothLiquid)drawLiquidNeonBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
     const b=breathCycle(cosmeticT,number);
     // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
     const sxB=1+.036*b.air+.012*b.strain;
