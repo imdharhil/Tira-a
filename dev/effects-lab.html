@@ -244,15 +244,22 @@ function cosmosNew(c,x,y,r,t,p){
 }
 
 function waterNew(c,x,y,r,t,p,controls={}){
- // Liquid Surface controls: Speed advances t; Movement shapes the fluid;
- // Instability adds turbulence; Urgency intensifies refraction and deformation.
+ // Liquid Surface ONLY: Instability controls cohesion (gravity-like containment);
+ // Movement controls vibration, independent of the flowing refraction clock.
  const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
  const urgency=clamp(controls.urgency??0,0,1);
- const activity=.12+.88*move,chaos=.12+.88*inst,energy=clamp(p*.65+urgency*.35,0,1);
- const flow=t*(.42+.45*activity);
- const wobble=a=>1+activity*(.007*Math.sin(3*a-flow*1.25)+.009*Math.sin(5*a+flow*.79)
-   +(.006+.012*chaos)*Math.sin(8*a-flow*1.75+a*.4));
- c.save();c.beginPath();
+ const cohesion=1-inst,looseness=inst*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ const flow=t*.64;
+ // Movement is vibration strength and frequency, not fluid drift speed.
+ const vibrationRate=5+move*16;
+ const vibrationX=Math.sin(t*vibrationRate)*r*.030*move;
+ const vibrationY=Math.sin(t*vibrationRate*1.31+.7)*r*.023*move;
+ // Stable water at 0 instability; progressively less-contained irregular water at 100.
+ const wobble=a=>1+(.003+.034*looseness)*Math.sin(3*a-flow*.83)
+   +(.002+.029*looseness)*Math.sin(5*a+flow*.57)
+   +(.001+.019*looseness)*Math.sin(8*a-flow*1.18+a*.4)
+   +move*.009*Math.sin(12*a-t*vibrationRate*.72);
+ c.save();c.translate(vibrationX,vibrationY);c.beginPath();
  for(let k=0;k<=144;k++){
   const angle=k*TAU/144,dist=r*wobble(angle);
   if(k)c.lineTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
@@ -270,8 +277,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
  // Broad but faint translucent caustic sheets. Each drifts along a different path.
  for(let i=0;i<5;i++){
   const a=flow*(.73+.08*i)+i*1.61;
-  const px=x+r*(.48*Math.sin(a)+.09*chaos*Math.sin(2.1*a));
-  const py=y+r*(.39*Math.cos(a*.87)+.06*chaos*Math.sin(a*1.6));
+  const px=x+r*(.48*Math.sin(a)+.09*looseness*Math.sin(2.1*a));
+  const py=y+r*(.39*Math.cos(a*.87)+.06*looseness*Math.sin(a*1.6));
   const rx=r*(.23+.08*Math.sin(a*.8+i)**2);
   const ry=rx*(.36+.12*Math.cos(a*.7+i)**2);
   c.save();c.translate(px,py);c.rotate(.35*Math.sin(a*.61));
@@ -288,8 +295,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
   const a=flow*(.55+.13*i)+i*2.3;
   const px=x+r*(.29*Math.sin(a)+.08*Math.sin(a*2+inst));
   const py=y+r*(.31*Math.cos(a*.89));
-  const sx=r*(.38+.11*move),sy=r*(.085+.05*chaos);
-  c.save();c.translate(px,py);c.rotate(-.45+Math.sin(a*.67)*(.22+.25*chaos));c.scale(1,sy/sx);
+  const sx=r*(.39+.06*looseness),sy=r*(.085+.05*looseness);
+  c.save();c.translate(px,py);c.rotate(-.45+Math.sin(a*.67)*(.22+.25*looseness));c.scale(1,sy/sx);
   const lens=c.createRadialGradient(-sx*.3,0,0,0,0,sx);
   lens.addColorStop(0,'rgba(218,252,255,'+(.045+.08*energy)+')');
   lens.addColorStop(.35,'rgba(159,225,243,.06)');
@@ -298,7 +305,7 @@ function waterNew(c,x,y,r,t,p,controls={}){
  }
  // A moving, soft light sweep; no static glass-like shine.
  const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
- const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*chaos));
+ const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*looseness));
  shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
  shine.addColorStop(.43,'rgba(177,236,250,.055)');
  shine.addColorStop(1,'rgba(170,231,247,0)');
@@ -425,7 +432,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===5){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*.8)*r*.026*move*follow,Math.cos(cosmeticT*.73)*r*.022*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
