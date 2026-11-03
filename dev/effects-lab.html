@@ -144,7 +144,7 @@ case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
 case 2:{glow(ctx,x,y,r*1.32,[[0,'rgba(182,248,255,.82)'],[.52,'rgba(91,169,255,.25)'],[1,'rgba(37,79,190,0)']]);softSphere(ctx,x,y,r*.96,['#ffffff','#c9f3ff','#3a7dd6','#08111f']);break;}
 case 3:{atomNew(ctx,x,y,r,t,stress);break;}
 case 4:{cosmosNew(ctx,x,y,r,t,stress);break;}
-case 5:{waterNew(ctx,x,y,r,t,stress);break;}
+case 5:{waterNew(ctx,x,y,r,t,stress,opts.waterControls);break;}
 case 6:{const coronaLevel=opts.coronaLevel ?? stress;const heat=.26+.74*coronaLevel;const pumpRate=.7+coronaLevel*1.7;const pumpAmp=.08+coronaLevel*.92;const pumpWave=.5+.5*Math.sin(t*pumpRate);const pump=pumpWave*pumpAmp;glow(ctx,x,y,r*(1.24+.16*heat+.18*pump),[[0,`rgba(255,248,194,${.62+.22*pump})`],[.24,`rgba(255,214,132,${.18+.28*heat+.1*pump})`],[.58,`rgba(255,146,52,${.12+.18*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.46+.2*heat+.22*pump),[[0,'rgba(255,214,132,0)'],[.5,`rgba(255,186,98,${.04+.12*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.82+.24*heat+.16*pump),[[0,'rgba(255,230,177,0)'],[.62,`rgba(255,176,82,${.02+.07*heat+.06*pump})`],[1,'transparent']]);softSphere(ctx,x,y,r*(1+.006+.028*pump),['#fff8d9','#ffd48a','#8b3a34','#14070a']);clipCircle(ctx,x,y,r*.98,()=>{for(let i=0;i<6;i++){const rr=r*(.42+i*.1);glow(ctx,x+r*.09*Math.sin(t*(.55+coronaLevel*.9)+i),y-r*.06*Math.cos(t*(.52+coronaLevel*.8)+i*1.3),rr,[[0,'rgba(255,255,255,0)'],[.56,`rgba(255,196,112,${(.024+.016*i)*(.45+1.1*heat+1.0*pump)})`],[1,'transparent']])}});break;}
 case 7:{glow(ctx,x,y,r*(1.02+.09*Math.sin(t*2.5)),[[0,'rgba(255,255,255,.96)'],[.37,'rgba(104,218,255,.8)'],[.82,'rgba(29,73,127,.62)'],[1,'rgba(2,10,23,.6)']]);break;}
 case 8:{
@@ -243,77 +243,66 @@ function cosmosNew(c,x,y,r,t,p){
  circle(c,x,y,r,'#040815');clipCircle(c,x,y,r,()=>{for(let j=0;j<3;j++){let gx=x+r*[-.17,.38,-.27][j],gy=y+r*[-.05,.22,.36][j],size=r*[.85,.35,.24][j];glow(c,gx,gy,size*.64,[[0,j?'rgba(110,152,255,.17)':'rgba(247,139,210,.24)'],[1,'transparent']]);for(let arm=0;arm<3;arm++)for(let k=0;k<80;k++){let q=(k+.5)/80,a=t*(.07+j*.02)+arm*TAU/3+q*8.3,d=size*(.05+.9*q);circle(c,gx+Math.cos(a)*d,gy+Math.sin(a)*d*.52,.4+(1-q),arm%2?'rgba(137,190,255,.4)':'rgba(249,180,238,.4)')}glow(c,gx,gy,size*.18,[[0,'rgba(255,254,237,.9)'],[1,'transparent']]);}for(let i=0;i<230;i++){let xx=x+(rand(i+100)*2-1)*r,yy=y+(rand(i+800)*2-1)*r;if(Math.hypot(xx-x,yy-y)<r)circle(c,xx,yy,.4+rand(i+1400),'rgba(218,237,255,.45)')}})
 }
 
-function waterNew(c,x,y,r,t,p){
- // Water-only rendering: refracted moving light, fluid deformation, no drawn circle or rim.
- // Keep the water in the Core area, but dissolve the edge rather than outlining a glass ball.
- const ripple=a=>1+.018*Math.sin(3*a-t*1.05)+.014*Math.sin(5*a+t*.75)
-  +p*.028*Math.sin(7*a-t*1.6)+p*.012*Math.sin(11*a+t*1.3);
- c.save();
- c.beginPath();
- for(let k=0;k<=140;k++){
-  const a=k*TAU/140,d=r*ripple(a),xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;
-  if(k)c.lineTo(xx,yy);else c.moveTo(xx,yy);
+function waterNew(c,x,y,r,t,p,controls={}){
+ // Liquid Surface controls: Speed advances t; Movement shapes the fluid;
+ // Instability adds turbulence; Urgency intensifies refraction and deformation.
+ const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
+ const urgency=clamp(controls.urgency??0,0,1);
+ const activity=.12+.88*move,chaos=.12+.88*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ const flow=t*(.42+.45*activity);
+ const wobble=a=>1+activity*(.007*Math.sin(3*a-flow*1.25)+.009*Math.sin(5*a+flow*.79)
+   +(.006+.012*chaos)*Math.sin(8*a-flow*1.75+a*.4));
+ c.save();c.beginPath();
+ for(let k=0;k<=144;k++){
+  const angle=k*TAU/144,dist=r*wobble(angle);
+  if(k)c.lineTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
+  else c.moveTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
  }
  c.closePath();c.clip();
- // Transparent water depth: keep irregular fluid light visible, without an opaque disc.
- const depth=c.createRadialGradient(x-r*.26,y-r*.31,r*.06,x+r*.10,y+r*.12,r*1.13);
- depth.addColorStop(0,'rgba(194,245,255,.92)');
- depth.addColorStop(.25,'rgba(79,185,220,.83)');
- depth.addColorStop(.57,'rgba(19,111,165,.77)');
- depth.addColorStop(.82,'rgba(8,62,114,.42)');
- depth.addColorStop(1,'rgba(5,28,69,0)');
- c.fillStyle=depth;c.fillRect(x-r*1.3,y-r*1.3,r*2.6,r*2.6);
- // Animated refracted highlights, distributed throughout the moving water.
- for(let i=0;i<6;i++){
-  const phase=t*(.28+.025*i)+i*1.21;
-  const px=x+r*(.50*Math.sin(phase)+.08*Math.sin(phase*1.7));
-  const py=y+r*(.44*Math.cos(phase*.72)+.08*Math.cos(phase*1.2));
-  const size=r*(.10+.10*Math.sin(phase*.55+i)**2);
-  const g=c.createRadialGradient(px-r*.04,py-r*.08,0,px,py,size);
-  g.addColorStop(0,i%2?'rgba(240,255,255,.20)':'rgba(170,245,255,.24)');
-  g.addColorStop(.34,'rgba(165,236,250,.10)');
-  g.addColorStop(.7,'rgba(112,214,240,.04)');
-  g.addColorStop(1,'rgba(112,214,240,0)');
-  c.fillStyle=g;c.fillRect(px-size,py-size,2*size,2*size);
+ // Low-contrast transparent body; avoid a solid permanent white hotspot.
+ const base=c.createRadialGradient(x-r*.26,y-r*.27,r*.07,x+r*.12,y+r*.16,r*1.16);
+ base.addColorStop(0,'rgba(89,177,210,.71)');
+ base.addColorStop(.26,'rgba(39,128,176,.79)');
+ base.addColorStop(.6,'rgba(15,88,143,.66)');
+ base.addColorStop(.84,'rgba(8,55,107,.30)');
+ base.addColorStop(1,'rgba(5,28,69,0)');
+ c.fillStyle=base;c.fillRect(x-r*1.25,y-r*1.25,r*2.5,r*2.5);
+ // Broad but faint translucent caustic sheets. Each drifts along a different path.
+ for(let i=0;i<5;i++){
+  const a=flow*(.73+.08*i)+i*1.61;
+  const px=x+r*(.48*Math.sin(a)+.09*chaos*Math.sin(2.1*a));
+  const py=y+r*(.39*Math.cos(a*.87)+.06*chaos*Math.sin(a*1.6));
+  const rx=r*(.23+.08*Math.sin(a*.8+i)**2);
+  const ry=rx*(.36+.12*Math.cos(a*.7+i)**2);
+  c.save();c.translate(px,py);c.rotate(.35*Math.sin(a*.61));
+  c.scale(1,ry/rx);
+  const caustic=c.createRadialGradient(-rx*.22,0,0,0,0,rx);
+  caustic.addColorStop(0,'rgba(190,245,253,'+(.06+.08*energy)+')');
+  caustic.addColorStop(.36,'rgba(127,221,243,.055)');
+  caustic.addColorStop(1,'rgba(110,219,245,0)');
+  c.fillStyle=caustic;c.beginPath();c.arc(0,0,rx,0,TAU);c.fill();
+  c.restore();
  }
- // Smaller, slower refractive lens shapes, kept intentionally subtle.
+ // Refracted light bands: displaced translucent sheets, not circular bubble blobs.
  for(let i=0;i<3;i++){
-  const phase=t*(.26+.02*i)+i*1.93;
-  const px=x+r*(.30*Math.cos(phase)-.06*Math.sin(phase*.6));
-  const py=y+r*(.26*Math.sin(phase*.72)+.05*Math.cos(phase*1.0));
-  const sx=r*(.14+.08*Math.sin(phase*.55+i)**2);
-  const sy=r*(.07+.05*Math.cos(phase*.58+i)**2);
-  c.save();c.translate(px,py);c.rotate(.45*Math.sin(phase*.57));
-  const lens=c.createRadialGradient(-sx*.15,-sy*.18,0,0,0,sx);
-  lens.addColorStop(0,'rgba(246,255,255,.16)');
-  lens.addColorStop(.30,'rgba(214,247,255,.09)');
-  lens.addColorStop(.62,'rgba(173,234,248,.05)');
-  lens.addColorStop(1,'rgba(173,234,248,0)');
-  c.scale(1,sy/sx);c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
+  const a=flow*(.55+.13*i)+i*2.3;
+  const px=x+r*(.29*Math.sin(a)+.08*Math.sin(a*2+inst));
+  const py=y+r*(.31*Math.cos(a*.89));
+  const sx=r*(.38+.11*move),sy=r*(.085+.05*chaos);
+  c.save();c.translate(px,py);c.rotate(-.45+Math.sin(a*.67)*(.22+.25*chaos));c.scale(1,sy/sx);
+  const lens=c.createRadialGradient(-sx*.3,0,0,0,0,sx);
+  lens.addColorStop(0,'rgba(218,252,255,'+(.045+.08*energy)+')');
+  lens.addColorStop(.35,'rgba(159,225,243,.06)');
+  lens.addColorStop(1,'rgba(115,208,234,0)');
+  c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- for(let i=0;i<4;i++){
-  const phase=t*(.14+.015*i)+i*.85;
-  const px=x+r*.26*Math.cos(phase*1.08+i);
-  const py=y+r*.24*Math.sin(phase*.97+i);
-  const flow=c.createRadialGradient(px,py,0,px,py,r*.58);
-  flow.addColorStop(0,'rgba(147,237,253,.09)');
-  flow.addColorStop(.36,'rgba(92,190,225,.06)');
-  flow.addColorStop(.7,'rgba(44,123,180,.02)');
-  flow.addColorStop(1,'rgba(20,70,120,0)');
-  c.fillStyle=flow;c.fillRect(px-r*.7,py-r*.7,r*1.4,r*1.4);
- }
- // Mobile highlights: no Fresnel rim, outline, stroke, or static circular shine.
- for(let i=0;i<2;i++){
-  const phase=t*(.24+.02*i)+i*2.2;
-  const hx=x-r*.22+r*.10*Math.sin(phase*.8+i);
-  const hy=y-r*.22+r*.09*Math.cos(phase*.7+i);
-  const size=r*(.10+.02*i);
-  const glint=c.createRadialGradient(hx,hy,0,hx,hy,size);
-  glint.addColorStop(0,'rgba(255,255,255,.16)');
-  glint.addColorStop(.45,'rgba(236,255,255,.07)');
-  glint.addColorStop(1,'rgba(236,255,255,0)');
-  c.fillStyle=glint;c.beginPath();c.arc(hx,hy,size,0,TAU);c.fill();
- }
+ // A moving, soft light sweep; no static glass-like shine.
+ const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
+ const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*chaos));
+ shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
+ shine.addColorStop(.43,'rgba(177,236,250,.055)');
+ shine.addColorStop(1,'rgba(170,231,247,0)');
+ c.fillStyle=shine;c.fillRect(x-r,y-r,r*2,r*2);
  c.restore();
 }
 function fractureNew(c,x,y,r,t,p){
@@ -436,7 +425,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===5){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*.8)*r*.026*move*follow,Math.cos(cosmeticT*.73)*r*.022*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
