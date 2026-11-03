@@ -57,7 +57,7 @@ body.retro-neon .viewport{background:#080f25}
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona starts at a true 2× animation clock and speeds up as Core Value and Urgency Boost rise together. The general Speed slider does not affect it.',8:'Solar Eclipse now uses value-driven coverage: the number determines how much the Moon covers the Core.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona starts at a true 2× animation clock and speeds up as Core Value and Urgency Boost rise together. The general Speed slider does not affect it.',8:'Solar Eclipse now uses value-driven coverage: the number determines how much the Moon covers the Core.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
@@ -174,7 +174,7 @@ function breathCycle(t,value){
 function drawAppearance(ctx,n,x,y,r,t,value,opts={}){const {power,stress}=stressFor(value);switch(n){
 case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
 case 2:{glow(ctx,x,y,r*1.32,[[0,'rgba(182,248,255,.82)'],[.52,'rgba(91,169,255,.25)'],[1,'rgba(37,79,190,0)']]);softSphere(ctx,x,y,r*.96,['#ffffff','#c9f3ff','#3a7dd6','#08111f']);break;}
-case 3:{atomNew(ctx,x,y,r,t,stress);break;}
+case 3:{atomNew(ctx,x,y,r,t,stress,opts.atomControls);break;}
 case 4:{cosmosNew(ctx,x,y,r,t,stress);break;}
 case 5:{waterNew(ctx,x,y,r,t,stress,opts.waterControls);break;}
 case 6:{const coronaLevel=opts.coronaLevel ?? stress;const heat=.26+.74*coronaLevel;const pumpRate=.7+coronaLevel*1.7;const pumpAmp=.08+coronaLevel*.92;const pumpWave=.5+.5*Math.sin(t*pumpRate);const pump=pumpWave*pumpAmp;glow(ctx,x,y,r*(1.24+.16*heat+.18*pump),[[0,`rgba(255,248,194,${.62+.22*pump})`],[.24,`rgba(255,214,132,${.18+.28*heat+.1*pump})`],[.58,`rgba(255,146,52,${.12+.18*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.46+.2*heat+.22*pump),[[0,'rgba(255,214,132,0)'],[.5,`rgba(255,186,98,${.04+.12*heat+.1*pump})`],[1,'transparent']]);glow(ctx,x,y,r*(1.82+.24*heat+.16*pump),[[0,'rgba(255,230,177,0)'],[.62,`rgba(255,176,82,${.02+.07*heat+.06*pump})`],[1,'transparent']]);softSphere(ctx,x,y,r*(1+.006+.028*pump),['#fff8d9','#ffd48a','#8b3a34','#14070a']);clipCircle(ctx,x,y,r*.98,()=>{for(let i=0;i<6;i++){const rr=r*(.42+i*.1);glow(ctx,x+r*.09*Math.sin(t*(.55+coronaLevel*.9)+i),y-r*.06*Math.cos(t*(.52+coronaLevel*.8)+i*1.3),rr,[[0,'rgba(255,255,255,0)'],[.56,`rgba(255,196,112,${(.024+.016*i)*(.45+1.1*heat+1.0*pump)})`],[1,'transparent']])}});break;}
@@ -265,11 +265,42 @@ default:{if(q<.18)draw(n===1?1:n,1,1-q*3);for(let i=0;i<8;i++){const a=i*TAU/8+.
 function burst(ctx,n,x,y,r,t,value){const p=clamp((t-state.burstStart)/1.9,0,1),u=easeOut(p);if(p>=1)return;if(n===14){shatterNew(ctx,x,y,r,p);return;}ctx.save();if(p<.2){ctx.globalAlpha=1-p*4;drawAppearance(ctx,n===14?14:n,x,y,r*(1+p*.06),t,value)}switch(n){case 13:{for(let i=0;i<22;i++){const a=i*TAU/22+t*.8,rr=r*(1.5-u*1.35);circle(ctx,x+Math.cos(a)*rr,y+Math.sin(a)*rr*.72,Math.max(.2,2.2*(1-p)),'rgba(214,194,255,.22)')}break;}case 14:{for(let i=0;i<5;i++){const rr=r*(1+.02*i)*(1-p*.12);ctx.beginPath();ctx.arc(x,y,rr,-.7+u*.7+i*.03,-.7+TAU-u*1.1-i*.05);ctx.lineWidth=(3.3-i*.5)*(1-p);ctx.strokeStyle=['rgba(242,252,255,.72)','rgba(176,236,255,.6)','rgba(215,117,239,.36)','rgba(70,214,245,.48)','rgba(255,255,255,.22)'][i];ctx.stroke()}break;}case 5:{for(let i=0;i<18;i++){const a=i*2.399+t*.3,dist=r*(.15+u*(.55+rand(i)*.82));ellipse(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.05+rand(i)*.05)*(1-p),r*.028*(1-p),'rgba(115,207,255,.72)',a)}break;}case 10:{for(let i=0;i<7;i++){const a=i*TAU/7+.22,dist=r*(.15+u*.92);ctx.save();ctx.translate(x+Math.cos(a)*dist,y+Math.sin(a)*dist);ctx.rotate(a+u*1.1);ctx.beginPath();ctx.moveTo(-r*.15,-r*.09);ctx.lineTo(r*.17,-r*.11);ctx.lineTo(r*.1,r*.14);ctx.lineTo(-r*.12,r*.1);ctx.closePath();ctx.fillStyle=`rgba(125,197,248,${1-p})`;ctx.fill();ctx.restore()}break;}default:{for(let i=0;i<10;i++){const a=i*TAU/10+n*.17,dist=r*(.2+u*(.75+rand(i)*.55));glow(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*.06*(1-p),[[0,n===6||n===12?'rgba(255,178,93,.78)':'rgba(172,239,255,.68)'],[1,'transparent']])}break;}}ctx.restore();}
 
 function pxLine(c,a,color,w){c.beginPath();a.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle=color;c.lineWidth=w;c.stroke()}
-function atomNew(c,x,y,r,t,p){
- glow(c,x,y,r*1.2,[[0,'rgba(95,167,255,.18)'],[1,'transparent']]);
- for(let j=0;j<3;j++){c.save();c.translate(x,y);c.rotate(j*2.09);c.scale(1,.36+j*.12);c.beginPath();c.arc(0,0,r*.9,0,TAU);c.strokeStyle='rgba(129,205,250,.17)';c.stroke();c.restore()}
- for(let j=0;j<18;j++){let a=j*2.399+t*.12,d=r*(.42+rand(j+91)*.42);glow(c,x+Math.cos(a)*d,y+Math.sin(a)*d*.65,r*.14,[[0,'rgba(102,211,255,.14)'],[1,'transparent']]);}
- for(let j=0;j<19;j++){let a=j*2.399,d=r*.38*Math.sqrt(j/19),xx=x+Math.cos(a)*d+Math.sin(t*.8+j)*r*.012,yy=y+Math.sin(a)*d+Math.cos(t*.7+j)*r*.012;softSphere(c,xx,yy,r*.14,j%2?['#fff6ed','#f8a596','#a03e55','#2b1526']:['#f5ffff','#b0e8ff','#3770b3','#0f2344']);}
+function atomNew(c,x,y,r,t,p,opts={}){
+ // Core 03 only: value adds nucleons; speed drives t; urgency excites electrons;
+ // instability adds precession; movement stretches orbits; number follows nucleus.
+ const value=clamp(opts.value??(1+p*29),1,30);
+ const urgency=clamp(opts.urgency??0,0,1);
+ const inst=clamp(opts.inst??0,0,1),move=clamp(opts.move??0,0,1);
+ const count=7+Math.round(value/30*18);
+ const precession=t*(.12+inst*1.8),stretch=1+move*.85;
+ const nx=x+Math.sin(t*(.47+inst*.53))*r*.032*inst;
+ const ny=y+Math.cos(t*(.55+inst*.48))*r*.027*inst;
+ glow(c,nx,ny,r*(1.13+.14*urgency),[[0,'rgba(95,167,255,'+(.13+.14*urgency)+')'],[1,'transparent']]);
+ for(let j=0;j<3;j++){
+  const plane=j*TAU/3+precession*(j===1?-1:1);
+  c.save();c.translate(nx,ny);c.rotate(plane);c.scale(1/stretch,.36+j*.12);
+  c.beginPath();c.arc(0,0,r*.9,0,TAU);
+  c.strokeStyle='rgba(129,205,250,'+(.17+.16*urgency)+')';c.lineWidth=1+urgency*.5;c.stroke();c.restore();
+ }
+ const electrons=6+Math.round(urgency*9);
+ for(let j=0;j<electrons;j++){
+  const track=j%3,plane=track*TAU/3+precession*(track===1?-1:1);
+  const angle=j*2.399+t*(.3+.9*urgency+.45*inst)*(j%2?-1:1);
+  const ax=Math.cos(angle)*r*.9/stretch,ay=Math.sin(angle)*r*.9*(.36+track*.12);
+  const xx=nx+Math.cos(plane)*ax-Math.sin(plane)*ay;
+  const yy=ny+Math.sin(plane)*ax+Math.cos(plane)*ay;
+  glow(c,xx,yy,r*(.075+.025*urgency),[[0,'rgba(166,237,255,'+(.32+.42*urgency)+')'],[1,'transparent']]);
+  circle(c,xx,yy,r*(.012+.005*urgency),'rgba(212,247,255,.82)');
+ }
+ for(let j=0;j<count;j++){
+  const a=j*2.399,d=r*.38*Math.sqrt((j+.5)/count);
+  const jiggle=r*(.003+.013*inst);
+  const xx=nx+Math.cos(a)*d+Math.sin(t*(.6+inst*2.1)+j)*jiggle;
+  const yy=ny+Math.sin(a)*d+Math.cos(t*(.55+inst*2)+j)*jiggle;
+  softSphere(c,xx,yy,r*(.12-.017*(count-7)/18),j%2?
+   ['#fff6ed','#f8a596','#a03e55','#2b1526']:
+   ['#f5ffff','#b0e8ff','#3770b3','#0f2344']);
+ }
 }
 function cosmosNew(c,x,y,r,t,p){
  circle(c,x,y,r,'#040815');clipCircle(c,x,y,r,()=>{for(let j=0;j<3;j++){let gx=x+r*[-.17,.38,-.27][j],gy=y+r*[-.05,.22,.36][j],size=r*[.85,.35,.24][j];glow(c,gx,gy,size*.64,[[0,j?'rgba(110,152,255,.17)':'rgba(247,139,210,.24)'],[1,'transparent']]);for(let arm=0;arm<3;arm++)for(let k=0;k<80;k++){let q=(k+.5)/80,a=t*(.07+j*.02)+arm*TAU/3+q*8.3,d=size*(.05+.9*q);circle(c,gx+Math.cos(a)*d,gy+Math.sin(a)*d*.52,.4+(1-q),arm%2?'rgba(137,190,255,.4)':'rgba(249,180,238,.4)')}glow(c,gx,gy,size*.18,[[0,'rgba(255,254,237,.9)'],[1,'transparent']]);}for(let i=0;i<230;i++){let xx=x+(rand(i+100)*2-1)*r,yy=y+(rand(i+800)*2-1)*r;if(Math.hypot(xx-x,yy-y)<r)circle(c,xx,yy,.4+rand(i+1400),'rgba(218,237,255,.45)')}})
@@ -464,7 +495,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&t-state.deathStart>=1.45);if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
