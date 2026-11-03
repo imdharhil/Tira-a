@@ -508,19 +508,21 @@ function voltageNew(c,x,y,r,t,p,controls={}){
  const value=clamp(controls.value??(1+29*p),1,30),power=(value-1)/29;
  const urgency=clamp(controls.urgency??0,0,1);
  const inst=clamp(controls.inst??0,0,1),move=clamp(controls.move??0,0,1);
- const charge=.22+.78*power,branches=8+Math.round(20*power);
+ const charge=.22+.78*power,branches=7+Math.round(7*power);
  const cycle=t*(.65+2.4*urgency),surge=Math.pow(.5+.5*Math.sin(cycle),3);
  const flicker=.75+.25*Math.sin(t*(4+inst*13)+1.3);
- const force=(.35+.65*charge)*(.7+.3*surge),reach=1+.72*move;
+ const force=(.35+.65*charge)*(.7+.3*surge);
  // Core stays bright enough for the number, rather than being obscured by pure white.
  glow(c,x,y,r*(1.28+.26*move),[[0,'rgba(181,244,255,'+(.24+.26*force)+')'],[.44,'rgba(54,130,245,.24)'],[1,'transparent']]);
  glow(c,x,y,r*(1.10+.20*surge),[[0,'rgba(235,255,255,'+(.31+.30*force)+')'],[.3,'rgba(88,181,255,.23)'],[1,'transparent']]);
  softSphere(c,x,y,r,['#f3fdff','#95d5ff','#354ca3','#100d39']);
- // Every lightning filament originates at the precise center of the Core and travels outward.
+ // The Core's circular silhouette is the hard boundary for all lightning strokes.
+ // All primary and fork paths originate at the exact center; only a few fork.
+ c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
  for(let j=0;j<branches;j++){
   const seed=j*73+31,angle=j*2.399963+Math.sin(t*.42+j)*(.08+.30*inst);
   const orbit=t*(.26+.11*(j%4)),a=angle+orbit*(j%2?-1:1);
-  const length=r*(.88+.30*charge+.44*move)*(.76+.24*rand(seed+9));
+  const length=r*(.76+.18*charge+.28*move)*(.78+.22*rand(seed+9));
   const steps=7,pts=[];
   for(let k=0;k<=steps;k++){
    const u=k/steps,d=length*u;
@@ -531,18 +533,19 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   }
   const flare=(.36+.64*surge)*flicker*(.47+.53*rand(seed+5));
   c.save();c.globalAlpha*=flare;
-  pxLine(c,pts,'rgba(58,126,255,.72)',2.4+1.1*charge);
-  pxLine(c,pts,'rgba(174,229,255,.92)',.65+.45*force);
-  if(inst>.15&&j%3===0){
+  pxLine(c,pts,'rgba(58,126,255,.67)',1.05+.28*charge);
+  pxLine(c,pts,'rgba(191,238,255,.90)',.42+.17*force);
+  if(inst>.18&&j%5===0){
    // Secondary lightning is center-rooted too, branching into a new direction.
    const split=pts[3],endAngle=a+(j%2?1:-1)*(.3+inst*.8);
-   const dist=r*(.12+.32*inst);
+   const dist=r*(.11+.25*inst);
    const forkEnd=[split[0]+Math.cos(endAngle)*dist,split[1]+Math.sin(endAngle)*dist];
    pxLine(c,[[x,y],pts[1],split,forkEnd],
-    'rgba(109,186,255,.72)',.8);
+    'rgba(109,186,255,.67)',.55);
   }
   c.restore();
  }
+ c.restore();
  // Scattered surface charges glow and move around the electrified shell.
  for(let j=0;j<12;j++){
   const a=j*2.399963+t*(.36+.20*urgency)*(j%2?-1:1);
