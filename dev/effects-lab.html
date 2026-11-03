@@ -246,10 +246,10 @@ function cosmosNew(c,x,y,r,t,p){
 function waterNew(c,x,y,r,t,p){
  // Continuous water lens: no horizontal wave-line bands or drawn contour stripes.
  // The surface gently deforms; interior lighting follows refracted, moving caustic patches.
- const ripple=(a)=>1+.008*Math.sin(3*a-t*.6)+.009*Math.sin(5*a+t*.42)
-   +p*.016*Math.sin(7*a-t*1.15);
+ const ripple=(a)=>1+.014*Math.sin(3*a-t*.95)+.012*Math.sin(5*a+t*.68)
+   +p*.024*Math.sin(7*a-t*1.55)+p*.010*Math.sin(11*a+t*1.2);
  c.save();c.beginPath();
- for(let k=0;k<=112;k++){const a=k*TAU/112,d=r*ripple(a);
+ for(let k=0;k<=132;k++){const a=k*TAU/132,d=r*ripple(a);
   if(k)c.lineTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
   else c.moveTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
  }
@@ -263,11 +263,11 @@ function waterNew(c,x,y,r,t,p){
  c.fillStyle=depth;c.fillRect(x-r*1.15,y-r*1.15,r*2.3,r*2.3);
  // Broad moving light patches imitate rays displaced by curved water.
  // They have translucent interiors and soft edges, not linear strokes.
- for(let i=0;i<6;i++){
-  const phase=t*(.27+.035*i)+i*1.41;
-  const px=x+r*(.51*Math.sin(phase)+.10*Math.sin(phase*1.9));
-  const py=y+r*(.48*Math.cos(phase*.81)+.09*Math.cos(phase*1.6));
-  const size=r*(.25+.10*Math.sin(phase*.67+i)**2);
+ for(let i=0;i<8;i++){
+  const phase=t*(.42+.05*i)+i*1.41;
+  const px=x+r*(.56*Math.sin(phase)+.10*Math.sin(phase*1.9));
+  const py=y+r*(.50*Math.cos(phase*.86)+.09*Math.cos(phase*1.6));
+  const size=r*(.22+.16*Math.sin(phase*.8+i)**2);
   const g=c.createRadialGradient(px-r*.05,py-r*.1,0,px,py,size);
   g.addColorStop(0,i%2?'rgba(224,255,255,.22)':'rgba(163,243,255,.27)');
   g.addColorStop(.45,'rgba(141,225,247,.08)');
@@ -276,12 +276,12 @@ function waterNew(c,x,y,r,t,p){
  }
  // Moving, distorted inner refraction: two overlapping translucent lenses
  // shift and flatten at the sphere edges like magnified light through water.
- for(let i=0;i<3;i++){
-  const phase=t*(.33+.07*i)+i*2.17;
-  const px=x+r*(.34*Math.cos(phase)-.13);
-  const py=y+r*(.38*Math.sin(phase*.83)+.04);
+ for(let i=0;i<5;i++){
+  const phase=t*(.48+.08*i)+i*2.17;
+  const px=x+r*(.40*Math.cos(phase)-.13);
+  const py=y+r*(.34*Math.sin(phase*.9)+.04);
   const sx=r*(.48+.08*Math.sin(phase*.7)),sy=r*(.26+.05*Math.cos(phase));
-  c.save();c.translate(px,py);c.rotate(.22*Math.sin(phase*.52));
+  c.save();c.translate(px,py);c.rotate(.35*Math.sin(phase*.62));
   const lens=c.createRadialGradient(-sx*.16,-sy*.22,0,0,0,sx);
   lens.addColorStop(0,'rgba(230,253,255,.18)');
   lens.addColorStop(.4,'rgba(199,245,255,.10)');
@@ -302,7 +302,7 @@ function waterNew(c,x,y,r,t,p){
  rim.addColorStop(.92,'rgba(187,247,255,.10)');
  rim.addColorStop(1,'rgba(202,250,255,.31)');
  c.fillStyle=rim;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
- const hx=x-r*.37+Math.sin(t*.38)*r*.035,hy=y-r*.49+Math.cos(t*.33)*r*.03;
+ const hx=x-r*.34+Math.sin(t*.62)*r*.06,hy=y-r*.47+Math.cos(t*.54)*r*.05;
  const highlight=c.createRadialGradient(hx,hy,0,hx,hy,r*.35);
  highlight.addColorStop(0,'rgba(255,255,255,.32)');
  highlight.addColorStop(.45,'rgba(228,255,255,.12)');
