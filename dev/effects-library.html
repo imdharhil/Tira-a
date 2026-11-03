@@ -47,13 +47,13 @@ const key='cellcore-effects-library-v1',pending='cellcore-effects-pending-load';
 const labels=['Core Value','Pull / Speed','Urgency','Instability','Movement','Number Follow'];
 const fields=['value','speed','urgency','inst','move','follow'];
 const ranges={value:[1,30],speed:[0,300],urgency:[0,100],inst:[0,100],move:[0,100],follow:[0,100]};
-const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core'];
+const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
 const $=id=>document.getElementById(id);let data=[];let published=[];
 function status(m){$('status').textContent=m;}
 function validate(p){
   if(!p||typeof p.name!=='string'||!p.settings)return null;
-  const mode=Number(p.mode),effect=Number(p.effect);if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:15))return null;
+  const mode=Number(p.mode),effect=Number(p.effect);if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:16))return null;
   const settings={};for(const k of fields){const v=Number(p.settings[k]);if(!Number.isFinite(v))return null;settings[k]=Math.min(ranges[k][1],Math.max(ranges[k][0],v));}
   return {id:String(p.id||''),name:p.name.trim().slice(0,70)||'Unnamed preset',mode,effect,settings};
 }
@@ -67,7 +67,7 @@ function render(){renderPublished();
   const card=document.createElement('article');card.className='preset';
   const type=document.createElement('span');type.className='pill';type.textContent=p.mode?'Explosion':'Appearance';
   const title=document.createElement('h3');title.textContent=p.name;
-  const sub=document.createElement('small');sub.textContent=String(p.effect).padStart(2,'0')+' · '+(p.mode?explosions:effects)[p.effect-1];
+  const sub=document.createElement('small');sub.textContent=(p.mode?String(p.effect).padStart(2,'0'):p.effect===16?'08B':p.effect===8?'08A':String(p.effect).padStart(2,'0'))+' · '+(p.mode?explosions:effects)[p.effect-1];
   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='View settings';details.append(summary);const settings=document.createElement('div');settings.className='settings';
   fields.forEach((k,i)=>{const chip=document.createElement('span');chip.textContent=labels[i]+': '+(k==='speed'?(p.settings[k]/100).toFixed(2)+'×':p.settings[k]);settings.append(chip);});
   const actions=document.createElement('div');actions.className='actions';
