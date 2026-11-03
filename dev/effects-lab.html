@@ -244,70 +244,77 @@ function cosmosNew(c,x,y,r,t,p){
 }
 
 function waterNew(c,x,y,r,t,p){
- // Continuous water lens: no horizontal wave-line bands or drawn contour stripes.
- // The surface gently deforms; interior lighting follows refracted, moving caustic patches.
- const ripple=(a)=>1+.014*Math.sin(3*a-t*.95)+.012*Math.sin(5*a+t*.68)
-   +p*.024*Math.sin(7*a-t*1.55)+p*.010*Math.sin(11*a+t*1.2);
- c.save();c.beginPath();
- for(let k=0;k<=132;k++){const a=k*TAU/132,d=r*ripple(a);
-  if(k)c.lineTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
-  else c.moveTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
+ // Water-only rendering: refracted moving light, fluid deformation, no drawn circle or rim.
+ // Keep the water in the Core area, but dissolve the edge rather than outlining a glass ball.
+ const ripple=a=>1+.018*Math.sin(3*a-t*1.05)+.014*Math.sin(5*a+t*.75)
+  +p*.028*Math.sin(7*a-t*1.6)+p*.012*Math.sin(11*a+t*1.3);
+ c.save();
+ c.beginPath();
+ for(let k=0;k<=140;k++){
+  const a=k*TAU/140,d=r*ripple(a),xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;
+  if(k)c.lineTo(xx,yy);else c.moveTo(xx,yy);
  }
  c.closePath();c.clip();
- const depth=c.createRadialGradient(x-r*.36,y-r*.42,r*.02,x+r*.11,y+r*.13,r*1.18);
- depth.addColorStop(0,'#e0f9fc');
- depth.addColorStop(.22,'#82cddd');
- depth.addColorStop(.53,'#298aa8');
- depth.addColorStop(.76,'#0c587c');
- depth.addColorStop(1,'#071b39');
- c.fillStyle=depth;c.fillRect(x-r*1.15,y-r*1.15,r*2.3,r*2.3);
- // Broad moving light patches imitate rays displaced by curved water.
- // They have translucent interiors and soft edges, not linear strokes.
- for(let i=0;i<8;i++){
-  const phase=t*(.42+.05*i)+i*1.41;
-  const px=x+r*(.56*Math.sin(phase)+.10*Math.sin(phase*1.9));
-  const py=y+r*(.50*Math.cos(phase*.86)+.09*Math.cos(phase*1.6));
-  const size=r*(.22+.16*Math.sin(phase*.8+i)**2);
-  const g=c.createRadialGradient(px-r*.05,py-r*.1,0,px,py,size);
-  g.addColorStop(0,i%2?'rgba(224,255,255,.22)':'rgba(163,243,255,.27)');
-  g.addColorStop(.45,'rgba(141,225,247,.08)');
-  g.addColorStop(1,'rgba(115,218,244,0)');
-  c.fillStyle=g;c.fillRect(px-size,py-size,size*2,size*2);
+ // Transparent water depth: keep irregular fluid light visible, without an opaque disc.
+ const depth=c.createRadialGradient(x-r*.26,y-r*.31,r*.06,x+r*.10,y+r*.12,r*1.13);
+ depth.addColorStop(0,'rgba(194,245,255,.92)');
+ depth.addColorStop(.25,'rgba(79,185,220,.83)');
+ depth.addColorStop(.57,'rgba(19,111,165,.77)');
+ depth.addColorStop(.82,'rgba(8,62,114,.42)');
+ depth.addColorStop(1,'rgba(5,28,69,0)');
+ c.fillStyle=depth;c.fillRect(x-r*1.3,y-r*1.3,r*2.6,r*2.6);
+ // Animated refracted highlights, distributed throughout the moving water.
+ for(let i=0;i<10;i++){
+  const phase=t*(.52+.045*i)+i*1.21;
+  const px=x+r*(.58*Math.sin(phase)+.14*Math.sin(phase*2.15));
+  const py=y+r*(.52*Math.cos(phase*.84)+.12*Math.cos(phase*1.53));
+  const size=r*(.18+.20*Math.sin(phase*.72+i)**2);
+  const g=c.createRadialGradient(px-r*.04,py-r*.08,0,px,py,size);
+  g.addColorStop(0,i%2?'rgba(240,255,255,.34)':'rgba(170,245,255,.40)');
+  g.addColorStop(.34,'rgba(165,236,250,.20)');
+  g.addColorStop(.7,'rgba(112,214,240,.07)');
+  g.addColorStop(1,'rgba(112,214,240,0)');
+  c.fillStyle=g;c.fillRect(px-size,py-size,2*size,2*size);
  }
- // Moving, distorted inner refraction: two overlapping translucent lenses
- // shift and flatten at the sphere edges like magnified light through water.
- for(let i=0;i<5;i++){
-  const phase=t*(.48+.08*i)+i*2.17;
-  const px=x+r*(.40*Math.cos(phase)-.13);
-  const py=y+r*(.34*Math.sin(phase*.9)+.04);
-  const sx=r*(.48+.08*Math.sin(phase*.7)),sy=r*(.26+.05*Math.cos(phase));
-  c.save();c.translate(px,py);c.rotate(.35*Math.sin(phase*.62));
-  const lens=c.createRadialGradient(-sx*.16,-sy*.22,0,0,0,sx);
-  lens.addColorStop(0,'rgba(230,253,255,.18)');
-  lens.addColorStop(.4,'rgba(199,245,255,.10)');
-  lens.addColorStop(1,'rgba(146,229,250,0)');
+ // Irregular overlapping refraction volumes, moving independently like flowing water.
+ for(let i=0;i<6;i++){
+  const phase=t*(.60+.06*i)+i*1.93;
+  const px=x+r*(.42*Math.cos(phase)-.12*Math.sin(phase*.8));
+  const py=y+r*(.38*Math.sin(phase*.92)+.09*Math.cos(phase*1.35));
+  const sx=r*(.24+.18*Math.sin(phase*.78+i)**2);
+  const sy=r*(.12+.12*Math.cos(phase*.82+i)**2);
+  c.save();c.translate(px,py);c.rotate(.45*Math.sin(phase*.57));
+  const lens=c.createRadialGradient(-sx*.15,-sy*.18,0,0,0,sx);
+  lens.addColorStop(0,'rgba(246,255,255,.30)');
+  lens.addColorStop(.30,'rgba(214,247,255,.19)');
+  lens.addColorStop(.62,'rgba(173,234,248,.10)');
+  lens.addColorStop(1,'rgba(173,234,248,0)');
   c.scale(1,sy/sx);c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- const surface=c.createLinearGradient(x-r,y-r,x+r,y+r);
- surface.addColorStop(0,'rgba(255,255,255,.28)');
- surface.addColorStop(.3,'rgba(238,253,255,.025)');
- surface.addColorStop(.65,'rgba(4,52,83,.025)');
- surface.addColorStop(1,'rgba(0,9,37,.47)');
- c.fillStyle=surface;c.fillRect(x-r*1.15,y-r*1.15,r*2.3,r*2.3);
+ for(let i=0;i<6;i++){
+  const phase=t*(.28+.03*i)+i*.85;
+  const px=x+r*.26*Math.cos(phase*1.08+i);
+  const py=y+r*.24*Math.sin(phase*.97+i);
+  const flow=c.createRadialGradient(px,py,0,px,py,r*.58);
+  flow.addColorStop(0,'rgba(147,237,253,.16)');
+  flow.addColorStop(.36,'rgba(92,190,225,.10)');
+  flow.addColorStop(.7,'rgba(44,123,180,.035)');
+  flow.addColorStop(1,'rgba(20,70,120,0)');
+  c.fillStyle=flow;c.fillRect(px-r*.7,py-r*.7,r*1.4,r*1.4);
+ }
+ // Mobile highlights: no Fresnel rim, outline, stroke, or static circular shine.
+ for(let i=0;i<4;i++){
+  const phase=t*(.75+.08*i)+i*2.2;
+  const hx=x-r*.28+r*.18*Math.sin(phase*1.1+i);
+  const hy=y-r*.30+r*.16*Math.cos(phase*.95+i);
+  const size=r*(.18+.04*i);
+  const glint=c.createRadialGradient(hx,hy,0,hx,hy,size);
+  glint.addColorStop(0,'rgba(255,255,255,.30)');
+  glint.addColorStop(.45,'rgba(236,255,255,.13)');
+  glint.addColorStop(1,'rgba(236,255,255,0)');
+  c.fillStyle=glint;c.beginPath();c.arc(hx,hy,size,0,TAU);c.fill();
+ }
  c.restore();
- // Fresnel-like rim and a moving soft specular highlight.
- const rim=c.createRadialGradient(x-r*.13,y-r*.17,r*.17,x,y,r*1.02);
- rim.addColorStop(0,'rgba(255,255,255,0)');
- rim.addColorStop(.75,'rgba(200,248,255,.02)');
- rim.addColorStop(.92,'rgba(187,247,255,.10)');
- rim.addColorStop(1,'rgba(202,250,255,.31)');
- c.fillStyle=rim;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
- const hx=x-r*.34+Math.sin(t*.62)*r*.06,hy=y-r*.47+Math.cos(t*.54)*r*.05;
- const highlight=c.createRadialGradient(hx,hy,0,hx,hy,r*.35);
- highlight.addColorStop(0,'rgba(255,255,255,.32)');
- highlight.addColorStop(.45,'rgba(228,255,255,.12)');
- highlight.addColorStop(1,'rgba(228,255,255,0)');
- c.fillStyle=highlight;c.beginPath();c.arc(hx,hy,r*.35,0,TAU);c.fill();
 }
 function fractureNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8fcff','#c5e9ff','#4a80c3','#09182f']);if(p<.08)return;clipCircle(c,x,y,r,()=>{for(let j=0;j<9;j++){let amount=clamp((p-.08-j*.055)*1.8,0,1);if(!amount)continue;let a=j*2.399,pts=[];for(let k=0;k<=8;k++){let d=r*(.06+.86*amount*k/8),angle=a+Math.sin(j*7+k*11)*.07;pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d])}pxLine(c,pts,'rgba(5,10,27,.9)',1+2.4*p);pxLine(c,pts.map(v=>[v[0]+1,v[1]-1]),'rgba(215,242,255,.32)',.7);if(p>.4){let v=pts[5],a2=a+(j%2?.7:-.7);pxLine(c,[v,[v[0]+Math.cos(a2)*r*.3*p,v[1]+Math.sin(a2)*r*.3*p]],'rgba(10,20,40,.85)',1.3)}}})}
