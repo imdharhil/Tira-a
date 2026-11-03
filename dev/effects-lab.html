@@ -281,6 +281,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
  const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
  const urgency=clamp(controls.urgency??0,0,1);
  const cohesion=1-inst,looseness=inst*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ // Droplets emerge as gravity-like cohesion weakens; zero until instability passes 28%.
+ const shed=clamp((inst-.28)/.72,0,1);
  const flow=t*.64;
  // Movement is vibration strength and frequency, not fluid drift speed.
  const vibrationRate=5+move*16;
@@ -290,7 +292,8 @@ function waterNew(c,x,y,r,t,p,controls={}){
  const wobble=a=>1+(.003+.034*looseness)*Math.sin(3*a-flow*.83)
    +(.002+.029*looseness)*Math.sin(5*a+flow*.57)
    +(.001+.019*looseness)*Math.sin(8*a-flow*1.18+a*.4)
-   +move*.009*Math.sin(12*a-t*vibrationRate*.72);
+   +move*.009*Math.sin(12*a-t*vibrationRate*.72)
+   +shed*.035*Math.sin(14*a+flow*1.4);
  c.save();c.translate(vibrationX,vibrationY);c.beginPath();
  for(let k=0;k<=144;k++){
   const angle=k*TAU/144,dist=r*wobble(angle);
@@ -299,7 +302,9 @@ function waterNew(c,x,y,r,t,p,controls={}){
  }
  c.closePath();c.clip();
  // Low-contrast transparent body; avoid a solid permanent white hotspot.
- const base=c.createRadialGradient(x-r*.26,y-r*.27,r*.07,x+r*.12,y+r*.16,r*1.16);
+ const baseX=x-r*.13+r*.13*Math.sin(flow*.93);
+ const baseY=y-r*.12+r*.12*Math.cos(flow*.79);
+ const base=c.createRadialGradient(baseX,baseY,r*.07,x+r*.12,y+r*.16,r*1.16);
  base.addColorStop(0,'rgba(89,177,210,.71)');
  base.addColorStop(.26,'rgba(39,128,176,.79)');
  base.addColorStop(.6,'rgba(15,88,143,.66)');
@@ -335,13 +340,40 @@ function waterNew(c,x,y,r,t,p,controls={}){
   lens.addColorStop(1,'rgba(115,208,234,0)');
   c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- // A moving, soft light sweep; no static glass-like shine.
- const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
- const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*looseness));
- shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
- shine.addColorStop(.43,'rgba(177,236,250,.055)');
- shine.addColorStop(1,'rgba(170,231,247,0)');
- c.fillStyle=shine;c.fillRect(x-r,y-r,r*2,r*2);
+ // Light belongs to the water: its elliptical soft volume drifts, tilts and stretches with flow.
+ const glowPhase=flow*.92;
+ const glowX=x+r*(-.16+.18*Math.sin(glowPhase))+looseness*r*.05*Math.sin(glowPhase*1.7);
+ const glowY=y+r*(-.12+.14*Math.cos(glowPhase*.83))+looseness*r*.04*Math.cos(glowPhase*1.35);
+ const glowRX=r*(.24+.08*move+.08*looseness);
+ const glowRY=r*(.18+.04*move+.10*looseness);
+ c.save();c.translate(glowX,glowY);
+ c.rotate(.18*Math.sin(glowPhase*.7)+looseness*.22*Math.sin(glowPhase*1.2));
+ c.scale(1,glowRY/glowRX);
+ const liquidGlow=c.createRadialGradient(-glowRX*.18,-glowRX*.12,0,0,0,glowRX);
+ liquidGlow.addColorStop(0,'rgba(218,248,255,'+(.09+.08*energy)+')');
+ liquidGlow.addColorStop(.34,'rgba(180,232,246,.06)');
+ liquidGlow.addColorStop(1,'rgba(180,232,246,0)');
+ c.fillStyle=liquidGlow;c.beginPath();c.arc(0,0,glowRX,0,TAU);c.fill();c.restore();
+ c.restore(); // Drop water clip before shedding droplets beyond the edge.
+ // Liquid fragments stay visible beyond the water boundary; deterministic and cyclic.
+ if(shed>0){
+  const count=Math.round(5+22*shed);
+  for(let i=0;i<count;i++){
+   const angle=i*2.39996323+flow*(.14+.018*(i%5));
+   const lifetime=(flow*(.28+.025*(i%4))+i*.6180339)%1;
+   const edge=r*wobble(angle);
+   const drift=r*(.03+.31*shed)*lifetime;
+   const px=x+Math.cos(angle)*(edge+drift)+vibrationX*.24;
+   const py=y+Math.sin(angle)*(edge+drift)+vibrationY*.24;
+   const radius=r*(.006+.013*shed)*(1-.55*lifetime);
+   const g=c.createRadialGradient(px-radius*.25,py-radius*.25,0,px,py,radius*2.8);
+   const alpha=(.14+.42*shed)*(1-lifetime);
+   g.addColorStop(0,'rgba(204,247,255,'+alpha+')');
+   g.addColorStop(.38,'rgba(87,201,231,'+(alpha*.66)+')');
+   g.addColorStop(1,'rgba(58,166,210,0)');
+   c.fillStyle=g;c.beginPath();c.arc(px,py,radius*2.8,0,TAU);c.fill();
+  }
+ }
  c.restore();
 }
 function fractureNew(c,x,y,r,t,p){
