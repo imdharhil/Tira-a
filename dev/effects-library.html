@@ -47,13 +47,13 @@ const key='cellcore-effects-library-v1',pending='cellcore-effects-pending-load';
 const labels=['Core Value','Pull / Speed','Urgency','Instability','Movement','Number Follow'];
 const fields=['value','speed','urgency','inst','move','follow'];
 const ranges={value:[1,30],speed:[0,300],urgency:[0,100],inst:[0,100],move:[0,100],follow:[0,100]};
-const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble'];
-const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse'];
+const effects=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core'];
+const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
 const $=id=>document.getElementById(id);let data=[];let published=[];
 function status(m){$('status').textContent=m;}
 function validate(p){
   if(!p||typeof p.name!=='string'||!p.settings)return null;
-  const mode=Number(p.mode),effect=Number(p.effect);if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?13:14))return null;
+  const mode=Number(p.mode),effect=Number(p.effect);if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:15))return null;
   const settings={};for(const k of fields){const v=Number(p.settings[k]);if(!Number.isFinite(v))return null;settings[k]=Math.min(ranges[k][1],Math.max(ranges[k][0],v));}
   return {id:String(p.id||''),name:p.name.trim().slice(0,70)||'Unnamed preset',mode,effect,settings};
 }
