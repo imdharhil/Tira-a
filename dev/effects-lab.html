@@ -374,7 +374,6 @@ function waterNew(c,x,y,r,t,p,controls={}){
    c.fillStyle=g;c.beginPath();c.arc(px,py,radius*2.8,0,TAU);c.fill();
   }
  }
- c.restore();
 }
 function fractureNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8fcff','#c5e9ff','#4a80c3','#09182f']);if(p<.08)return;clipCircle(c,x,y,r,()=>{for(let j=0;j<9;j++){let amount=clamp((p-.08-j*.055)*1.8,0,1);if(!amount)continue;let a=j*2.399,pts=[];for(let k=0;k<=8;k++){let d=r*(.06+.86*amount*k/8),angle=a+Math.sin(j*7+k*11)*.07;pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d])}pxLine(c,pts,'rgba(5,10,27,.9)',1+2.4*p);pxLine(c,pts.map(v=>[v[0]+1,v[1]-1]),'rgba(215,242,255,.32)',.7);if(p>.4){let v=pts[5],a2=a+(j%2?.7:-.7);pxLine(c,[v,[v[0]+Math.cos(a2)*r*.3*p,v[1]+Math.sin(a2)*r*.3*p]],'rgba(10,20,40,.85)',1.3)}}})}
