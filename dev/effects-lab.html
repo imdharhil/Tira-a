@@ -264,53 +264,53 @@ function waterNew(c,x,y,r,t,p){
  depth.addColorStop(1,'rgba(5,28,69,0)');
  c.fillStyle=depth;c.fillRect(x-r*1.3,y-r*1.3,r*2.6,r*2.6);
  // Animated refracted highlights, distributed throughout the moving water.
- for(let i=0;i<10;i++){
-  const phase=t*(.52+.045*i)+i*1.21;
-  const px=x+r*(.58*Math.sin(phase)+.14*Math.sin(phase*2.15));
-  const py=y+r*(.52*Math.cos(phase*.84)+.12*Math.cos(phase*1.53));
-  const size=r*(.18+.20*Math.sin(phase*.72+i)**2);
+ for(let i=0;i<6;i++){
+  const phase=t*(.28+.025*i)+i*1.21;
+  const px=x+r*(.50*Math.sin(phase)+.08*Math.sin(phase*1.7));
+  const py=y+r*(.44*Math.cos(phase*.72)+.08*Math.cos(phase*1.2));
+  const size=r*(.10+.10*Math.sin(phase*.55+i)**2);
   const g=c.createRadialGradient(px-r*.04,py-r*.08,0,px,py,size);
-  g.addColorStop(0,i%2?'rgba(240,255,255,.34)':'rgba(170,245,255,.40)');
-  g.addColorStop(.34,'rgba(165,236,250,.20)');
-  g.addColorStop(.7,'rgba(112,214,240,.07)');
+  g.addColorStop(0,i%2?'rgba(240,255,255,.20)':'rgba(170,245,255,.24)');
+  g.addColorStop(.34,'rgba(165,236,250,.10)');
+  g.addColorStop(.7,'rgba(112,214,240,.04)');
   g.addColorStop(1,'rgba(112,214,240,0)');
   c.fillStyle=g;c.fillRect(px-size,py-size,2*size,2*size);
  }
- // Irregular overlapping refraction volumes, moving independently like flowing water.
- for(let i=0;i<6;i++){
-  const phase=t*(.60+.06*i)+i*1.93;
-  const px=x+r*(.42*Math.cos(phase)-.12*Math.sin(phase*.8));
-  const py=y+r*(.38*Math.sin(phase*.92)+.09*Math.cos(phase*1.35));
-  const sx=r*(.24+.18*Math.sin(phase*.78+i)**2);
-  const sy=r*(.12+.12*Math.cos(phase*.82+i)**2);
+ // Smaller, slower refractive lens shapes, kept intentionally subtle.
+ for(let i=0;i<3;i++){
+  const phase=t*(.26+.02*i)+i*1.93;
+  const px=x+r*(.30*Math.cos(phase)-.06*Math.sin(phase*.6));
+  const py=y+r*(.26*Math.sin(phase*.72)+.05*Math.cos(phase*1.0));
+  const sx=r*(.14+.08*Math.sin(phase*.55+i)**2);
+  const sy=r*(.07+.05*Math.cos(phase*.58+i)**2);
   c.save();c.translate(px,py);c.rotate(.45*Math.sin(phase*.57));
   const lens=c.createRadialGradient(-sx*.15,-sy*.18,0,0,0,sx);
-  lens.addColorStop(0,'rgba(246,255,255,.30)');
-  lens.addColorStop(.30,'rgba(214,247,255,.19)');
-  lens.addColorStop(.62,'rgba(173,234,248,.10)');
+  lens.addColorStop(0,'rgba(246,255,255,.16)');
+  lens.addColorStop(.30,'rgba(214,247,255,.09)');
+  lens.addColorStop(.62,'rgba(173,234,248,.05)');
   lens.addColorStop(1,'rgba(173,234,248,0)');
   c.scale(1,sy/sx);c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
  }
- for(let i=0;i<6;i++){
-  const phase=t*(.28+.03*i)+i*.85;
+ for(let i=0;i<4;i++){
+  const phase=t*(.14+.015*i)+i*.85;
   const px=x+r*.26*Math.cos(phase*1.08+i);
   const py=y+r*.24*Math.sin(phase*.97+i);
   const flow=c.createRadialGradient(px,py,0,px,py,r*.58);
-  flow.addColorStop(0,'rgba(147,237,253,.16)');
-  flow.addColorStop(.36,'rgba(92,190,225,.10)');
-  flow.addColorStop(.7,'rgba(44,123,180,.035)');
+  flow.addColorStop(0,'rgba(147,237,253,.09)');
+  flow.addColorStop(.36,'rgba(92,190,225,.06)');
+  flow.addColorStop(.7,'rgba(44,123,180,.02)');
   flow.addColorStop(1,'rgba(20,70,120,0)');
   c.fillStyle=flow;c.fillRect(px-r*.7,py-r*.7,r*1.4,r*1.4);
  }
  // Mobile highlights: no Fresnel rim, outline, stroke, or static circular shine.
- for(let i=0;i<4;i++){
-  const phase=t*(.75+.08*i)+i*2.2;
-  const hx=x-r*.28+r*.18*Math.sin(phase*1.1+i);
-  const hy=y-r*.30+r*.16*Math.cos(phase*.95+i);
-  const size=r*(.18+.04*i);
+ for(let i=0;i<2;i++){
+  const phase=t*(.24+.02*i)+i*2.2;
+  const hx=x-r*.22+r*.10*Math.sin(phase*.8+i);
+  const hy=y-r*.22+r*.09*Math.cos(phase*.7+i);
+  const size=r*(.10+.02*i);
   const glint=c.createRadialGradient(hx,hy,0,hx,hy,size);
-  glint.addColorStop(0,'rgba(255,255,255,.30)');
-  glint.addColorStop(.45,'rgba(236,255,255,.13)');
+  glint.addColorStop(0,'rgba(255,255,255,.16)');
+  glint.addColorStop(.45,'rgba(236,255,255,.07)');
   glint.addColorStop(1,'rgba(236,255,255,0)');
   c.fillStyle=glint;c.beginPath();c.arc(hx,hy,size,0,TAU);c.fill();
  }
