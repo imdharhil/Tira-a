@@ -10,12 +10,10 @@
 .library-list{display:grid;gap:8px;max-height:300px;overflow:auto;margin:12px 0}.library-entry{border:1px solid #344360;border-radius:10px;padding:10px;display:grid;gap:7px}.library-entry .actions{display:flex;gap:6px;flex-wrap:wrap}.library-entry button{font-size:12px;padding:6px 9px}.library-entry strong{font-size:13px}.library-entry small{color:#9ab3eb}.lib-feedback{font-size:12px;color:#a7d5ee;min-height:18px}.lib-name{background:#10192b;color:#e9f1ff;border:1px solid #334665;border-radius:9px;padding:9px;width:100%}
 .page-nav{color:#a8ceff;text-decoration:none;font-size:12px}.page-nav:hover{text-decoration:underline}@media all{body.effect-embed{min-height:0;background:#080f1f;overflow:hidden}body.effect-embed .wrap{padding:0;max-width:none}body.effect-embed header,body.effect-embed .left,body.effect-embed footer,body.effect-embed .titlebar,body.effect-embed .checks,body.effect-embed .stagegrid .viewport:nth-child(2){display:none!important}body.effect-embed main{display:block;margin:0}body.effect-embed main>.panel{padding:0;border:0;background:none;border-radius:0}body.effect-embed .stagegrid{display:block}body.effect-embed .viewport{aspect-ratio:auto;min-height:0;height:100vh;border:0;border-radius:0}body.effect-embed .viewport .top,body.effect-embed .viewport .bottom{display:none}}
 
-/* Opt-in retro preview; original appearance and explosion algorithms stay intact. */
+/* Background choices only. Never modify canvas resolution or add pixel/CRT filtering. */
 body.retro-pixel .viewport{background:radial-gradient(ellipse at 50% 24%,#231b4b 0%,#100e2b 49%,#05091a 100%)}
 body.retro-arcade .viewport{background:linear-gradient(180deg,#0b1431 0%,#251345 45%,#130b29 64%,#060916 100%)}
-body.retro-pixel .viewport canvas,body.retro-arcade .viewport canvas{image-rendering:pixelated;image-rendering:crisp-edges}
-body.retro-arcade .viewport::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(2,3,14,.14) 4px);opacity:.5}
-body.retro-arcade .viewport.liquid-smooth::after{display:none}
+body.retro-neon .viewport{background:#080f25}
 .retro-description{font-size:11px;line-height:1.5;color:#9eb6d6;margin:3px 0 0}
 </style>
 </head>
@@ -27,9 +25,8 @@ body.retro-arcade .viewport.liquid-smooth::after{display:none}
 <section class="panel">
 <h2>Experiment mode</h2>
 <div class="controls" style="margin-top:12px"><button id="appearance" class="active">Appearance 01–15</button><button id="explosion">Explosion 01–14</button></div>
-<div class="field"><label for="retroStyle">Retro presentation (both previews)</label><select id="retroStyle"><option value="off">Original / unchanged</option><option value="pixel">Pixel shading</option><option value="arcade">Neon arcade + pixel shading</option></select></div>
-<div class="field" id="retroDetail" hidden><label for="pixelSize">Pixel block size <output id="pixelSizeLabel">4×</output></label><input type="range" id="pixelSize" min="2" max="8" step="1" value="4"></div>
-<p class="retro-description">Preview-only visual filter. Does not replace any Core or explosion effect, alter the mechanics, or change saved preset formats.</p>
+<div class="field"><label for="retroStyle">Background (both previews)</label><select id="retroStyle"><option value="off">Original</option><option value="pixel">Retro Twilight</option><option value="arcade">Neon Arcade Grid</option><option value="neon">Neon Glow Arcade</option></select></div>
+<p class="retro-description">Four backgrounds only. No pixel filter, scanlines, or changes to Core appearances, explosions, gameplay, or saved presets.</p>
 <div class="field"><label>Core value <output id="valueLabel">5</output></label><input id="value" type="range" min="1" max="30" value="5"></div>
 <div class="field"><label>Animation speed / pull speed <output id="speedLabel">1.70×</output></label><input id="speed" type="range" min="0" max="300" value="170"></div>
 <div class="field"><label>Urgency / pull range <output id="urgencyLabel">0%</output></label><input id="urgency" type="range" min="0" max="100" value="0"></div>
@@ -66,16 +63,15 @@ const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embed
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
 let bhSpinTime=0, bhPullTime=0;
 const TAU=Math.PI*2;
-let retroStyle='off',pixelSize=4;
+let retroStyle='off';
 $('retroStyle').addEventListener('change',e=>{
   retroStyle=e.target.value;
-  $('retroDetail').hidden=retroStyle==='off';
   document.body.classList.toggle('retro-pixel',retroStyle==='pixel');
   document.body.classList.toggle('retro-arcade',retroStyle==='arcade');
+  document.body.classList.toggle('retro-neon',retroStyle==='neon');
 });
-$('pixelSize').addEventListener('input',e=>{pixelSize=+e.target.value;$('pixelSizeLabel').textContent=pixelSize+'×'});
-function drawLiquidNeonBackground(ctx,w,h,t){
-  // Liquid Surface only: smooth neon arcade scene, without pixel scaling or CRT scanlines.
+function drawNeonGlowBackground(ctx,w,h,t){
+  // Available to every appearance and explosion, independent of Core style.
   const horizon=h*.64;
   ctx.save();
   const base=ctx.createLinearGradient(0,0,0,h);
@@ -456,7 +452,7 @@ function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStren
   }
   ctx.restore();
 }
-function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const smoothLiquid=!state.mode&&n===5;canvas.parentElement.classList.toggle('liquid-smooth',smoothLiquid);canvas.style.imageRendering=smoothLiquid?'auto':'';const dpr=Math.min(devicePixelRatio||1,2),scale=(smoothLiquid||retroStyle==='off')?dpr:1/pixelSize,W=Math.max(1,Math.round(bounds.width*scale)),H=Math.max(1,Math.round(bounds.height*scale));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=smoothLiquid||retroStyle==='off';const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(smoothLiquid)drawLiquidNeonBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && (n===6||n===9)){const rate=n===9?3:2+clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1)*1.5;view.identityTime+=state.dt*rate;}const cosmeticT=n===13?bhSpinTime:(n===6||n===9)?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:n===12?.16+.18*stress:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
     const b=breathCycle(cosmeticT,number);
     // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
     const sxB=1+.036*b.air+.012*b.strain;
