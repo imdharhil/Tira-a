@@ -516,28 +516,29 @@ function voltageNew(c,x,y,r,t,p,controls={}){
  glow(c,x,y,r*(1.28+.26*move),[[0,'rgba(181,244,255,'+(.24+.26*force)+')'],[.44,'rgba(54,130,245,.24)'],[1,'transparent']]);
  glow(c,x,y,r*(1.10+.20*surge),[[0,'rgba(235,255,255,'+(.31+.30*force)+')'],[.3,'rgba(88,181,255,.23)'],[1,'transparent']]);
  softSphere(c,x,y,r,['#f3fdff','#95d5ff','#354ca3','#100d39']);
- // Thin electric filaments follow curved, branching paths over the spherical field.
+ // Every lightning filament originates at the precise center of the Core and travels outward.
  for(let j=0;j<branches;j++){
   const seed=j*73+31,angle=j*2.399963+Math.sin(t*.42+j)*(.08+.30*inst);
   const orbit=t*(.26+.11*(j%4)),a=angle+orbit*(j%2?-1:1);
-  const radial=.55+.25*rand(seed);
-  const length=r*(.32+.28*charge+.42*move)*(.58+.42*rand(seed+9));
+  const length=r*(.88+.30*charge+.44*move)*(.76+.24*rand(seed+9));
   const steps=7,pts=[];
   for(let k=0;k<=steps;k++){
-   const u=k/steps,d=r*radial+length*u;
-   const rag=inst*(.05+.14*u)*(rand(seed+k*29+Math.floor(t*2.5)*13)-.5);
-   const bend=.13*Math.sin(u*4.8+t*.8+j)+rag;
+   const u=k/steps,d=length*u;
+   const rag=inst*u*(.05+.14*u)*(rand(seed+k*29+Math.floor(t*2.5)*13)-.5);
+   const bend=u*.13*Math.sin(u*4.8+t*.8+j)+rag;
    const aa=a+bend;
-   pts.push([x+Math.cos(aa)*d,y+Math.sin(aa)*d]);
+   pts.push(k===0?[x,y]:[x+Math.cos(aa)*d,y+Math.sin(aa)*d]);
   }
   const flare=(.36+.64*surge)*flicker*(.47+.53*rand(seed+5));
   c.save();c.globalAlpha*=flare;
   pxLine(c,pts,'rgba(58,126,255,.72)',2.4+1.1*charge);
   pxLine(c,pts,'rgba(174,229,255,.92)',.65+.45*force);
   if(inst>.15&&j%3===0){
-   const from=pts[3],endAngle=a+(j%2?1:-1)*(.3+inst*.8);
+   // Secondary lightning is center-rooted too, branching into a new direction.
+   const split=pts[3],endAngle=a+(j%2?1:-1)*(.3+inst*.8);
    const dist=r*(.12+.32*inst);
-   pxLine(c,[from,[from[0]+Math.cos(endAngle)*dist,from[1]+Math.sin(endAngle)*dist]],
+   const forkEnd=[split[0]+Math.cos(endAngle)*dist,split[1]+Math.sin(endAngle)*dist];
+   pxLine(c,[[x,y],pts[1],split,forkEnd],
     'rgba(109,186,255,.72)',.8);
   }
   c.restore();
