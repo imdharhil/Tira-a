@@ -70,6 +70,60 @@ $('retroStyle').addEventListener('change',e=>{
   document.body.classList.toggle('retro-arcade',retroStyle==='arcade');
   document.body.classList.toggle('retro-neon',retroStyle==='neon');
 });
+// Atmospheric backdrops belong only to eclipse appearances 08A and 08B.
+// Both use exactly the same animated eclipseCover that shades the celestial body.
+function drawEclipseSky(ctx,w,h,cover,t,solar){
+ const total=clamp((cover-.48)/.52,0,1);
+ ctx.save();
+ const sky=ctx.createLinearGradient(0,0,0,h);
+ if(solar){
+  sky.addColorStop(0,'rgb('+Math.round(mix(117,8,total))+','+Math.round(mix(175,13,total))+','+Math.round(mix(218,31,total))+')');
+  sky.addColorStop(.53,'rgb('+Math.round(mix(243,69,total))+','+Math.round(mix(184,39,total))+','+Math.round(mix(114,40,total))+')');
+  sky.addColorStop(1,'rgb('+Math.round(mix(116,14,total))+','+Math.round(mix(80,16,total))+','+Math.round(mix(91,29,total))+')');
+ }else{
+  sky.addColorStop(0,'rgb('+Math.round(mix(7,2,total))+','+Math.round(mix(18,8,total))+','+Math.round(mix(40,25,total))+')');
+  sky.addColorStop(.63,'rgb('+Math.round(mix(17,5,total))+','+Math.round(mix(33,13,total))+','+Math.round(mix(65,35,total))+')');
+  sky.addColorStop(1,'rgb('+Math.round(mix(32,12,total))+','+Math.round(mix(44,18,total))+','+Math.round(mix(65,35,total))+')');
+ }
+ ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+ // Diffused sky illumination follows the eclipse's transition.
+ const atmosphere=ctx.createRadialGradient(w*.53,h*.44,0,w*.53,h*.44,w*.64);
+ atmosphere.addColorStop(0,solar?'rgba(255,226,159,'+(.24*(1-total)) +')':'rgba(117,145,221,'+(.13+.08*total)+')');
+ atmosphere.addColorStop(1,'rgba(20,27,57,0)');
+ ctx.fillStyle=atmosphere;ctx.fillRect(0,0,w,h);
+ if(!solar){
+  // The night sky is always night; its stars become more pronounced at totality.
+  for(let i=0;i<88;i++){
+   const xx=rand(i*13+6901)*w,yy=rand(i*29+7113)*h*.85;
+   const twinkle=.76+.24*Math.sin(t*(.35+.65*rand(i+78))+i*2.4);
+   ctx.globalAlpha=(.12+.56*total)*twinkle;
+   ctx.fillStyle=i%9?'#daeaff':'#ffffff';
+   const radius=.35+rand(i+322)*1.15;
+   ctx.fillRect(xx,yy,radius,radius);
+  }
+  ctx.globalAlpha=1;
+ }
+ // Soft, layered cloud banks drift with time and darken with eclipse progress.
+ const cloudAlpha=solar?.13+.21*total:.17+.13*total;
+ for(let layer=0;layer<3;layer++){
+  const baseY=h*(solar?.61:.77)+layer*h*.095;
+  const drift=Math.sin(t*(.065+.022*layer)+layer*2.1)*w*.065;
+  for(let i=-2;i<8;i++){
+   const xx=(i/6)*w+drift+layer*w*.09;
+   const yy=baseY+Math.sin(i*1.8+layer*.75)*h*.04;
+   const rx=w*(.14+.045*rand(i+24+layer*37)),ry=h*(.09+.035*rand(i+140+layer*71));
+   const cloud=ctx.createRadialGradient(xx,yy,rx*.12,xx,yy,rx);
+   const shade=solar?'35,27,39':'15,24,42';
+   cloud.addColorStop(0,'rgba('+shade+','+cloudAlpha+')');
+   cloud.addColorStop(.56,'rgba('+shade+','+(cloudAlpha*.54)+')');
+   cloud.addColorStop(1,'rgba('+shade+',0)');
+   ctx.fillStyle=cloud;
+   ctx.save();ctx.translate(xx,yy);ctx.scale(1,ry/rx);
+   ctx.beginPath();ctx.arc(0,0,rx,0,TAU);ctx.fill();ctx.restore();
+  }
+ }
+ ctx.restore();
+}
 function drawNeonGlowBackground(ctx,w,h,t){
   // Available to every appearance and explosion, independent of Core style.
   const horizon=h*.64;
@@ -641,7 +695,7 @@ function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStren
   }
   ctx.restore();
 }
-function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && n===9){view.identityTime+=state.dt*3;}const cosmeticT=n===13?bhSpinTime:n===9?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);if(!state.mode&&(n===8||n===16))drawEclipseSky(ctx,w,h,view.eclipseCover,t,n===8);else if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && n===9){view.identityTime+=state.dt*3;}const cosmeticT=n===13?bhSpinTime:n===9?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const identityShake=state.mode?0:(n===1?1:0);ctx.save();ctx.translate(sx*identityShake,sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
     const b=breathCycle(cosmeticT,number);
     // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
     const sxB=1+.036*b.air+.012*b.strain;
