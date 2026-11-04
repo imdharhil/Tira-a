@@ -747,24 +747,36 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   c.shadowBlur=2;taperedArc(points,'rgba(255,245,178,.91)',.32,.035);
   c.restore();
  }
- // Number Follow adds nested halo outlines around the center numeral.
- // At zero the original Core is unchanged; increasing Follow strengthens layers.
+ // Number Follow / Captured Count: two closed, angular and crossing
+ // inner electrical contours traced from the owner's reference silhouette.
+ // They replace the old smooth interrupted halos, not the outer outlines.
  if(follow>.001){
-  const ringCount=1+Math.floor(follow*2.99);
-  for(let j=0;j<ringCount;j++){
-   const rr=r*(.36+.075*j),offset=t*(.20+.08*j)*(j%2?-1:1);
-   const segments=3+j*2;
-   c.save();c.globalAlpha*=follow*(.50+.21*surge)/(1+j*.30);
-   c.strokeStyle=j===0?'rgba(255,251,196,.94)':'rgba(255,178,64,.81)';
-   c.lineWidth=(1.05+.55*follow)/(1+j*.22);
-   c.shadowColor='#ffd874';c.shadowBlur=5+4*follow;
-   // Interrupted rings read as distinct energetic layers, not a static bullseye.
-   for(let k=0;k<segments;k++){
-    const begin=offset+k*TAU/segments+.09;
-    const end=begin+TAU/segments*(.43+.25*rand(j*47+k+9));
-    c.beginPath();c.arc(x,y,rr,begin,end);c.stroke();
+  const innerContours=[
+   [[-.20,-1],[-.09,-.86],[.57,-.85],[.35,-.56],[.50,-.29],[.70,-.10],[.61,.28],[.94,.36],[.77,.62],[.35,.70],[-.02,1],[-.35,.71],[-.68,.68],[-.89,.28],[-.62,.04],[-.82,-.13],[-.48,-.47],[-.59,-.79],[-.23,-.78]],
+   [[-.65,-.50],[-.32,-.69],[.15,-.57],[.40,-.71],[.56,-.40],[.40,-.05],[.65,.26],[.35,.57],[-.05,.71],[-.38,.60],[-.54,.25],[-.94,.17],[-.58,-.20],[-.73,-.34]]
+  ];
+  const secondStrength=clamp((follow-.16)/.46,0,1);
+  for(let j=0;j<2;j++){
+   const visibility=j===0?1:secondStrength;
+   if(visibility<=0)continue;
+   const contour=innerContours[j];
+   const rotation=t*(j===0?.12:-.15)*( .40+.60*follow);
+   const size=r*(j===0?.47:.45)*( .90+.10*follow);
+   const cosine=Math.cos(rotation),sine=Math.sin(rotation);
+   c.save();
+   c.globalAlpha*=visibility*(.67+.33*follow)*(.85+.15*surge);
+   c.beginPath();
+   for(let k=0;k<contour.length;k++){
+    const point=contour[k],xx=point[0]*size,yy=point[1]*size;
+    const px=x+xx*cosine-yy*sine,py=y+xx*sine+yy*cosine;
+    if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
    }
-   c.restore();
+   c.closePath();
+   c.lineJoin='round';
+   c.strokeStyle='rgba(255,235,124,.93)';
+   c.lineWidth=j===0?1.2:.95;
+   c.shadowColor='#ffb42a';c.shadowBlur=4.5;
+   c.stroke();c.restore();
   }
  }
  c.restore();
