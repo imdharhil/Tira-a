@@ -107,6 +107,7 @@ function updateFrame(entry,explode=false){
   entry.visual.prepend(entry.frame);
  }
  const p={mode:0,effect:entry.fx.id,settings:settings(entry.fx.id,entry.value)};
+ if(entry.fx.id===13)p.displayNumber=entry.value;
  let src='./fx-gallery-player.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify(p));
  if(explode)src+='&galleryDeath=1&replay='+Date.now();
  entry.frame.src=src;
