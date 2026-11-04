@@ -686,6 +686,29 @@ function voltageNew(c,x,y,r,t,p,controls={}){
     taperedArc(fork,'rgba(255,247,171,.66)',.39,.045);
    }
   }
+  // Attached angular offshoots supplement the existing trunks and original forks.
+  // Their geometry uses the parent's seed and clock, so they share its animation.
+  const extraBranches=1+Math.floor(rand(seed+403)*3);
+  for(let branch=0;branch<extraBranches;branch++){
+   const at=3+Math.floor(rand(seed+419+branch*29)*6);
+   const anchor=pts[at],before=pts[at-1],after=pts[at+1];
+   const parentDirection=Math.atan2(after[1]-before[1],after[0]-before[0]);
+   const side=rand(seed+431+branch*37)<.5?-1:1;
+   const forkLength=r*(.065+.095*rand(seed+443+branch*41))*(.8+.2*move);
+   let direction=parentDirection+side*(.53+.57*rand(seed+457+branch*43));
+   let fx=anchor[0],fy=anchor[1];
+   const offshoot=[[fx,fy]],sections=3+Math.floor(rand(seed+467+branch*47)*2);
+   for(let q=1;q<=sections;q++){
+    direction+=side*(rand(seed+479+branch*53+q*23)-.5)*(.52+.38*inst);
+    const step=forkLength/sections*(.75+.5*rand(seed+487+branch*59+q*31));
+    fx+=Math.cos(direction)*step;fy+=Math.sin(direction)*step;
+    offshoot.push([fx,fy]);
+   }
+   // Match the existing secondary fork weight, glow and parent flash cadence.
+   c.shadowColor='#ffb42e';c.shadowBlur=3.5+2.5*surge;
+   taperedArc(offshoot,'rgba(255,178,43,.74)',.89,.08);
+   c.shadowBlur=0;taperedArc(offshoot,'rgba(255,247,171,.66)',.39,.045);
+  }
   // Tiny sparks remain attached to existing lightning segments.
   const tick=Math.floor(t*(6+6*urgency)),sparkSeed=seed+tick*193;
   if(rand(sparkSeed+17)<.25+.17*urgency){
