@@ -109,9 +109,9 @@ function updateFrame(entry,explode=false){
   entry.visual.prepend(entry.frame);
  }
  const p={mode:0,effect:entry.fx.id,settings:settings(entry.fx.id,entry.value)};
- // Black Hole uses a contact-driven stage transition without reloading its player.
+ // Black Hole uses a direct visual stage transition without reloading its player.
  if(entry.fx.id===13&&!explode&&entry.frameReady){
-  entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-contact',stage:entry.value,settings:p.settings},location.origin);
+  entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-stage',stage:entry.value,settings:p.settings},location.origin);
   return;
  }
  if(entry.fx.id===13)p.displayNumber=entry.value;
