@@ -24,7 +24,7 @@ body.retro-neon .viewport{background:#080f25}
 <aside class="left">
 <section class="panel">
 <h2>Experiment mode</h2>
-<div class="controls" style="margin-top:12px"><button id="appearance" class="active">Appearance 01–15 + 08B</button><button id="explosion">Explosion 01–14</button></div>
+<div class="controls" style="margin-top:12px"><button id="appearance" class="active">Appearance 01–18 (08A / 08B)</button><button id="explosion">Explosion 01–14</button></div>
 <div class="field"><label for="retroStyle">Background (both previews)</label><select id="retroStyle"><option value="off">Original</option><option value="pixel">Retro Twilight</option><option value="arcade">Neon Arcade Grid</option><option value="neon">Neon Glow Arcade</option></select></div>
 <p class="retro-description">Four backgrounds only. No pixel filter, scanlines, or changes to Core appearances, explosions, gameplay, or saved presets.</p>
 <div class="field"><label>Core value <output id="valueLabel">5</output></label><input id="value" type="range" min="1" max="30" value="5"></div>
@@ -55,9 +55,9 @@ body.retro-neon .viewport{background:#080f25}
 </div>
 <script>
 (()=>{'use strict';
-const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse'];
+const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
@@ -182,7 +182,7 @@ const easeOut=x=>1-Math.pow(1-x,3);
 function rand(n){const x=Math.sin(n*127.13+78.23)*43758.5453123;return x-Math.floor(x)}
 function names(){return state.mode?explosions:appearance}
 function appearanceLabel(n){return n===8?'08A':n===16?'08B':String(n).padStart(2,'0')}
-function rebuild(){const arr=names(),order=state.mode?arr.map((_,i)=>i+1):[1,2,3,4,5,6,7,8,16,9,10,11,12,13,14,15];$('effects').replaceChildren();for(const side of ['A','B']){const sel=$('choice'+side);sel.replaceChildren();order.forEach(n=>{const op=document.createElement('option');op.value=n;op.textContent=(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+' · '+arr[n-1];sel.append(op)});sel.value=state[side]}order.forEach(n=>{const b=document.createElement('button');b.innerHTML='<strong>'+(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+'</strong> '+arr[n-1];b.className=state.A===n?'active':'';b.onclick=()=>{state.A=n;$('choiceA').value=n;state.burstStart=state.t;rebuild()};$('effects').append(b)});$('modeLabel').textContent=state.mode?'Explosion experiments':'Core appearance';$('aName').textContent=(state.mode?String(state.A).padStart(2,'0'):appearanceLabel(state.A))+' '+arr[state.A-1];$('bName').textContent=(state.mode?String(state.B).padStart(2,'0'):appearanceLabel(state.B))+' '+arr[state.B-1];$('note').textContent=state.mode?'Explosion mode remains experimental. Identity destruction preview is the primary review path.':(notes[state.A]||'This slot remains a supporting cosmetic variant.');}
+function rebuild(){const arr=names(),order=state.mode?arr.map((_,i)=>i+1):[1,2,3,4,5,6,7,8,16,9,10,11,12,13,14,15,17,18];$('effects').replaceChildren();for(const side of ['A','B']){const sel=$('choice'+side);sel.replaceChildren();order.forEach(n=>{const op=document.createElement('option');op.value=n;op.textContent=(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+' · '+arr[n-1];sel.append(op)});sel.value=state[side]}order.forEach(n=>{const b=document.createElement('button');b.innerHTML='<strong>'+(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+'</strong> '+arr[n-1];b.className=state.A===n?'active':'';b.onclick=()=>{state.A=n;$('choiceA').value=n;state.burstStart=state.t;rebuild()};$('effects').append(b)});$('modeLabel').textContent=state.mode?'Explosion experiments':'Core appearance';$('aName').textContent=(state.mode?String(state.A).padStart(2,'0'):appearanceLabel(state.A))+' '+arr[state.A-1];$('bName').textContent=(state.mode?String(state.B).padStart(2,'0'):appearanceLabel(state.B))+' '+arr[state.B-1];$('note').textContent=state.mode?'Explosion mode remains experimental. Identity destruction preview is the primary review path.':(notes[state.A]||'This slot remains a supporting cosmetic variant.');}
 $('appearance').onclick=()=>{state.mode=0;state.deathStart=null;$('appearance').classList.add('active');$('explosion').classList.remove('active');rebuild()};
 $('explosion').onclick=()=>{state.mode=1;state.deathStart=null;state.burstStart=state.t;$('explosion').classList.add('active');$('appearance').classList.remove('active');rebuild()};
 for(const side of ['A','B']) $('choice'+side).onchange=e=>{state[side]=+e.target.value;state.deathStart=null;state.burstStart=state.t;rebuild()};
@@ -225,6 +225,44 @@ function breathCycle(t,value){
   else if(phase<.79){air=1-smoothstep((phase-.37)/.42);} // quicker exhale under pressure
   else air=0; // short empty pause before next breath
   return {air,strain,pressure,phase};
+}
+// Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
+function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
+ const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.5,0,1);
+ const move=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
+ const flow=t*(.7+.5*urgency),reach=1.10+.6*move+.2*power;
+ const outer=dark?'rgba(87,40,149,':'rgba(33,183,197,';
+ const mid=dark?'rgba(159,92,232,':'rgba(99,233,236,';
+ const shine=dark?'rgba(236,167,255,':'rgba(255,221,161,';
+ c.save();
+ glow(c,x,y+r*.07,r*1.30,[[0,outer+(.24+.1*urgency)+')'],[.6,outer+'.09)'],[1,'transparent']]);
+ const seed=c.createRadialGradient(x-r*.1,y,r*.03,x,y+r*.08,r*.72);
+ if(dark){seed.addColorStop(0,'rgba(234,187,255,.87)');seed.addColorStop(.28,'rgba(149,72,221,.76)');seed.addColorStop(.65,'rgba(63,25,111,.42)');seed.addColorStop(1,'rgba(30,5,55,0)')}
+ else{seed.addColorStop(0,'rgba(255,254,235,.97)');seed.addColorStop(.25,'rgba(255,216,146,.87)');seed.addColorStop(.65,'rgba(88,218,229,.39)');seed.addColorStop(1,'rgba(30,190,207,0)')}
+ c.beginPath();c.ellipse(x,y+r*.09,r*.67,r*.70,0,0,TAU);c.fillStyle=seed;c.fill();
+ for(let j=0;j<13;j++){
+  const u=j/12,phase=flow*(.7+.1*(j%5))+j*1.59;
+  const baseX=x+r*(u-.5)*1.3,baseY=y+r*(.24+.18*rand(j+41));
+  const height=r*reach*(.60+.51*rand(j+107)),bend=r*(.12+.22*inst)*Math.sin(phase);
+  const tx=x+r*((u-.5)*(.50+.30*move)+.26*Math.sin(phase*.62+u*4));
+  const ty=baseY-height*(.87+.12*Math.sin(phase*.57));
+  const width=r*(.10+.07*rand(j+93));
+  const path=()=>{c.beginPath();c.moveTo(baseX,baseY);c.bezierCurveTo(baseX+bend-r*.19,baseY-r*.35,x+r*(u-.5)*.56-bend+r*.3,ty+r*.4,tx,ty)};
+  c.save();c.globalCompositeOperation='screen';c.lineCap='round';
+  path();c.strokeStyle=outer+(.10+.09*urgency)+')';c.lineWidth=width*2.7;c.shadowColor=dark?'#7445cb':'#66e5eb';c.shadowBlur=r*.12;c.stroke();
+  path();c.strokeStyle=mid+(.17+.11*urgency)+')';c.lineWidth=width*1.25;c.shadowBlur=r*.06;c.stroke();
+  path();c.strokeStyle=(j%3===0?shine:mid)+(.34+.13*urgency)+')';c.lineWidth=width*.27;c.shadowBlur=0;c.stroke();
+  c.restore();
+ }
+ for(let j=0;j<13;j++){
+  const cycle=(flow*(.13+.06*rand(j+301))+rand(j*17+9))%1,a=j*2.39996;
+  const spread=r*(.19+.54*rand(j+61))*(1-.5*cycle);
+  const px=x+Math.cos(a)*spread,py=y+r*.43-cycle*r*(reach+.9);
+  c.save();c.globalAlpha=(.2+.24*urgency)*(1-cycle);
+  c.fillStyle=dark?'#e3baff':'#eafff3';c.shadowColor=dark?'#ad72ee':'#9deded';c.shadowBlur=4;
+  c.beginPath();c.arc(px,py,Math.max(.5,r*(.007+.01*rand(j+113))),0,TAU);c.fill();c.restore();
+ }
+ c.restore();
 }
 function drawAppearance(ctx,n,x,y,r,t,value,opts={}){const {power,stress}=stressFor(value);switch(n){
 case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
@@ -360,8 +398,16 @@ case 13:{
 }
 case 14:{filmNew(ctx,x,y,r,t,stress);break;}
 case 15:{spriteNew(ctx,x,y,r,t,stress,opts.arcadeControls);break;}
+case 17:case 18:{drawSoulWisp(ctx,x,y,r,t,value,n===18,opts.soulControls);break;}
 }}
 function drawIdentityDeath(ctx,n,x,y,r,elapsed,value){const q=clamp(elapsed/1.5,0,1),u=easeOut(q);if(q>=1)return;if(n===15){shatterNew(ctx,x,y,r,q,{inst:+$('inst').value/100,move:+$('move').value/100,urgency:+$('urgency').value/100,value});return;}const draw=(id,scale=1,alpha=1)=>{ctx.save();ctx.globalAlpha*=alpha;ctx.translate(x,y);ctx.scale(scale,scale);drawAppearance(ctx,id,0,0,r,elapsed*2+1,value);ctx.restore()};ctx.save();switch(n){
+case 17:case 18:{
+ if(q<.72)draw(n,1+.1*q,1-q);
+ for(let j=0;j<16;j++){
+  const a=j*2.39996,dist=r*(.12+u*.9)*(.5+.5*rand(j+47));
+  circle(ctx,x+Math.cos(a)*dist,y-r*u*(.55+rand(j+307)),r*(.02+.01*rand(j+7))*(1-q),n===18?'rgba(175,99,230,'+(.45*(1-q))+')':'rgba(154,240,228,'+(.48*(1-q))+')');
+ }break;
+}
 case 14:{if(q<.08)draw(14,1+q*.15,1-q*3);const rupture=-.72;for(let i=0;i<5;i++){const rr=r*(1+.02*i)*(1-q*.12);ctx.beginPath();ctx.arc(x,y,rr,rupture+u*.9+i*.03,rupture+TAU-u*1.35-i*.05);ctx.lineWidth=(3.6-i*.55)*(1-q);ctx.strokeStyle=['rgba(242,252,255,.72)','rgba(176,236,255,.6)','rgba(215,117,239,.36)','rgba(70,214,245,.48)','rgba(255,255,255,.22)'][i];ctx.stroke()}for(let i=0;i<9;i++){const a=rupture+i*.45,dist=r*(1+u*.8);circle(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.012+.01*rand(i))*(1-q),'rgba(176,237,255,.28)')}break;}
 case 13:{for(let i=0;i<24;i++){const a=i*TAU/24+elapsed*1.3,rr=r*(1.55-u*1.48);circle(ctx,x+Math.cos(a)*rr,y+Math.sin(a)*rr*.72,Math.max(.1,2.1*(1-q)),'rgba(214,194,255,.22)')}draw(13,Math.max(.01,1-u*.98),1-q*.9);break;}
 case 5:{if(q<.22)draw(5,1+q*.08,1-q*3);for(let i=0;i<18;i++){const a=i*2.399+elapsed*.4,dist=r*(.18+u*(.65+rand(i)*.72));ellipse(ctx,x+Math.cos(a)*dist,y+Math.sin(a)*dist,r*(.05+rand(i)*.05)*(1-q),r*.028*(1-q),'rgba(115,207,255,.72)',a)}break;}
@@ -786,7 +832,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
@@ -795,7 +841,7 @@ if(isEffectEmbed){
  try{
   const raw=embedParams.get('preset');if(!raw||raw.length>1600)throw Error('Missing preview settings');
   const p=JSON.parse(raw);const mode=Number(p.mode),effect=Number(p.effect);
-  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:16))throw Error('Invalid effect');
+  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:18))throw Error('Invalid effect');
   state.mode=mode;state.A=effect;state.B=effect;for(const k of ['value','speed','urgency','inst','move','follow']){const input=$(k);const n=Number(p.settings?.[k]);if(!Number.isFinite(n))throw Error('Invalid settings');input.value=Math.min(Number(input.max),Math.max(Number(input.min),n));input.dispatchEvent(new Event('input'));}
   rebuild();
   if(isGalleryDeath&&state.mode===0)state.deathStart=state.t;
@@ -808,7 +854,7 @@ let library=[];
 function validatePreset(p){
   if(!p||typeof p!=='object'||typeof p.name!=='string'||!p.settings||typeof p.settings!=='object')return null;
   const mode=Number(p.mode),effect=Number(p.effect);
-  if(!Number.isInteger(mode)||(mode!==0&&mode!==1)||!Number.isInteger(effect)||effect<1||effect>(mode?14:16))return null;
+  if(!Number.isInteger(mode)||(mode!==0&&mode!==1)||!Number.isInteger(effect)||effect<1||effect>(mode?14:18))return null;
   const settings={};
   for(const k of libSliders){const input=$(k),v=Number(p.settings[k]);if(!Number.isFinite(v))return null;settings[k]=Math.max(Number(input.min),Math.min(Number(input.max),v));}
   return {id:typeof p.id==='string'?p.id.slice(0,64):'',name:p.name.trim().slice(0,70)||'Unnamed preset',mode,effect,settings};
