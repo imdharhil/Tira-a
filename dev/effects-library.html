@@ -67,7 +67,7 @@ footer{margin-top:24px;font-size:12px;color:#8399b8;line-height:1.65}
  <p class="note">Each appearance has one fixed entry. Core selection is saved in this browser; pressing Explosion replays that appearance’s own destruction animation. Sound effects are managed separately.</p>
  <div class="fx-list" id="fxList"></div>
 </section>
-<footer>Visual previews use the real Effects Lab renderer. This page does not publish changes, modify gameplay, or delete saved presets from the Effects Lab.</footer>
+<footer>Visual previews use an independent Gallery player. This page does not publish changes, modify gameplay, or delete Effects Lab presets.</footer>
 </div>
 <script>
 (()=>{'use strict';
@@ -93,7 +93,9 @@ const observer=typeof IntersectionObserver!=='undefined'?new IntersectionObserve
   else if(entry.frame){entry.frame.removeAttribute('src');entry.frame.remove();entry.frame=null;}
  });
 },{rootMargin:'180px 0px'}):null;
-function settings(value){return {value,speed:100,urgency:25,inst:35,move:40,follow:50};}
+const blackHoleStages=[[1,100,50,50,100,50],[3,150,57,75,100,50],[5,200,65,82,100,50],[7,231,70,92,100,50],[9,280,90,100,100,50],[11,300,100,100,100,50]];
+function settings(effect,stage){const a=effect===13?blackHoleStages[stage-1]:[stage,100,25,35,40,50];return {value:a[0],speed:a[1],urgency:a[2],inst:a[3],move:a[4],follow:a[5]};}
+function blackHoleDescription(stage){const a=blackHoleStages[stage-1];return 'Size '+a[0]+' · Speed '+(a[1]/100).toFixed(2)+'× · Pull '+a[2]+'% · Spin '+a[3]+'% · Stretch '+a[4]+'% · Captured '+a[5]+'%';}
 function updateFrame(entry,explode=false){
  if(!entry.visible)return;
  if(!entry.frame){
@@ -104,14 +106,15 @@ function updateFrame(entry,explode=false){
   entry.frame.setAttribute('sandbox','allow-scripts allow-same-origin');
   entry.visual.prepend(entry.frame);
  }
- const p={mode:0,effect:entry.fx.id,settings:settings(entry.value)};
- let src='./effects-lab.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify(p));
+ const p={mode:0,effect:entry.fx.id,settings:settings(entry.fx.id,entry.value)};
+ let src='./fx-gallery-player.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify(p));
  if(explode)src+='&galleryDeath=1&replay='+Date.now();
  entry.frame.src=src;
 }
 function setValue(entry,value){
  entry.value=value;
  entry.buttons.forEach((btn,i)=>btn.setAttribute('aria-pressed',String(i+1===value)));
+ if(entry.fx.id===13)entry.hint.textContent=blackHoleDescription(value);
  saved[entry.fx.id]=value;
  try{localStorage.setItem(storageKey,JSON.stringify(saved));}catch(e){}
  updateFrame(entry);
@@ -127,12 +130,12 @@ function makeEntry(fxItem){
  const name=document.createElement('span');name.className='fx-name';name.textContent=fxItem.name;
  heading.append(code,name);content.append(heading);
  const controls=document.createElement('div');controls.className='fx-controls';
- const label=document.createElement('span');label.className='fx-label';label.textContent='Core Value';
+ const label=document.createElement('span');label.className='fx-label';label.textContent=fxItem.id===13?'Configuration':'Core Value';
  controls.append(label);
  const numbers=document.createElement('div');numbers.className='value-buttons';numbers.setAttribute('role','group');numbers.setAttribute('aria-label',fxItem.name+' Core Value');
  for(let n=1;n<=6;n++){
   const button=document.createElement('button');button.type='button';button.textContent=String(n);
-  button.setAttribute('aria-label',fxItem.name+' Core '+n);
+  button.setAttribute('aria-label',fxItem.id===13?fxItem.name+' configuration '+n+' (size '+blackHoleStages[n-1][0]+')':fxItem.name+' Core '+n);
   button.setAttribute('aria-pressed',String(entry.value===n));
   button.onclick=()=>setValue(entry,n);
   entry.buttons.push(button);numbers.append(button);
@@ -142,7 +145,7 @@ function makeEntry(fxItem){
  explode.setAttribute('aria-label','Play '+fxItem.name+' explosion');
  explode.onclick=()=>updateFrame(entry,true);
  controls.append(explode);content.append(controls);
- const hint=document.createElement('span');hint.className='fx-small';hint.textContent='Animated visual · Explosion preview on demand';content.append(hint);
+ const hint=document.createElement('span');hint.className='fx-small';hint.textContent=fxItem.id===13?blackHoleDescription(entry.value):'Animated visual · Explosion preview on demand';entry.hint=hint;content.append(hint);
  card.append(content);list.append(card);
  card.dataset.effect=String(fxItem.id);entries.set(fxItem.id,entry);
  if(observer)observer.observe(card);else updateFrame(entry);
