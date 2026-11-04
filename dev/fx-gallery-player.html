@@ -813,12 +813,18 @@ function bhContactUpdate(dt){
  if(!bhContact)return;
  const tr=bhContact;tr.elapsed+=dt;
  const factor=mix(.9,.36,clamp((tr.start.value-1)/29,0,1));
- const arrival=.57+.18*factor;
- if(tr.elapsed>=arrival&&!tr.contact){
-  tr.contact=true;galleryDisplayNumber=tr.stage;
+ const canvas=$('canvasA'),rect=canvas.getBoundingClientRect();
+ const radius=Math.max(1,Math.min(rect.width,rect.height)*.29);
+ const horizon=radius*factor,arrival=.57+.18*factor;
+ const u=clamp(tr.elapsed/arrival,0,1),eased=u*u*(3-2*u);
+ const distance=(horizon+radius*.77)*(1-eased)+(horizon+radius*.012)*eased;
+ const cellRadius=Math.max(2.5,radius*.067)*(1-.42*u);
+ // Actual collision condition: incoming Cell's near edge touches the event horizon.
+ if(!tr.contact&&distance-cellRadius<=horizon){
+  tr.contact=true;tr.contactAt=tr.elapsed;galleryDisplayNumber=tr.stage;
  }
  if(tr.contact){
-  const q=clamp((tr.elapsed-arrival)/.38,0,1),ease=q*q*(3-2*q),a={};
+  const q=clamp((tr.elapsed-tr.contactAt)/.38,0,1),ease=q*q*(3-2*q),a={};
   for(const k of bhFields)a[k]=tr.start[k]+(tr.target[k]-tr.start[k])*ease;
   bhSet(a);
   if(q>=1){bhSet(tr.target);bhContact=null;}
