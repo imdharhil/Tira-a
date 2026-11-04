@@ -228,60 +228,105 @@ function breathCycle(t,value){
   return {air,strain,pressure,phase};
 }
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
- // The two souls deliberately use distinct silhouettes and motion, not recolored twins.
+ // Organic soul-fire: continuous rounded lower flame, curling tapered upper plumes.
+ // No sharp wedge panels or detached rounded-ended tentacle strokes.
  const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.5,0,1);
  const move=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
- const time=t*(.55+.62*urgency),length=dark?1.36:1.24;
- const outer=dark?[108,52,174]:[33,172,220];
- const mid=dark?[172,97,238]:[100,232,223];
- const heart=dark?[235,181,255]:[255,240,182];
- const rgba=(arr,a)=>'rgba('+arr.join(',')+','+clamp(a,0,1)+')';
- c.save();
- glow(c,x,y+r*.10,r*(dark?1.60:1.43),[[0,rgba(mid,.17+.1*urgency)],[.46,rgba(outer,.09)],[1,'transparent']]);
- // An unbroken envelope keeps the body organic. Dark Soul curls inward;
- // Pure Soul lifts upward and breathes, rather than spiking outward.
- const envelope=(idx,baseX,width,height,alpha)=>{
-   const phase=time*(.61+.1*idx)+idx*1.49,top=y+r*.40-r*height;
-   c.beginPath();
-   const steps=32,side=[];
-   for(let i=0;i<=steps;i++){
-     const u=i/steps,yy=y+r*.48-u*r*height;
-     const bend=(dark?-.18:.10)*u*u+Math.sin(phase+u*(dark?7:4))*(.06+.11*inst)*u;
-     const center=x+r*(baseX*(1-u)+bend+Math.sin(time*.34+idx)*move*.05*u);
-     const spread=r*width*Math.pow(1-u,1.10)*(.48+.52*Math.sin(Math.PI*(u*.75+.14)));
-     side.push([center-spread,center+spread,yy]);
-   }
-   c.moveTo(side[0][0],side[0][2]);for(let i=1;i<=steps;i++)c.lineTo(side[i][0],side[i][2]);
-   for(let i=steps;i>=0;i--)c.lineTo(side[i][1],side[i][2]);c.closePath();
-   const gradient=c.createLinearGradient(x,y+r*.48,x,top);
-   gradient.addColorStop(0,rgba(outer,alpha*.84));
-   gradient.addColorStop(.45,rgba(mid,alpha*.68));
-   gradient.addColorStop(.8,rgba(heart,alpha*.26));
-   gradient.addColorStop(1,rgba(heart,0));
-   c.fillStyle=gradient;c.fill();
+ const time=t*(.72+.63*urgency),stretch=.93+.43*move+.12*power;
+ const palette=dark?{
+  haze:[116,51,188],outer:[102,48,172],middle:[158,90,230],
+  light:[214,154,251],heart:[243,198,255],mote:'#d8b7ff'
+ }:{
+  haze:[26,115,192],outer:[35,150,210],middle:[67,221,234],
+  light:[149,255,245],heart:[255,226,166],mote:'#ddffff'
  };
- c.globalCompositeOperation='screen';
- envelope(0,0,dark?.46:.54,length*(1+.15*move),.49+.12*urgency);
- envelope(1,dark?.25:-.21,.29,length*(dark?.95:1.08),.33);
- envelope(2,dark?-.31:.29,.28,length*(dark?1.14:.88),.30);
- envelope(3,.05,.21,length*(dark?.71:1.03),.39);
- // Dark Soul has a shadowed center; Pure Soul has a stable warm ignition.
- c.globalCompositeOperation='source-over';
- if(dark){
-   glow(c,x,y+r*.12,r*.64,[[0,'rgba(31,9,65,.85)'],[.48,rgba(outer,.22)],[1,'transparent']]);
-   for(let i=0;i<3;i++){
-     const a=time*.36+i*2.094,xx=x+r*.32*Math.cos(a),yy=y+r*.14+r*.21*Math.sin(a);
-     glow(c,xx,yy,r*.21,[[0,rgba(heart,.09+.08*urgency)],[1,'transparent']]);
-   }
- }else{
-   glow(c,x,y+r*.17,r*.79,[[0,rgba(heart,.62)],[.34,rgba(mid,.32)],[1,'transparent']]);
+ const rgba=(rgb,alpha)=>'rgba('+rgb.join(',')+','+clamp(alpha,0,1)+')';
+ c.save();
+ const centerY=y+r*.16;
+ // One broad, softly glowing fire body with a bright soul ignition at its foot.
+ glow(c,x,centerY,r*1.42,[[0,rgba(palette.middle,.22+.12*urgency)],
+  [.45,rgba(palette.outer,.12)],[1,'transparent']]);
+ // Each overlapping plume is a curving, volumetric envelope. Both sides share
+ // a meandering centerline, so their shape is continuous rather than triangular.
+ // Wide rounded lower lobes feed into tapered, asymmetrical curling upper tips.
+ function plume(index,offset,height,width,alpha,colors){
+  const phase=time*(.52+.13*index)+index*1.83;
+  const yBase=y+r*(.50-.045*index);
+  const length=r*height*stretch;
+  const drift=Math.sin(phase*.61)*(.095+.10*inst);
+  const samples=26,left=[],right=[];
+  for(let i=0;i<=samples;i++){
+   const u=i/samples;
+   const yy=yBase-u*length;
+   const bend=(.16*Math.sin(u*4.9-phase*.63)+.11*Math.sin(u*9.1+phase*.40)
+    +.12*Math.sin(u*3.3+phase))*inst;
+   const swirl=(.11+.13*move)*Math.sin(phase*.65+u*5.7+index*.49)*u;
+   const cx=x+r*(offset*(1-.48*u)+drift*u+bend*u+swirl);
+   // Broad lower body, a rounded midsection and a narrow, wandering final tip.
+   const belly=Math.pow(Math.max(0,1-u),.78)*(Math.min(1,(u+.19)*3.7));
+   const tail=Math.pow(Math.max(0,1-u),1.42);
+   const irregular=1+(.09+.15*inst)*(Math.sin(u*13+phase)+.5*Math.sin(u*24-phase));
+   const half=r*width*(.17+.83*belly)*tail*irregular;
+   left.push([cx-half*(1+.13*Math.sin(phase+u*8)),yy]);
+   right.push([cx+half*(1+.12*Math.cos(phase*.8+u*7)),yy]);
+  }
+  c.beginPath();c.moveTo(left[0][0],left[0][1]);
+  for(let i=1;i<left.length;i++)c.lineTo(left[i][0],left[i][1]);
+  for(let i=right.length-1;i>=0;i--)c.lineTo(right[i][0],right[i][1]);
+  c.closePath();
+  const grad=c.createLinearGradient(x,yBase,x+drift*r,yBase-length);
+  grad.addColorStop(0,rgba(colors[0],alpha));
+  grad.addColorStop(.36,rgba(colors[1],alpha*.86));
+  grad.addColorStop(.69,rgba(colors[2],alpha*.49));
+  grad.addColorStop(1,rgba(colors[2],.015));
+  c.fillStyle=grad;c.fill();
  }
- // Small bounded motes, tied to the body, avoid uncontrolled off-screen particles.
- for(let i=0;i<13;i++){
-   const phase=(time*(.17+.05*rand(i+71))+rand(i+41))%1;
-   const a=i*2.39996,xx=x+r*Math.sin(a)*(.13+.31*phase);
-   const yy=y+r*.42-phase*r*(.96+.36*move);
-   circle(c,xx,yy,r*(.005+.009*rand(i+118)),rgba(mid,.09+.22*(1-phase)));
+ // A continuous primary flame with diffuse secondary curls, never a fan of spikes.
+ c.globalCompositeOperation='screen';
+ plume(0,0,1.54,.93,.38+.13*urgency,[palette.outer,palette.middle,palette.light]);
+ plume(1,-.23,1.30,.58,.29+.08*urgency,[palette.haze,palette.outer,palette.middle]);
+ plume(2,.29,1.07,.61,.27+.09*urgency,[palette.outer,palette.middle,palette.light]);
+ plume(3,-.11,1.44,.49,.28+.11*urgency,[palette.middle,palette.light,palette.heart]);
+ plume(4,.16,.98,.48,.26+.10*urgency,[palette.middle,palette.light,palette.heart]);
+ // Broad translucent currents curl through the body and taper away at the top.
+ // Short luminous segments use graduated widths to avoid noodle-like strokes.
+ for(let j=0;j<4;j++){
+  const phase=time*(.69+.09*j)+j*1.63;
+  const startX=x+r*(j-1.5)*.14,startY=y+r*(.36-.05*j);
+  const height=r*stretch*(.72+.18*j);
+  for(let layer=0;layer<2;layer++){
+   c.beginPath();c.moveTo(startX,startY);
+   const parts=16;
+   for(let k=1;k<=parts;k++){
+    const u=k/parts,wiggle=Math.sin(phase+u*5.4+j)*(.12+.12*inst);
+    const xx=startX+r*(wiggle*u+.23*Math.sin(phase*.48+u*3.3)*u);
+    const yy=startY-height*u;
+    c.lineTo(xx,yy);
+   }
+   c.strokeStyle=rgba(layer?palette.heart:palette.light,
+    (layer?.16:.12)*(.7+.3*urgency));
+   c.lineWidth=r*(layer?.027:.080);
+   c.lineCap='butt';c.lineJoin='round';c.stroke();
+  }
+ }
+ c.globalCompositeOperation='source-over';
+ // Central soul light emerges from the lower flame body; number stays on top.
+ const seed=c.createRadialGradient(x-r*.09,centerY-r*.06,0,x,centerY,r*.75);
+ seed.addColorStop(0,rgba(palette.heart,.82));
+ seed.addColorStop(.26,rgba(palette.light,.51));
+ seed.addColorStop(.63,rgba(palette.middle,.17));
+ seed.addColorStop(1,rgba(palette.outer,0));
+ c.fillStyle=seed;c.beginPath();c.ellipse(x,centerY,r*.76,r*.62,0,0,TAU);c.fill();
+ // Small rising flecks, widely separated so the flame remains the main subject.
+ for(let j=0;j<11;j++){
+  const cycle=(time*(.10+.07*rand(j+301))+rand(j*17+9))%1;
+  const angle=j*2.39996,spread=r*(.26+.59*rand(j+61))*(1-.50*cycle);
+  const px=x+Math.cos(angle)*spread+r*Math.sin(time*.42+j)*.06*cycle;
+  const py=y+r*.42-cycle*r*(1.4*stretch+.55);
+  c.save();c.globalAlpha=(.13+.22*urgency)*(1-cycle);
+  c.fillStyle=palette.mote;c.shadowColor=palette.mote;c.shadowBlur=3;
+  c.beginPath();c.arc(px,py,Math.max(.45,r*(.006+.01*rand(j+113))),0,TAU);
+  c.fill();c.restore();
  }
  c.restore();
 }
@@ -457,160 +502,119 @@ function burst(ctx,n,x,y,r,t,value){const p=clamp((t-state.burstStart)/1.9,0,1),
 
 function pxLine(c,a,color,w){c.beginPath();a.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle=color;c.lineWidth=w;c.stroke()}
 function atomNew(c,x,y,r,t,p,opts={}){
- // Stylized probability cloud and compact nucleon cluster, not planetary electron orbits.
- const value=clamp(opts.value??(1+p*29),1,30),urgency=clamp(opts.urgency??0,0,1);
+ // Core 03 only: value adds nucleons; speed drives t; urgency excites electrons;
+ // instability adds precession; movement stretches orbits; number follows nucleus.
+ const value=clamp(opts.value??(1+p*29),1,30);
+ const urgency=clamp(opts.urgency??0,0,1);
  const inst=clamp(opts.inst??0,0,1),move=clamp(opts.move??0,0,1);
- const count=5+Math.round(value*.68),cloudRadius=r*(.78+.15*move);
- const nx=x+Math.sin(t*(.34+inst*.52))*r*.026*inst;
- const ny=y+Math.cos(t*(.42+inst*.33))*r*.022*inst;
- glow(c,nx,ny,r*1.10,[[0,'rgba(99,181,255,.13)'],[.48,'rgba(83,129,240,.075)'],[1,'transparent']]);
- // A soft, multi-lobed probability density: positions are samples, not drawn electron tracks.
- c.save();c.globalCompositeOperation='screen';
- for(let j=0;j<145;j++){
-   const seed=j*1.6180339,angle=seed*TAU;
-   const radial=Math.sqrt(rand(j+57))*(.65+.25*rand(j+1005));
-   const orbit=Math.sin(angle*2+t*.12*(.2+urgency))*.13;
-   const distance=cloudRadius*(radial+orbit);
-   const phase=t*(.13+.20*urgency)*((j%2)?1:-1);
-   const xx=nx+Math.cos(angle+phase*.13)*distance;
-   const yy=ny+Math.sin(angle+phase*.13)*distance*(.70+.1*Math.sin(t*.22))+r*.08*Math.sin(angle*3);
-   const alpha=(.045+.085*urgency)*(.35+.65*(1-radial));
-   circle(c,xx,yy,r*(.004+.008*rand(j+231)), 'rgba(136,223,255,'+alpha+')');
+ const count=7+Math.round(value/30*18);
+ const precession=t*(.12+inst*1.8),stretch=1+move*.85;
+ const nx=x+Math.sin(t*(.47+inst*.53))*r*.032*inst;
+ const ny=y+Math.cos(t*(.55+inst*.48))*r*.027*inst;
+ glow(c,nx,ny,r*(1.13+.14*urgency),[[0,'rgba(95,167,255,'+(.13+.14*urgency)+')'],[1,'transparent']]);
+ for(let j=0;j<3;j++){
+  const plane=j*TAU/3+precession*(j===1?-1:1);
+  c.save();c.translate(nx,ny);c.rotate(plane);c.scale(1/stretch,.36+j*.12);
+  c.beginPath();c.arc(0,0,r*.9,0,TAU);
+  c.strokeStyle='rgba(129,205,250,'+(.17+.16*urgency)+')';c.lineWidth=1+urgency*.5;c.stroke();c.restore();
  }
- c.restore();
- // Distinct protons and neutrons packed into the center; count scales with Core value.
- for(let j=count-1;j>=0;j--){
-   const a=j*2.399963,dist=r*.31*Math.sqrt((j+.5)/count);
-   const wobble=r*.004*inst;
-   const xx=nx+Math.cos(a)*dist+Math.sin(t*1.2+j)*wobble;
-   const yy=ny+Math.sin(a)*dist+Math.cos(t*1.3+j)*wobble;
-   softSphere(c,xx,yy,r*(.106-.016*count/27),j%2?
-    ['#fff1eb','#f5aaa0','#b94a5b','#401525']:
-    ['#e4f9ff','#90d6ff','#3578bb','#112a56']);
+ const electrons=6+Math.round(urgency*9);
+ for(let j=0;j<electrons;j++){
+  const track=j%3,plane=track*TAU/3+precession*(track===1?-1:1);
+  const angle=j*2.399+t*(.3+.9*urgency+.45*inst)*(j%2?-1:1);
+  const ax=Math.cos(angle)*r*.9/stretch,ay=Math.sin(angle)*r*.9*(.36+track*.12);
+  const xx=nx+Math.cos(plane)*ax-Math.sin(plane)*ay;
+  const yy=ny+Math.sin(plane)*ax+Math.cos(plane)*ay;
+  glow(c,xx,yy,r*(.075+.025*urgency),[[0,'rgba(166,237,255,'+(.32+.42*urgency)+')'],[1,'transparent']]);
+  circle(c,xx,yy,r*(.012+.005*urgency),'rgba(212,247,255,.82)');
  }
- glow(c,nx,ny,r*.55,[[0,'rgba(219,245,255,.20)'],[1,'transparent']]);
- // Transient excitation appears as rare photons instead of fixed electron paths.
- for(let j=0;j<5;j++){
-   const phase=(t*(.21+urgency*.32)+j*.207)%1;
-   const a=j*2.39996+phase*.3,rr=r*(.38+.55*phase);
-   const xx=nx+Math.cos(a)*rr,yy=ny+Math.sin(a)*rr*.8;
-   glow(c,xx,yy,r*.075,[[0,'rgba(177,247,255,'+(.08+.22*urgency)*(1-phase)+')'],[1,'transparent']]);
+ for(let j=0;j<count;j++){
+  const a=j*2.399,d=r*.38*Math.sqrt((j+.5)/count);
+  const jiggle=r*(.003+.013*inst);
+  const xx=nx+Math.cos(a)*d+Math.sin(t*(.6+inst*2.1)+j)*jiggle;
+  const yy=ny+Math.sin(a)*d+Math.cos(t*(.55+inst*2)+j)*jiggle;
+  softSphere(c,xx,yy,r*(.12-.017*(count-7)/18),j%2?
+   ['#fff6ed','#f8a596','#a03e55','#2b1526']:
+   ['#f5ffff','#b0e8ff','#3770b3','#0f2344']);
  }
 }
 function cosmosNew(c,x,y,r,t,p){
- // A deep-space core holding a coherent rotating galaxy, dust lanes and sparse stars.
- circle(c,x,y,r,'#020714');
- c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
- const theta=t*(.085+.1*p),tilt=.66,spin=theta;
- glow(c,x,y,r*.95,[[0,'rgba(70,83,161,.19)'],[.65,'rgba(44,60,123,.10)'],[1,'transparent']]);
- // Broad nebula haze follows the disk without becoming three unrelated spirals.
- c.save();c.translate(x,y);c.rotate(-.3);
- c.scale(1,tilt);
- glow(c,0,0,r*.96,[[0,'rgba(239,174,228,.24)'],[.35,'rgba(99,93,215,.17)'],[.78,'rgba(54,120,204,.07)'],[1,'transparent']]);
- for(let arm=0;arm<3;arm++){
-   for(let k=0;k<95;k++){
-     const u=(k+.5)/95,a=spin+arm*TAU/3+u*7.7;
-     const spread=(rand(k*17+arm*907)-.5)*(.14+.20*u);
-     const dist=r*(.09+.84*u),xx=Math.cos(a+spread)*dist,yy=Math.sin(a+spread)*dist;
-     const alpha=(.12+.39*(1-u))*(.5+.5*rand(k+arm*211));
-     circle(c,xx,yy,r*(.002+.010*rand(k*7+arm*303)),arm===1?'rgba(255,177,219,'+alpha+')':'rgba(136,195,255,'+alpha+')');
-   }
- }
- // Two narrow dust lanes create a visible dimensional swirl.
- for(let arm=0;arm<2;arm++)for(let k=0;k<88;k++){
-   const u=(k+.5)/88,a=spin+arm*Math.PI+u*7.7+.24,d=r*(.13+.76*u);
-   circle(c,Math.cos(a)*d,Math.sin(a)*d,r*.008,'rgba(3,9,29,'+(.09+.25*(1-u))+')');
- }
- glow(c,0,0,r*.36,[[0,'rgba(255,250,224,.91)'],[.16,'rgba(255,206,174,.61)'],[.45,'rgba(183,135,234,.24)'],[1,'transparent']]);
- c.restore();
- // Fixed-distance background stars stay stable while the galaxy disk rotates.
- for(let j=0;j<105;j++){
-   const px=x+(rand(j+82)*2-1)*r,py=y+(rand(j+380)*2-1)*r;
-   if(Math.hypot(px-x,py-y)>=r*.96)continue;
-   const brightness=.12+.47*rand(j+1409);
-   circle(c,px,py,r*(.002+.006*rand(j+1701)),'rgba(227,242,255,'+brightness+')');
- }
- c.restore();
+ circle(c,x,y,r,'#040815');clipCircle(c,x,y,r,()=>{for(let j=0;j<3;j++){let gx=x+r*[-.17,.38,-.27][j],gy=y+r*[-.05,.22,.36][j],size=r*[.85,.35,.24][j];glow(c,gx,gy,size*.64,[[0,j?'rgba(110,152,255,.17)':'rgba(247,139,210,.24)'],[1,'transparent']]);for(let arm=0;arm<3;arm++)for(let k=0;k<80;k++){let q=(k+.5)/80,a=t*(.07+j*.02)+arm*TAU/3+q*8.3,d=size*(.05+.9*q);circle(c,gx+Math.cos(a)*d,gy+Math.sin(a)*d*.52,.4+(1-q),arm%2?'rgba(137,190,255,.4)':'rgba(249,180,238,.4)')}glow(c,gx,gy,size*.18,[[0,'rgba(255,254,237,.9)'],[1,'transparent']]);}for(let i=0;i<230;i++){let xx=x+(rand(i+100)*2-1)*r,yy=y+(rand(i+800)*2-1)*r;if(Math.hypot(xx-x,yy-y)<r)circle(c,xx,yy,.4+rand(i+1400),'rgba(218,237,255,.45)')}})
 }
+
 function waterNew(c,x,y,r,t,p,controls={}){
- // Coherent transparent fluid: surface tension, travelling capillary ripples and refraction.
+ // Liquid Surface ONLY: Instability controls cohesion (gravity-like containment);
+ // Movement controls vibration, independent of the flowing refraction clock.
  const move=clamp(controls.move??.5,0,1),inst=clamp(controls.inst??.5,0,1);
- const urgency=clamp(controls.urgency??0,0,1),flow=t*(.36+.30*urgency);
- const jitter=r*.014*move,shiftX=Math.sin(t*(4+move*9))*jitter;
- const shiftY=Math.cos(t*(5+move*8))*jitter*.72;
- const shape=a=>1+(.008+.025*inst)*Math.sin(3*a-flow)
-   +(.004+.025*inst*inst)*Math.sin(6*a+flow*.8)
-   +.006*move*Math.sin(10*a-t*(2+move*6));
- c.save();c.translate(shiftX,shiftY);
- c.beginPath();for(let k=0;k<=120;k++){
-   const a=k*TAU/120,d=r*shape(a);
-   if(k)c.lineTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
-   else c.moveTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
- }c.closePath();c.save();c.clip();
- const body=c.createRadialGradient(x-r*.30,y-r*.36,0,x+r*.11,y+r*.15,r*1.13);
- body.addColorStop(0,'rgba(156,230,244,.78)');
- body.addColorStop(.28,'rgba(63,164,209,.72)');
- body.addColorStop(.7,'rgba(16,86,163,.55)');
- body.addColorStop(1,'rgba(6,38,106,.27)');
- c.fillStyle=body;c.fillRect(x-r*1.2,y-r*1.2,r*2.4,r*2.4);
- // Refraction bands move under the meniscus, never independent opaque blobs.
- for(let i=0;i<6;i++){
-   const a=i*1.047+flow*(i%2?-.43:.57),px=x+r*.57*Math.cos(a),py=y+r*.48*Math.sin(a);
-   c.save();c.translate(px,py);c.rotate(a+.8);
-   const band=c.createLinearGradient(-r*.36,0,r*.36,0);
-   band.addColorStop(0,'rgba(166,238,255,0)');
-   band.addColorStop(.42,'rgba(178,243,255,'+(.055+.10*urgency)+')');
-   band.addColorStop(.55,'rgba(19,66,146,.08)');
-   band.addColorStop(1,'rgba(145,219,245,0)');
-   c.fillStyle=band;c.beginPath();c.ellipse(0,0,r*.44,r*(.075+.045*inst),0,0,TAU);c.fill();c.restore();
+ const urgency=clamp(controls.urgency??0,0,1);
+ const cohesion=1-inst,looseness=inst*inst,energy=clamp(p*.65+urgency*.35,0,1);
+ const flow=t*.64;
+ // Movement is vibration strength and frequency, not fluid drift speed.
+ const vibrationRate=5+move*16;
+ const vibrationX=Math.sin(t*vibrationRate)*r*.030*move;
+ const vibrationY=Math.sin(t*vibrationRate*1.31+.7)*r*.023*move;
+ // Stable water at 0 instability; progressively less-contained irregular water at 100.
+ const wobble=a=>1+(.003+.034*looseness)*Math.sin(3*a-flow*.83)
+   +(.002+.029*looseness)*Math.sin(5*a+flow*.57)
+   +(.001+.019*looseness)*Math.sin(8*a-flow*1.18+a*.4)
+   +move*.009*Math.sin(12*a-t*vibrationRate*.72);
+ c.save();c.translate(vibrationX,vibrationY);c.beginPath();
+ for(let k=0;k<=144;k++){
+  const angle=k*TAU/144,dist=r*wobble(angle);
+  if(k)c.lineTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
+  else c.moveTo(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist);
  }
- for(let j=0;j<3;j++){
-   const angle=t*(.24+.11*j)+j*2.094,xx=x+r*.30*Math.cos(angle),yy=y+r*.24*Math.sin(angle);
-   glow(c,xx,yy,r*.38,[[0,'rgba(213,251,255,'+(.10+.08*urgency)+')'],[1,'transparent']]);
+ c.closePath();c.clip();
+ // Low-contrast transparent body; avoid a solid permanent white hotspot.
+ const base=c.createRadialGradient(x-r*.26,y-r*.27,r*.07,x+r*.12,y+r*.16,r*1.16);
+ base.addColorStop(0,'rgba(89,177,210,.71)');
+ base.addColorStop(.26,'rgba(39,128,176,.79)');
+ base.addColorStop(.6,'rgba(15,88,143,.66)');
+ base.addColorStop(.84,'rgba(8,55,107,.30)');
+ base.addColorStop(1,'rgba(5,28,69,0)');
+ c.fillStyle=base;c.fillRect(x-r*1.25,y-r*1.25,r*2.5,r*2.5);
+ // Broad but faint translucent caustic sheets. Each drifts along a different path.
+ for(let i=0;i<5;i++){
+  const a=flow*(.73+.08*i)+i*1.61;
+  const px=x+r*(.48*Math.sin(a)+.09*looseness*Math.sin(2.1*a));
+  const py=y+r*(.39*Math.cos(a*.87)+.06*looseness*Math.sin(a*1.6));
+  const rx=r*(.23+.08*Math.sin(a*.8+i)**2);
+  const ry=rx*(.36+.12*Math.cos(a*.7+i)**2);
+  c.save();c.translate(px,py);c.rotate(.35*Math.sin(a*.61));
+  c.scale(1,ry/rx);
+  const caustic=c.createRadialGradient(-rx*.22,0,0,0,0,rx);
+  caustic.addColorStop(0,'rgba(190,245,253,'+(.06+.08*energy)+')');
+  caustic.addColorStop(.36,'rgba(127,221,243,.055)');
+  caustic.addColorStop(1,'rgba(110,219,245,0)');
+  c.fillStyle=caustic;c.beginPath();c.arc(0,0,rx,0,TAU);c.fill();
+  c.restore();
  }
- c.restore();
- // Meniscus: brightest along the rim opposite the darker inner edge.
- c.lineWidth=Math.max(1,r*.023);c.strokeStyle='rgba(169,236,250,'+(.25+.17*(1-inst))+')';c.stroke();
- c.lineWidth=Math.max(.6,r*.009);c.strokeStyle='rgba(221,255,255,.30)';c.stroke();
+ // Refracted light bands: displaced translucent sheets, not circular bubble blobs.
+ for(let i=0;i<3;i++){
+  const a=flow*(.55+.13*i)+i*2.3;
+  const px=x+r*(.29*Math.sin(a)+.08*Math.sin(a*2+inst));
+  const py=y+r*(.31*Math.cos(a*.89));
+  const sx=r*(.39+.06*looseness),sy=r*(.085+.05*looseness);
+  c.save();c.translate(px,py);c.rotate(-.45+Math.sin(a*.67)*(.22+.25*looseness));c.scale(1,sy/sx);
+  const lens=c.createRadialGradient(-sx*.3,0,0,0,0,sx);
+  lens.addColorStop(0,'rgba(218,252,255,'+(.045+.08*energy)+')');
+  lens.addColorStop(.35,'rgba(159,225,243,.06)');
+  lens.addColorStop(1,'rgba(115,208,234,0)');
+  c.fillStyle=lens;c.beginPath();c.arc(0,0,sx,0,TAU);c.fill();c.restore();
+ }
+ // A moving, soft light sweep; no static glass-like shine.
+ const phase=flow*.77,px=x+r*(-.22+.32*Math.sin(phase)),py=y-r*(.25+.17*Math.cos(phase*.81));
+ const shine=c.createRadialGradient(px,py,0,px,py,r*(.30+.04*looseness));
+ shine.addColorStop(0,'rgba(216,252,255,'+(.07+.075*energy)+')');
+ shine.addColorStop(.43,'rgba(177,236,250,.055)');
+ shine.addColorStop(1,'rgba(170,231,247,0)');
+ c.fillStyle=shine;c.fillRect(x-r,y-r,r*2,r*2);
  c.restore();
 }
 function fractureNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8fcff','#c5e9ff','#4a80c3','#09182f']);if(p<.08)return;clipCircle(c,x,y,r,()=>{for(let j=0;j<9;j++){let amount=clamp((p-.08-j*.055)*1.8,0,1);if(!amount)continue;let a=j*2.399,pts=[];for(let k=0;k<=8;k++){let d=r*(.06+.86*amount*k/8),angle=a+Math.sin(j*7+k*11)*.07;pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d])}pxLine(c,pts,'rgba(5,10,27,.9)',1+2.4*p);pxLine(c,pts.map(v=>[v[0]+1,v[1]-1]),'rgba(215,242,255,.32)',.7);if(p>.4){let v=pts[5],a2=a+(j%2?.7:-.7);pxLine(c,[v,[v[0]+Math.cos(a2)*r*.3*p,v[1]+Math.sin(a2)*r*.3*p]],'rgba(10,20,40,.85)',1.3)}}})}
 function worldNew(c,x,y,r,t,p){
- // Physically legible globe: oceans, rotating continents, atmosphere, terminator.
- const angle=t*(.16+.29*p);
- glow(c,x,y,r*1.21,[[0,'rgba(91,181,255,.14)'],[.71,'rgba(52,147,223,.10)'],[1,'transparent']]);
- softSphere(c,x,y,r,['#bceeff','#379ac8','#0d4586','#06152e']);
- c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
- // Latitude/longitude coordinates are projected onto the visible hemisphere.
- for(let j=0;j<65;j++){
-   const lon=(j*2.39996+angle),lat=Math.asin(2*rand(j+45)-1)*.88;
-   const front=Math.cos(lat)*Math.cos(lon);
-   if(front<=0)continue;
-   const xx=x+r*Math.cos(lat)*Math.sin(lon),yy=y+r*Math.sin(lat);
-   const size=r*(.075+.12*rand(j+201))*Math.pow(front,.67);
-   c.save();c.translate(xx,yy);c.rotate(.2*Math.sin(lon));
-   c.fillStyle=j%5===0?'rgba(162,193,109,.78)':j%3===0?'rgba(55,151,112,.86)':'rgba(39,117,125,.82)';
-   c.beginPath();c.moveTo(-size*.7,-size*.16);c.bezierCurveTo(-size*.35,-size*.7,size*.22,-size*.55,size*.42,-size*.18);
-   c.bezierCurveTo(size*.85,size*.27,size*.30,size*.42,-size*.1,size*.64);
-   c.quadraticCurveTo(-size*.72,size*.2,-size*.7,-size*.16);c.fill();c.restore();
- }
- // Thin, soft cirrus bands drift slowly across the apparent surface.
- for(let j=0;j<10;j++){
-   const a=angle*.68+j*2.39996,lat=-.68+1.36*rand(j+621),z=Math.cos(a)*Math.cos(lat);
-   if(z<=0)continue;
-   const xx=x+r*Math.sin(a)*Math.cos(lat),yy=y+r*Math.sin(lat);
-   c.save();c.translate(xx,yy);c.rotate(.24*Math.sin(a));
-   c.strokeStyle='rgba(240,252,255,.18)';c.lineWidth=r*.027*z;c.lineCap='round';
-   c.beginPath();c.moveTo(-r*.16*z,0);c.quadraticCurveTo(0,-r*.04,r*.17*z,0);c.stroke();c.restore();
- }
- const shade=c.createLinearGradient(x-r,y-r*.12,x+r,y+r*.20);
- shade.addColorStop(0,'rgba(1,7,31,.57)');shade.addColorStop(.44,'rgba(3,15,45,0)');
- shade.addColorStop(1,'rgba(1,7,31,.50)');
- c.fillStyle=shade;c.fillRect(x-r,y-r,r*2,r*2);
- c.restore();
- circle(c,x,y,r,'rgba(112,203,255,.06)');
-}
+ softSphere(c,x,y,r,['#f8ffff','#9cdaff','#337bbc','#091d3a']);let spin=t*(.25+.85*p);clipCircle(c,x,y,r,()=>{for(let j=0;j<25;j++){let lon=spin+j*2.399,lat=-1.13+2.26*rand(j+85),z=Math.cos(lat)*Math.cos(lon);if(z<=0)continue;let xx=x+r*Math.cos(lat)*Math.sin(lon),yy=y+r*Math.sin(lat),w=r*(.14+.2*rand(j+127))*Math.pow(z,.8);taperedLeaf(c,xx,yy,w,r*.08*Math.pow(z,.7),Math.sin(lat)*.28,j%3?'rgba(61,181,166,.8)':'rgba(34,113,157,.9)')}let g=c.createLinearGradient(x-r,y,x+r,y);g.addColorStop(0,'rgba(0,8,27,.48)');g.addColorStop(.4,'rgba(0,0,0,.02)');g.addColorStop(1,'rgba(0,5,23,.64)');circle(c,x,y,r,g)});}
 function voltageNew(c,x,y,r,t,p,controls={}){
  // Overcharge 12: a hot amber energy orb with center-rooted, branching lightning.
  // Keep the illuminated circular shell while the number remains readable above it.
@@ -828,36 +832,7 @@ function voltageNew(c,x,y,r,t,p,controls={}){
  }
 }
 function filmNew(c,x,y,r,t,p){
- // Thin-film interference on a transparent spherical membrane, not a solid orb.
- const wobble=1+.006*Math.sin(t*.9),rr=r*wobble;
- c.save();c.translate(x,y);c.scale(1+.006*Math.sin(t*.72),1-.006*Math.sin(t*.72));c.translate(-x,-y);
- circle(c,x,y,rr,'rgba(98,166,218,.045)');
- c.save();c.beginPath();c.arc(x,y,rr,0,TAU);c.clip();
- // Interference colors follow slow travelling curved bands across the film.
- for(let j=0;j<8;j++){
-   const phase=t*.24+j*.71,yy=y+r*(-.85+j*.24)+Math.sin(phase)*r*.14;
-   c.beginPath();c.moveTo(x-r*1.2,yy-r*.12);
-   c.bezierCurveTo(x-r*.4,yy-r*.17+Math.sin(phase)*r*.11,x+r*.28,yy+r*.14,x+r*1.15,yy-r*.07);
-   c.strokeStyle=j%4===0?'rgba(245,132,198,.10)':j%4===1?'rgba(104,219,220,.12)':j%4===2?'rgba(200,167,252,.10)':'rgba(230,212,128,.09)';
-   c.lineWidth=r*(.045+.012*Math.sin(phase)**2);c.stroke();
- }
- const inner=c.createRadialGradient(x-r*.30,y-r*.38,r*.06,x,y,r);
- inner.addColorStop(0,'rgba(255,255,255,.075)');inner.addColorStop(.65,'rgba(107,187,230,.015)');
- inner.addColorStop(.85,'rgba(179,129,225,.035)');inner.addColorStop(1,'rgba(141,211,255,.12)');
- c.fillStyle=inner;c.fillRect(x-r,y-r,r*2,r*2);
- c.restore();
- // Fresnel-like edge, rim thickness and a pair of restrained reflections.
- const rim=c.createRadialGradient(x,y,rr*.81,x,y,rr*1.03);
- rim.addColorStop(0,'rgba(170,224,255,0)');
- rim.addColorStop(.72,'rgba(174,222,245,.065)');
- rim.addColorStop(.91,'rgba(234,247,255,.34)');
- rim.addColorStop(1,'rgba(176,211,251,0)');
- circle(c,x,y,rr*1.03,rim);
- c.save();c.translate(x-r*.25,y-r*.35);c.rotate(-.53);
- c.strokeStyle='rgba(255,255,255,.52)';c.lineWidth=r*.052;c.lineCap='round';
- c.beginPath();c.ellipse(0,0,r*.36,r*.12,0,3.5,5.7);c.stroke();c.restore();
- c.restore();
-}
+ let rr=r*(1+.01*Math.sin(t*.9));c.save();c.translate(x,y);c.scale(1+.008*Math.sin(t*.8),1-.008*Math.sin(t*.8));c.translate(-x,-y);circle(c,x,y,rr,'rgba(166,207,240,.06)');clipCircle(c,x,y,rr,()=>{for(let j=0;j<15;j++){let a=j*TAU/15+t*.13;glow(c,x+Math.cos(a)*rr*.78,y+Math.sin(a)*rr*.78,rr*.28,[[0,j%3===0?'rgba(245,91,200,.12)':j%3===1?'rgba(80,232,208,.12)':'rgba(133,121,247,.12)'],[1,'transparent']])}});const g=c.createRadialGradient(x-rr*.15,y-rr*.2,rr*.12,x,y,rr);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.78,'rgba(255,255,255,.01)');g.addColorStop(.95,'rgba(136,206,245,.24)');g.addColorStop(1,'rgba(238,248,255,.68)');circle(c,x,y,rr,g);c.save();c.translate(x,y);c.rotate(-.36);ellipse(c,-rr*.33,-rr*.64,rr*.38,rr*.07,'rgba(255,255,255,.5)',-.15);c.restore();c.restore()}
 const pxPalette=['#08112b','#2040a8','#346ed8','#4fa3ff','#2de2e6','#b8f7ff','#f4fdff'];
 function spriteNew(c,x,y,r,t,p,controls={}){
  // Arcade Pixel Core 15 only. No canvas-wide pixel filter: all geometry is square.
