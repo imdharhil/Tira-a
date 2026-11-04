@@ -57,10 +57,10 @@ body.retro-neon .viewport{background:#080f25}
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
-const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
+const state={mode:0,A:4,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
 let bhSpinTime=0, bhPullTime=0;
 const TAU=Math.PI*2;
 let retroStyle='off';
@@ -334,7 +334,7 @@ function drawAppearance(ctx,n,x,y,r,t,value,opts={}){const {power,stress}=stress
 case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
 case 2:{glow(ctx,x,y,r*1.32,[[0,'rgba(182,248,255,.82)'],[.52,'rgba(91,169,255,.25)'],[1,'rgba(37,79,190,0)']]);softSphere(ctx,x,y,r*.96,['#ffffff','#c9f3ff','#3a7dd6','#08111f']);break;}
 case 3:{atomNew(ctx,x,y,r,t,stress,opts.atomControls);break;}
-case 4:{cosmosNew(ctx,x,y,r,t,stress);break;}
+case 4:{cosmosNew(ctx,x,y,r,t,stress,opts.cosmosControls);break;}
 case 5:{waterNew(ctx,x,y,r,t,stress,opts.waterControls);break;}
 case 6:{
  const ctrl=opts.coronaControls||{};
@@ -538,10 +538,85 @@ function atomNew(c,x,y,r,t,p,opts={}){
    ['#f5ffff','#b0e8ff','#3770b3','#0f2344']);
  }
 }
-function cosmosNew(c,x,y,r,t,p){
- circle(c,x,y,r,'#040815');clipCircle(c,x,y,r,()=>{for(let j=0;j<3;j++){let gx=x+r*[-.17,.38,-.27][j],gy=y+r*[-.05,.22,.36][j],size=r*[.85,.35,.24][j];glow(c,gx,gy,size*.64,[[0,j?'rgba(110,152,255,.17)':'rgba(247,139,210,.24)'],[1,'transparent']]);for(let arm=0;arm<3;arm++)for(let k=0;k<80;k++){let q=(k+.5)/80,a=t*(.07+j*.02)+arm*TAU/3+q*8.3,d=size*(.05+.9*q);circle(c,gx+Math.cos(a)*d,gy+Math.sin(a)*d*.52,.4+(1-q),arm%2?'rgba(137,190,255,.4)':'rgba(249,180,238,.4)')}glow(c,gx,gy,size*.18,[[0,'rgba(255,254,237,.9)'],[1,'transparent']]);}for(let i=0;i<230;i++){let xx=x+(rand(i+100)*2-1)*r,yy=y+(rand(i+800)*2-1)*r;if(Math.hypot(xx-x,yy-y)<r)circle(c,xx,yy,.4+rand(i+1400),'rgba(218,237,255,.45)')}})
+function cosmosNew(c,x,y,r,t,p,controls={}){
+ // Living Cosmos candidate: a contained volume of cosmic web, not a single spiral galaxy.
+ // Value reveals structure; speed is the global renderer clock; urgency excites glow;
+ // instability bends the web; movement gives depth/parallax. Number Follow stays independent.
+ const v=clamp(controls.value??(1+29*p),1,30);
+ const density=clamp((v-1)/29,0,1),urgency=clamp(controls.urgency??.25,0,1);
+ const instability=clamp(controls.inst??.35,0,1),movement=clamp(controls.move??.4,0,1);
+ const nodeCount=7+Math.round(density*15),starCount=100+Math.round(density*145);
+ const pulse=.5+.5*Math.sin(t*(.58+.26*urgency));
+ const volume=1+.018*movement*Math.sin(t*.24);
+ const motion=t*(.05+.11*movement);
+ c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
+ circle(c,x,y,r,'#030713');
+ const space=c.createRadialGradient(x-r*.24,y-r*.29,r*.03,x,y,r*1.14);
+ space.addColorStop(0,'rgba(22,32,75,.90)');
+ space.addColorStop(.57,'rgba(8,14,41,.92)');
+ space.addColorStop(1,'rgba(1,4,15,1)');
+ c.fillStyle=space;c.fillRect(x-r,y-r,r*2,r*2);
+ // Stable depth layers with gentle perspective drift. Bounded, no growing particle arrays.
+ for(let j=0;j<starCount;j++){
+  const depth=.22+.77*rand(j*13+17),a=TAU*rand(j*7+37);
+  const dist=Math.sqrt(rand(j*23+201))*.98;
+  const shift=motion*(.15+.8*(1-depth));
+  const px=x+r*(Math.cos(a+shift)*dist*volume+.025*movement*Math.sin(t*.21+j)*depth);
+  const py=y+r*(Math.sin(a+shift)*dist*.94*volume+.021*movement*Math.cos(t*.18+j)*depth);
+  if(Math.hypot(px-x,py-y)>r*.985)continue;
+  const twinkle=.72+.28*Math.sin(t*(.30+.33*depth)+j*2.41);
+  const alpha=(.13+.47*depth)*twinkle;
+  const size=r*(.0014+.0055*depth)*(rand(j*11+77)>.98?1.7:1);
+  circle(c,px,py,Math.max(.24,size),'rgba(208,225,255,'+alpha+')');
+ }
+ // Node positions share a gently evolving 3D projection, with slower distant nodes.
+ const nodes=[];
+ for(let j=0;j<nodeCount;j++){
+  const a=j*2.399963+motion*(j%2?-.18:.21);
+  const radial=.12+.76*Math.sqrt(rand(j*41+83));
+  const z=.24+.72*rand(j*13+921);
+  const warp=instability*.09*Math.sin(t*(.37+.18*z)+j*1.71);
+  const expand=1+movement*.05*Math.sin(t*.31+j*.53);
+  const xx=x+r*(Math.cos(a)*radial*expand+warp)*(.70+.30*z);
+  const yy=y+r*(Math.sin(a)*radial*expand*.88+warp*.36)*(.70+.30*z);
+  nodes.push({x:xx,y:yy,z,radial});
+ }
+ // Faint filaments link nearby clusters, tracing a connected cosmic web.
+ // Pair count is bounded; connection geometry remains attached to cluster nodes.
+ for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+  const a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y;
+  const d=Math.hypot(dx,dy)/r;
+  if(d>.40||d<.08)continue;
+  const strength=(1-d/.40)*(.55+.45*urgency);
+  c.beginPath();c.moveTo(a.x,a.y);
+  const mx=(a.x+b.x)/2+instability*r*.038*Math.sin(t*.42+i+j);
+  const my=(a.y+b.y)/2+instability*r*.038*Math.cos(t*.36+i*2+j);
+  c.quadraticCurveTo(mx,my,b.x,b.y);
+  c.strokeStyle='rgba(82,136,211,'+(.025+.16*strength)+')';
+  c.lineWidth=Math.max(.35,r*(.003+.004*a.z));c.stroke();
+ }
+ // Galaxy clusters are small, light-rich knots, not large cartoon galaxies.
+ for(let i=0;i<nodes.length;i++){
+  const n=nodes[i],power=.35+.65*n.z;
+  const light=(.12+.15*urgency+.045*pulse)*power;
+  const shade=i%7===0?'246,154,207':i%3===0?'156,122,230':'115,191,255';
+  glow(c,n.x,n.y,r*(.095+.065*n.z),[[0,'rgba('+shade+','+light+')'],[1,'transparent']]);
+  for(let k=0;k<4;k++){
+   const a=k*2.399963+t*.07*(i%2?1:-1),d=r*(.018+.036*rand(k+i*27));
+   circle(c,n.x+Math.cos(a)*d,n.y+Math.sin(a)*d*.68,Math.max(.30,r*.004*n.z),
+    'rgba(206,224,255,'+(.12+.27*power)+')');
+  }
+  circle(c,n.x,n.y,Math.max(.5,r*(.006+.009*n.z)),
+   'rgba(231,238,255,'+(.28+.37*power)+')');
+ }
+ // Dark outer falloff establishes the window's depth without a thick glass rim.
+ const edge=c.createRadialGradient(x,y,r*.58,x,y,r);
+ edge.addColorStop(0,'rgba(1,3,12,0)');
+ edge.addColorStop(.75,'rgba(1,3,12,.14)');
+ edge.addColorStop(1,'rgba(0,2,10,.78)');
+ c.fillStyle=edge;c.fillRect(x-r,y-r,r*2,r*2);
+ c.restore();
 }
-
 function waterNew(c,x,y,r,t,p,controls={}){
  // Liquid Surface ONLY: Instability controls cohesion (gravity-like containment);
  // Movement controls vibration, independent of the flowing refraction clock.
@@ -1041,7 +1116,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(68,14,0,.96)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';if(!state.mode&&n===12){ctx.save();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,r*.055);ctx.strokeStyle='rgba(72,20,4,.90)';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);ctx.restore();}ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,cosmosControls:n===4?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===4){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*.31)*r*.011*move*follow,Math.cos(cosmeticT*.23)*r*.009*move*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(68,14,0,.96)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';if(!state.mode&&n===12){ctx.save();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,r*.055);ctx.strokeStyle='rgba(72,20,4,.90)';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);ctx.restore();}ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
