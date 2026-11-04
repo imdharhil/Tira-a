@@ -84,6 +84,19 @@ const storageKey='tira-fx-gallery-values-v2';
 let saved={};
 try{const value=JSON.parse(localStorage.getItem(storageKey)||'{}');if(value&&typeof value==='object'&&!Array.isArray(value))saved=value;}catch(e){}
 const entries=new Map(),list=document.getElementById('fxList');
+// Only an explicit signal from the loaded Black Hole player counts as ready.
+// An iframe's own load event can describe its initial blank document.
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.data?.type!=='tira-gallery-bh-ready')return;
+ const entry=entries.get(13);
+ if(!entry||!entry.frame||entry.frame.contentWindow!==event.source)return;
+ entry.playerReady=true;
+ if(entry.pendingStage!==null){
+  const stage=entry.pendingStage;
+  entry.pendingStage=null;
+  entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-stage',stage,settings:settings(13,stage)},location.origin);
+ }
+});
 const observer=typeof IntersectionObserver!=='undefined'?new IntersectionObserver(changes=>{
  changes.forEach(change=>{
   const entry=entries.get(Number(change.target.dataset.effect));
@@ -104,19 +117,28 @@ function updateFrame(entry,explode=false){
   entry.frame.loading='lazy';
   entry.frame.referrerPolicy='same-origin';
   entry.frame.setAttribute('sandbox','allow-scripts allow-same-origin');
-  entry.frameReady=false;
-  entry.frame.onload=()=>{entry.frameReady=true;};
+  entry.playerReady=false;
+  entry.navigationStarted=false;
+  entry.pendingStage=null;
   entry.visual.prepend(entry.frame);
  }
  const p={mode:0,effect:entry.fx.id,settings:settings(entry.fx.id,entry.value)};
- // Black Hole uses a direct visual stage transition without reloading its player.
- if(entry.fx.id===13&&!explode&&entry.frameReady){
-  entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-stage',stage:entry.value,settings:p.settings},location.origin);
+ // Always navigate newly created previews; queue clicks until the player
+ // explicitly confirms it initialized, then preserve continuous animation.
+ if(entry.fx.id===13&&!explode&&entry.navigationStarted){
+  if(entry.playerReady){
+   entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-stage',stage:entry.value,settings:p.settings},location.origin);
+  }else entry.pendingStage=entry.value;
   return;
  }
  if(entry.fx.id===13)p.displayNumber=entry.value;
  let src='./fx-gallery-player.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify(p));
  if(explode)src+='&galleryDeath=1&replay='+Date.now();
+ if(entry.fx.id===13){
+  entry.playerReady=false;
+  entry.navigationStarted=true;
+  entry.pendingStage=null;
+ }
  entry.frame.src=src;
 }
 function setValue(entry,value){
