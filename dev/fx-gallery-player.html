@@ -833,6 +833,9 @@ if(isEffectEmbed){
   if(effect===13&&p.displayNumber!==undefined){const display=Number(p.displayNumber);if(!Number.isInteger(display)||display<1||display>6)throw Error('Invalid display number');galleryDisplayNumber=display;}
   rebuild();
   if(isGalleryDeath&&state.mode===0)state.deathStart=state.t;
+  // A real ready signal, emitted only after this preview has applied its preset.
+  // The parent must not treat the iframe's initial about:blank load as ready.
+  if(effect===13&&state.mode===0)parent.postMessage({type:'tira-gallery-bh-ready'},location.origin);
  }catch(err){document.body.dataset.previewError=err.message;}
 }
 // The Gallery player is standalone; it does not load or write Lab browser presets.
