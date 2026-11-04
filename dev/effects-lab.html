@@ -635,11 +635,25 @@ function voltageNew(c,x,y,r,t,p,controls={}){
  field.addColorStop(1,'rgba(36,3,8,1)');
  c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
  c.fillStyle=field;c.fillRect(x-r,y-r,r*2,r*2);
+ // Segment-by-segment tapered strokes: full energy at the center or fork base,
+ // becoming hair-thin at the terminal point, with no uniform-width spaghetti.
+ function taperedArc(points,color,baseWidth,tipWidth){
+  const segments=points.length-1;
+  for(let k=0;k<segments;k++){
+   const u=k/segments,fade=Math.pow(1-u,1.22);
+   c.beginPath();c.moveTo(points[k][0],points[k][1]);c.lineTo(points[k+1][0],points[k+1][1]);
+   c.strokeStyle=color;c.lineWidth=tipWidth+(baseWidth-tipWidth)*fade;
+   c.lineCap='round';c.stroke();
+  }
+ }
  // Every major arc starts at the center. Forks emerge from existing branches,
  // not from random points floating off the energy ball.
  const stepCount=11;
  for(let j=0;j<density;j++){
-  const seed=53+j*67,base=j*2.399963+t*(.055+.08*inst)*(j%2?1:-1);
+  const seed=53+j*67;
+  // Stable irregular angular spacing, instead of equally fanned radial spokes.
+  const base=j*TAU/density+(rand(seed+201)-.5)*(.50+.24*inst)
+   +t*(.035+.095*inst)*(j%2?1:-1);
   const a0=base+Math.sin(t*.9+j*1.7)*(.10+.10*inst);
   const length=r*(.82+.17*move)*(.83+.17*rand(seed+9));
   const pts=[[x,y]];
@@ -653,9 +667,9 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   const flash=.62+.38*rand(seed+Math.floor(t*(4+7*urgency))*19);
   c.save();c.globalAlpha*=live*flash;
   c.shadowColor='#ffb42e';c.shadowBlur=3.5+2.5*surge;
-  pxLine(c,pts,'rgba(255,105,14,.87)',1.55+.28*power);
-  pxLine(c,pts,'rgba(255,208,73,.94)',.76+.15*surge);
-  c.shadowBlur=0;pxLine(c,pts,'rgba(255,252,212,.92)',.30);
+  taperedArc(pts,'rgba(255,105,14,.87)',2.35+.45*power,.20);
+  taperedArc(pts,'rgba(255,208,73,.94)',1.30+.22*surge,.10);
+  c.shadowBlur=0;taperedArc(pts,'rgba(255,252,212,.92)',.62,.06);
   // Organic side branches fork at the path's actual node.
   if(rand(seed+17)<branchRate){
    for(let f=0;f<2;f++){
@@ -668,8 +682,8 @@ function voltageNew(c,x,y,r,t,p,controls={}){
      const u=q/4,ang=direction+.10*Math.sin(t*3+q+j)*inst;
      fork.push([split[0]+Math.cos(ang)*forkLength*u,split[1]+Math.sin(ang)*forkLength*u]);
     }
-    pxLine(c,fork,'rgba(255,178,43,.74)',.50);
-    pxLine(c,fork,'rgba(255,247,171,.66)',.21);
+    taperedArc(fork,'rgba(255,178,43,.74)',.89,.08);
+    taperedArc(fork,'rgba(255,247,171,.66)',.39,.045);
    }
   }
   // Tiny sparks remain attached to existing lightning segments.
