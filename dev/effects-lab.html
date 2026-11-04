@@ -616,77 +616,94 @@ function fractureNew(c,x,y,r,t,p){
 function worldNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8ffff','#9cdaff','#337bbc','#091d3a']);let spin=t*(.25+.85*p);clipCircle(c,x,y,r,()=>{for(let j=0;j<25;j++){let lon=spin+j*2.399,lat=-1.13+2.26*rand(j+85),z=Math.cos(lat)*Math.cos(lon);if(z<=0)continue;let xx=x+r*Math.cos(lat)*Math.sin(lon),yy=y+r*Math.sin(lat),w=r*(.14+.2*rand(j+127))*Math.pow(z,.8);taperedLeaf(c,xx,yy,w,r*.08*Math.pow(z,.7),Math.sin(lat)*.28,j%3?'rgba(61,181,166,.8)':'rgba(34,113,157,.9)')}let g=c.createLinearGradient(x-r,y,x+r,y);g.addColorStop(0,'rgba(0,8,27,.48)');g.addColorStop(.4,'rgba(0,0,0,.02)');g.addColorStop(1,'rgba(0,5,23,.64)');circle(c,x,y,r,g)});}
 function voltageNew(c,x,y,r,t,p,controls={}){
- // Overcharge 12: electrical density, clock, surges, branching instability, radial movement.
+ // Overcharge 12: a hot amber energy orb with center-rooted, branching lightning.
+ // Keep the illuminated circular shell while the number remains readable above it.
  const value=clamp(controls.value??(1+29*p),1,30),power=(value-1)/29;
- const urgency=clamp(controls.urgency??0,0,1);
- const inst=clamp(controls.inst??0,0,1),move=clamp(controls.move??0,0,1);
- const charge=.22+.78*power,branches=7+Math.round(7*power);
- const cycle=t*(.65+2.4*urgency),surge=Math.pow(.5+.5*Math.sin(cycle),3);
- const flicker=.75+.25*Math.sin(t*(4+inst*13)+1.3);
- const force=(.35+.65*charge)*(.7+.3*surge);
- // Core stays bright enough for the number, rather than being obscured by pure white.
- glow(c,x,y,r*(1.28+.26*move),[[0,'rgba(181,244,255,'+(.24+.26*force)+')'],[.44,'rgba(54,130,245,.24)'],[1,'transparent']]);
- glow(c,x,y,r*(1.10+.20*surge),[[0,'rgba(235,255,255,'+(.31+.30*force)+')'],[.3,'rgba(88,181,255,.23)'],[1,'transparent']]);
- softSphere(c,x,y,r,['#f3fdff','#95d5ff','#354ca3','#100d39']);
- // The Core's circular silhouette is the hard boundary for all lightning strokes.
- // All primary and fork paths originate at the exact center; only a few fork.
+ const urgency=clamp(controls.urgency??0,0,1),inst=clamp(controls.inst??0,0,1);
+ const move=clamp(controls.move??0,0,1);
+ const density=14+Math.round(13*power),branchRate=.28+.44*inst;
+ const surge=Math.pow(.5+.5*Math.sin(t*(1.7+3.4*urgency)),2);
+ const live=.74+.26*surge;
+ // Outside heat halo fades into the panel; the actual sphere remains round.
+ glow(c,x,y,r*1.55,[[0,'rgba(255,186,43,'+(.14+.11*urgency)+')'],
+  [.52,'rgba(227,62,13,.16)'],[1,'transparent']]);
+ const field=c.createRadialGradient(x-r*.12,y-r*.16,r*.025,x,y,r);
+ field.addColorStop(0,'rgba(255,250,204,.93)');
+ field.addColorStop(.18,'rgba(255,174,39,.82)');
+ field.addColorStop(.48,'rgba(209,61,13,.92)');
+ field.addColorStop(.86,'rgba(99,14,11,.98)');
+ field.addColorStop(1,'rgba(36,3,8,1)');
  c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
- for(let j=0;j<branches;j++){
-  const seed=j*73+31,angle=j*2.399963+Math.sin(t*.42+j)*(.08+.30*inst);
-  const orbit=t*(.26+.11*(j%4)),a=angle+orbit*(j%2?-1:1);
-  const length=r*(.76+.18*charge+.28*move)*(.78+.22*rand(seed+9));
-  const steps=7,pts=[];
-  for(let k=0;k<=steps;k++){
-   const u=k/steps,d=length*u;
-   const rag=inst*u*(.05+.14*u)*(rand(seed+k*29+Math.floor(t*2.5)*13)-.5);
-   const bend=u*.13*Math.sin(u*4.8+t*.8+j)+rag;
-   const aa=a+bend;
-   pts.push(k===0?[x,y]:[x+Math.cos(aa)*d,y+Math.sin(aa)*d]);
+ c.fillStyle=field;c.fillRect(x-r,y-r,r*2,r*2);
+ // Every major arc starts at the center. Forks emerge from existing branches,
+ // not from random points floating off the energy ball.
+ const stepCount=11;
+ for(let j=0;j<density;j++){
+  const seed=53+j*67,base=j*2.399963+t*(.055+.08*inst)*(j%2?1:-1);
+  const a0=base+Math.sin(t*.9+j*1.7)*(.10+.10*inst);
+  const length=r*(.82+.17*move)*(.83+.17*rand(seed+9));
+  const pts=[[x,y]];
+  for(let k=1;k<=stepCount;k++){
+   const u=k/stepCount,phase=a0+u*(.12+.12*inst)*Math.sin(t*2.3+u*13+j);
+   const jitter=(rand(seed+k*113+Math.floor(t*(5+7*urgency))*23)-.5)*inst*u*.22;
+   const angle=phase+jitter;
+   const d=u*length;
+   pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d]);
   }
-  const flare=(.36+.64*surge)*flicker*(.47+.53*rand(seed+5));
-  c.save();c.globalAlpha*=flare;
-  pxLine(c,pts,'rgba(58,126,255,.67)',1.05+.28*charge);
-  pxLine(c,pts,'rgba(191,238,255,.90)',.42+.17*force);
-  // Small transient sparks live on the lightning segments; never float off-path.
-  // Time quantization keeps each flash stable briefly before it jumps to a new segment.
-  const sparkTick=Math.floor(t*(4+6*urgency));
-  const sparkSeed=seed+sparkTick*193;
-  if(rand(sparkSeed+17)<.24+.14*urgency){
-   const segment=1+Math.floor(rand(sparkSeed+31)*(steps-1));
-   const between=.2+.6*rand(sparkSeed+47);
-   const ax=pts[segment-1][0],ay=pts[segment-1][1];
-   const bx=pts[segment][0],by=pts[segment][1];
-   const px=ax+(bx-ax)*between,py=ay+(by-ay)*between;
-   const pulse=.38+.62*Math.sin(Math.PI*clamp(t*(4+6*urgency)-sparkTick,0,1));
-   c.save();
-   c.globalAlpha*=pulse;
-   c.shadowColor='rgba(188,238,255,.85)';
-   c.shadowBlur=3.5+3.5*surge;
-   c.fillStyle='#e8fbff';
-   c.beginPath();c.arc(px,py,.7+.55*rand(sparkSeed+61),0,TAU);c.fill();
-   c.restore();
+  const flash=.62+.38*rand(seed+Math.floor(t*(4+7*urgency))*19);
+  c.save();c.globalAlpha*=live*flash;
+  c.shadowColor='#ffb42e';c.shadowBlur=3.5+2.5*surge;
+  pxLine(c,pts,'rgba(255,105,14,.87)',1.55+.28*power);
+  pxLine(c,pts,'rgba(255,208,73,.94)',.76+.15*surge);
+  c.shadowBlur=0;pxLine(c,pts,'rgba(255,252,212,.92)',.30);
+  // Organic side branches fork at the path's actual node.
+  if(rand(seed+17)<branchRate){
+   for(let f=0;f<2;f++){
+    const k=4+Math.floor(rand(seed+31+f*17)*5),split=pts[k];
+    const parentAngle=Math.atan2(pts[k+1][1]-pts[k-1][1],pts[k+1][0]-pts[k-1][0]);
+    const direction=parentAngle+(f?1:-1)*(.42+.75*rand(seed+51+f*11));
+    const forkLength=r*(.10+.20*inst+.12*move)*(.58+.42*rand(seed+73+f*13));
+    const fork=[[split[0],split[1]]];
+    for(let q=1;q<=4;q++){
+     const u=q/4,ang=direction+.10*Math.sin(t*3+q+j)*inst;
+     fork.push([split[0]+Math.cos(ang)*forkLength*u,split[1]+Math.sin(ang)*forkLength*u]);
+    }
+    pxLine(c,fork,'rgba(255,178,43,.74)',.50);
+    pxLine(c,fork,'rgba(255,247,171,.66)',.21);
+   }
   }
-  if(inst>.18&&j%5===0){
-   // Secondary lightning is center-rooted too, branching into a new direction.
-   const split=pts[3],endAngle=a+(j%2?1:-1)*(.3+inst*.8);
-   const dist=r*(.11+.25*inst);
-   const forkEnd=[split[0]+Math.cos(endAngle)*dist,split[1]+Math.sin(endAngle)*dist];
-   pxLine(c,[[x,y],pts[1],split,forkEnd],
-    'rgba(109,186,255,.67)',.55);
+  // Tiny sparks remain attached to existing lightning segments.
+  const tick=Math.floor(t*(6+6*urgency)),sparkSeed=seed+tick*193;
+  if(rand(sparkSeed+17)<.25+.17*urgency){
+   const k=2+Math.floor(rand(sparkSeed+31)*(stepCount-2)),u=.15+.7*rand(sparkSeed+47);
+   const px=pts[k-1][0]+(pts[k][0]-pts[k-1][0])*u;
+   const py=pts[k-1][1]+(pts[k][1]-pts[k-1][1])*u;
+   c.fillStyle='rgba(255,245,189,.95)';c.shadowColor='#ffe477';c.shadowBlur=4;
+   c.beginPath();c.arc(px,py,.65+.58*rand(sparkSeed+59),0,TAU);c.fill();
   }
   c.restore();
  }
  c.restore();
- // Scattered surface charges glow and move around the electrified shell.
- for(let j=0;j<12;j++){
-  const a=j*2.399963+t*(.36+.20*urgency)*(j%2?-1:1);
-  const d=r*(.64+.27*rand(j+306));
-  const px=x+Math.cos(a)*d,py=y+Math.sin(a)*d;
-  glow(c,px,py,r*(.042+.028*charge),[[0,'rgba(177,238,255,'+(.13+.24*surge)+')'],[1,'transparent']]);
+ // Thin, irregular arcs circle the event shell, not a thick static border.
+ for(let j=0;j<3;j++){
+  const phase=t*(.13+.04*j)+j*2.094;
+  c.save();c.beginPath();
+  for(let k=0;k<=90;k++){
+   const a=k/90*TAU+phase;
+   const rr=r*(.975+.012*Math.sin(a*11+t*2.7+j)+.009*Math.sin(a*21-t*3.3+j));
+   const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;
+   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
+  }
+  c.closePath();c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
+  c.lineWidth=j===0?1.35:.72;c.shadowColor='#ffb42a';c.shadowBlur=5;c.stroke();c.restore();
  }
- // Bright charged center surrounded by translucent blue-white bloom.
- glow(c,x,y,r*(.34+.10*surge),[[0,'rgba(251,255,255,'+(.52+.38*surge)+')'],
-  [.35,'rgba(187,246,255,'+(.28+.30*surge)+')'],[1,'transparent']]);
+ // A focused center flash under the number, not a screen-filling white disc.
+ glow(c,x,y,r*.40,[[0,'rgba(255,255,225,.73)'],[.23,'rgba(255,224,112,.37)'],[1,'transparent']]);
+ for(let j=0;j<11;j++){
+  const a=j*2.39996+t*(.11+.08*urgency),d=r*(1.05+.12*rand(j+100));
+  const px=x+Math.cos(a)*d,py=y+Math.sin(a)*d;
+  glow(c,px,py,r*.033,[[0,'rgba(255,189,58,.31)'],[1,'transparent']]);
+ }
 }
 function filmNew(c,x,y,r,t,p){
  let rr=r*(1+.01*Math.sin(t*.9));c.save();c.translate(x,y);c.scale(1+.008*Math.sin(t*.8),1-.008*Math.sin(t*.8));c.translate(-x,-y);circle(c,x,y,rr,'rgba(166,207,240,.06)');clipCircle(c,x,y,rr,()=>{for(let j=0;j<15;j++){let a=j*TAU/15+t*.13;glow(c,x+Math.cos(a)*rr*.78,y+Math.sin(a)*rr*.78,rr*.28,[[0,j%3===0?'rgba(245,91,200,.12)':j%3===1?'rgba(80,232,208,.12)':'rgba(133,121,247,.12)'],[1,'transparent']])}});const g=c.createRadialGradient(x-rr*.15,y-rr*.2,rr*.12,x,y,rr);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.78,'rgba(255,255,255,.01)');g.addColorStop(.95,'rgba(136,206,245,.24)');g.addColorStop(1,'rgba(238,248,255,.68)');circle(c,x,y,rr,g);c.save();c.translate(x,y);c.rotate(-.36);ellipse(c,-rr*.33,-rr*.64,rr*.38,rr*.07,'rgba(255,255,255,.5)',-.15);c.restore();c.restore()}
@@ -898,7 +915,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(68,14,0,.96)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';if(!state.mode&&n===12){ctx.save();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,r*.055);ctx.strokeStyle='rgba(72,20,4,.90)';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);ctx.restore();}ctx.fillText(number,cx,cy+3);ctx.restore()}}
 function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
