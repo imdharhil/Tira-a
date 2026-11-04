@@ -36,6 +36,7 @@ body.retro-neon .viewport{background:#080f25}
 <div class="controls"><button id="death">Preview identity destruction</button><button id="restore">Restore Core</button></div>
 <div class="controls"><button id="pause">Pause</button><button id="restart">Restart / replay</button></div>
 </section>
+<section class="panel" id="lunarPresetPanel"><div class="titlebar"><h2>08B Lunar Eclipse · #3</h2><span class="muted">Core value 12</span></div><div class="muted">Speed 0.49× · Urgency 38% · Spin 0% · Movement 0% · Number follow 0%</div><div class="controls" style="margin-top:12px"><button id="loadLunarPreset3" type="button">Load Lunar Eclipse #3</button></div></section>
 <section class="panel" id="libraryPanel">
 <div class="titlebar"><h2>Save an Effect</h2><a class="page-nav" href="./effects-library.html">Open Effects Library →</a></div>
 <div class="muted">Experiment here. Manage saved presets on the separate Effects Library page.</div>
@@ -1117,6 +1118,15 @@ $('libraryImportFile').onchange=async e=>{
     const existing=new Set(library.map(p=>p.id));const incoming=valid.filter(p=>!p.id||!existing.has(p.id));
     const remaining=Math.max(0,200-library.length);library.push(...incoming.slice(0,remaining));persistLibrary();renderLibrary();libraryStatus('Imported '+Math.min(incoming.length,remaining)+' preset(s). Existing presets kept.');
   }catch(err){libraryStatus('Import failed: '+err.message)}
+};
+// Owner-approved 08B Lunar Eclipse #3 configuration (Core value corrected from 11 to 12).
+$('loadLunarPreset3').onclick=()=>{
+  state.mode=0;state.B=16;state.deathStart=null;state.burstStart=state.t;
+  $('appearance').classList.add('active');$('explosion').classList.remove('active');
+  for(const [key,value] of Object.entries({value:12,speed:49,urgency:38,inst:0,move:0,follow:0})){
+    $(key).value=value;$(key).dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  rebuild();
 };
 readLibrary();
 try{
