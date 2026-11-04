@@ -228,39 +228,82 @@ function breathCycle(t,value){
 }
 // Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
+ // A layered flame silhouette, not a collection of rounded ribbon strokes.
  const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.5,0,1);
- const move=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
- const flow=t*(.7+.5*urgency),reach=1.10+.6*move+.2*power;
- const outer=dark?'rgba(87,40,149,':'rgba(33,183,197,';
- const mid=dark?'rgba(159,92,232,':'rgba(99,233,236,';
- const shine=dark?'rgba(236,167,255,':'rgba(255,221,161,';
+ const movement=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
+ const flow=t*(.78+.55*urgency),stretch=.85+.55*movement+.15*power;
+ const sway=Math.sin(flow*.67)*r*(.035+.065*inst);
+ const palette=dark?{
+  outer:'rgba(93,35,151,',mid:'rgba(156,82,222,',inner:'rgba(222,160,255,',
+  ember:'rgba(235,194,255,',glow:'rgba(120,54,192,',mote:'#d6abff'
+ }:{
+  outer:'rgba(29,161,184,',mid:'rgba(73,219,225,',inner:'rgba(158,255,243,',
+  ember:'rgba(255,218,142,',glow:'rgba(79,228,228,',mote:'#e9fff8'
+ };
  c.save();
- glow(c,x,y+r*.07,r*1.30,[[0,outer+(.24+.1*urgency)+')'],[.6,outer+'.09)'],[1,'transparent']]);
- const seed=c.createRadialGradient(x-r*.1,y,r*.03,x,y+r*.08,r*.72);
- if(dark){seed.addColorStop(0,'rgba(234,187,255,.87)');seed.addColorStop(.28,'rgba(149,72,221,.76)');seed.addColorStop(.65,'rgba(63,25,111,.42)');seed.addColorStop(1,'rgba(30,5,55,0)')}
- else{seed.addColorStop(0,'rgba(255,254,235,.97)');seed.addColorStop(.25,'rgba(255,216,146,.87)');seed.addColorStop(.65,'rgba(88,218,229,.39)');seed.addColorStop(1,'rgba(30,190,207,0)')}
- c.beginPath();c.ellipse(x,y+r*.09,r*.67,r*.70,0,0,TAU);c.fillStyle=seed;c.fill();
- for(let j=0;j<13;j++){
-  const u=j/12,phase=flow*(.7+.1*(j%5))+j*1.59;
-  const baseX=x+r*(u-.5)*1.3,baseY=y+r*(.24+.18*rand(j+41));
-  const height=r*reach*(.60+.51*rand(j+107)),bend=r*(.12+.22*inst)*Math.sin(phase);
-  const tx=x+r*((u-.5)*(.50+.30*move)+.26*Math.sin(phase*.62+u*4));
-  const ty=baseY-height*(.87+.12*Math.sin(phase*.57));
-  const width=r*(.10+.07*rand(j+93));
-  const path=()=>{c.beginPath();c.moveTo(baseX,baseY);c.bezierCurveTo(baseX+bend-r*.19,baseY-r*.35,x+r*(u-.5)*.56-bend+r*.3,ty+r*.4,tx,ty)};
-  c.save();c.globalCompositeOperation='screen';c.lineCap='round';
-  path();c.strokeStyle=outer+(.10+.09*urgency)+')';c.lineWidth=width*2.7;c.shadowColor=dark?'#7445cb':'#66e5eb';c.shadowBlur=r*.12;c.stroke();
-  path();c.strokeStyle=mid+(.17+.11*urgency)+')';c.lineWidth=width*1.25;c.shadowBlur=r*.06;c.stroke();
-  path();c.strokeStyle=(j%3===0?shine:mid)+(.34+.13*urgency)+')';c.lineWidth=width*.27;c.shadowBlur=0;c.stroke();
-  c.restore();
+ glow(c,x,y+r*.20,r*1.12,[[0,palette.glow+(.18+.12*urgency)+')'],[.65,palette.outer+'.055)'],[1,'transparent']]);
+ // One broad main flame, its inner body, and a few asymmetric curling tongues.
+ // Closed tapered paths make pointed tips and continuous fire rather than tentacles.
+ function tongue(j,width,height,offset,opacity,layer){
+  const phase=flow*(.73+.11*j)+j*2.31;
+  const baseX=x+r*offset,baseY=y+r*(.43+.045*Math.sin(phase*.6));
+  const lean=sway+Math.sin(phase)*r*(.05+.15*inst);
+  const tipX=x+r*offset*.34+lean+Math.sin(phase*.53+j)*r*.11;
+  const tipY=baseY-r*height*stretch*(1+.07*Math.sin(phase*.87));
+  const half=r*width/2,flip=j%2?1:-1;
+  const topBend=flip*r*(.09+.12*inst)*Math.sin(phase*.65);
+  c.beginPath();
+  c.moveTo(baseX-half,baseY);
+  c.bezierCurveTo(baseX-half*1.38,baseY-r*.33,
+   tipX-topBend-half*.20,tipY+r*height*.43,tipX,tipY);
+  c.bezierCurveTo(tipX+topBend+half*.29,tipY+r*height*.29,
+   baseX+half*1.35,baseY-r*.34,baseX+half,baseY);
+  c.quadraticCurveTo(baseX,baseY+r*.07,baseX-half,baseY);
+  c.closePath();
+  const grad=c.createLinearGradient(baseX,baseY,tipX,tipY);
+  const start=layer===0?palette.outer:layer===1?palette.mid:palette.ember;
+  const end=layer===0?palette.mid:layer===1?palette.inner:palette.inner;
+  grad.addColorStop(0,start+Math.min(.84,opacity+.15)+')');
+  grad.addColorStop(.36,start+opacity+')');
+  grad.addColorStop(.78,end+opacity*.60+')');
+  grad.addColorStop(1,end+'.02)');
+  c.fillStyle=grad;c.fill();
  }
- for(let j=0;j<13;j++){
-  const cycle=(flow*(.13+.06*rand(j+301))+rand(j*17+9))%1,a=j*2.39996;
-  const spread=r*(.19+.54*rand(j+61))*(1-.5*cycle);
-  const px=x+Math.cos(a)*spread,py=y+r*.43-cycle*r*(reach+.9);
-  c.save();c.globalAlpha=(.2+.24*urgency)*(1-cycle);
-  c.fillStyle=dark?'#e3baff':'#eafff3';c.shadowColor=dark?'#ad72ee':'#9deded';c.shadowBlur=4;
-  c.beginPath();c.arc(px,py,Math.max(.5,r*(.007+.01*rand(j+113))),0,TAU);c.fill();c.restore();
+ c.globalCompositeOperation='screen';
+ // Outer fire mass forms a unified broad base with a sharp, wandering tip.
+ tongue(0,.96,1.18,0,.28+.10*urgency,0);
+ tongue(1,.66,1.04,-.21,.27+.09*urgency,0);
+ tongue(2,.57,.86,.27,.22+.08*urgency,0);
+ // Three unequal, narrower flame tongues fold into the main silhouette.
+ tongue(3,.39,1.29,-.19,.32+.12*urgency,1);
+ tongue(4,.44,1.38,.12,.30+.12*urgency,1);
+ tongue(5,.27,.91,.35,.28+.10*urgency,1);
+ // Inner warm soul-fire remains concentrated near the Core, not at the tips.
+ tongue(6,.45,.76,-.045,.39+.15*urgency,2);
+ tongue(7,.27,.59,.115,.32+.15*urgency,2);
+ c.globalCompositeOperation='source-over';
+ // Soft ignition seed anchors all flames beneath the centered number.
+ const seed=c.createRadialGradient(x-r*.12,y+r*.12,r*.02,x,y+r*.15,r*.66);
+ if(dark){
+  seed.addColorStop(0,'rgba(218,160,255,.73)');
+  seed.addColorStop(.33,'rgba(141,68,222,.49)');
+  seed.addColorStop(.78,'rgba(58,21,100,.15)');
+ }else{
+  seed.addColorStop(0,'rgba(255,245,211,.76)');
+  seed.addColorStop(.34,'rgba(245,211,136,.56)');
+  seed.addColorStop(.76,'rgba(103,229,227,.15)');
+ }
+ seed.addColorStop(1,'rgba(0,0,0,0)');
+ c.fillStyle=seed;c.beginPath();c.ellipse(x,y+r*.14,r*.63,r*.61,0,0,TAU);c.fill();
+ // Sparse embers rise with the body of the flame.
+ for(let j=0;j<10;j++){
+  const cycle=(flow*(.10+.08*rand(j+301))+rand(j*17+9))%1;
+  const angle=j*2.39996,spread=r*(.22+.50*rand(j+61))*(1-.45*cycle);
+  const px=x+Math.cos(angle)*spread+sway*cycle;
+  const py=y+r*.36-cycle*r*(stretch*1.22+.70);
+  c.save();c.globalAlpha=(.13+.25*urgency)*(1-cycle);
+  c.fillStyle=palette.mote;c.shadowColor=palette.mote;c.shadowBlur=3;
+  c.beginPath();c.arc(px,py,Math.max(.4,r*(.006+.008*rand(j+113))),0,TAU);c.fill();c.restore();
  }
  c.restore();
 }
