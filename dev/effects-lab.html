@@ -616,132 +616,222 @@ function fractureNew(c,x,y,r,t,p){
 function worldNew(c,x,y,r,t,p){
  softSphere(c,x,y,r,['#f8ffff','#9cdaff','#337bbc','#091d3a']);let spin=t*(.25+.85*p);clipCircle(c,x,y,r,()=>{for(let j=0;j<25;j++){let lon=spin+j*2.399,lat=-1.13+2.26*rand(j+85),z=Math.cos(lat)*Math.cos(lon);if(z<=0)continue;let xx=x+r*Math.cos(lat)*Math.sin(lon),yy=y+r*Math.sin(lat),w=r*(.14+.2*rand(j+127))*Math.pow(z,.8);taperedLeaf(c,xx,yy,w,r*.08*Math.pow(z,.7),Math.sin(lat)*.28,j%3?'rgba(61,181,166,.8)':'rgba(34,113,157,.9)')}let g=c.createLinearGradient(x-r,y,x+r,y);g.addColorStop(0,'rgba(0,8,27,.48)');g.addColorStop(.4,'rgba(0,0,0,.02)');g.addColorStop(1,'rgba(0,5,23,.64)');circle(c,x,y,r,g)});}
 function voltageNew(c,x,y,r,t,p,controls={}){
- // Irregular containment shell and staggered, flickering electric crack clusters.
- // Each cluster lives on its own clock; no full-frame re-seeding or regular spokes.
+ // Overcharge 12: a hot amber energy orb with center-rooted, branching lightning.
+ // Keep the illuminated circular shell while the number remains readable above it.
  const value=clamp(controls.value??(1+29*p),1,30),power=(value-1)/29;
  const urgency=clamp(controls.urgency??0,0,1),inst=clamp(controls.inst??0,0,1);
  const move=clamp(controls.move??0,0,1),follow=clamp(controls.follow??0,0,1);
- const wave=t*(1.4+2.5*urgency),surge=.5+.5*Math.sin(wave);
- const rgba=(red,green,blue,alpha)=>'rgba('+red+','+green+','+blue+','+clamp(alpha,0,1)+')';
- // The hot orange sphere supports the drawing but does not hide its fine outlines.
- glow(c,x,y,r*1.42,[[0,'rgba(255,177,43,.20)'],[.57,'rgba(215,58,12,.13)'],[1,'transparent']]);
- const heat=c.createRadialGradient(x-r*.08,y-r*.10,0,x,y,r);
- heat.addColorStop(0,'rgba(255,248,187,.97)');
- heat.addColorStop(.18,'rgba(255,166,30,.87)');
- heat.addColorStop(.53,'rgba(178,44,12,.95)');
- heat.addColorStop(.9,'rgba(66,9,11,.99)');
- heat.addColorStop(1,'rgba(31,2,8,1)');
+ const density=14+Math.round(13*power),branchRate=.28+.44*inst;
+ const surge=Math.pow(.5+.5*Math.sin(t*(1.7+3.4*urgency)),2);
+ const live=.74+.26*surge;
+ // Outside heat halo fades into the panel; the actual sphere remains round.
+ glow(c,x,y,r*1.55,[[0,'rgba(255,186,43,'+(.14+.11*urgency)+')'],
+  [.52,'rgba(227,62,13,.16)'],[1,'transparent']]);
+ const field=c.createRadialGradient(x-r*.12,y-r*.16,r*.025,x,y,r);
+ field.addColorStop(0,'rgba(255,250,204,.93)');
+ field.addColorStop(.18,'rgba(255,174,39,.82)');
+ field.addColorStop(.48,'rgba(209,61,13,.92)');
+ field.addColorStop(.86,'rgba(99,14,11,.98)');
+ field.addColorStop(1,'rgba(36,3,8,1)');
  c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
- c.fillStyle=heat;c.fillRect(x-r,y-r,2*r,2*r);
- // Segmented discharge: thick at its origin, pointed at its end.
- function filament(points,weight,alpha){
-  if(points.length<2)return;
-  const count=points.length-1;
-  for(let k=0;k<count;k++){
-   const u=k/count;
+ c.fillStyle=field;c.fillRect(x-r,y-r,r*2,r*2);
+ // Segment-by-segment tapered strokes: full energy at the center or fork base,
+ // becoming hair-thin at the terminal point, with no uniform-width spaghetti.
+ function taperedArc(points,color,baseWidth,tipWidth){
+  const segments=points.length-1;
+  for(let k=0;k<segments;k++){
+   const u=k/segments,fade=Math.pow(1-u,1.22);
    c.beginPath();c.moveTo(points[k][0],points[k][1]);c.lineTo(points[k+1][0],points[k+1][1]);
-   c.lineWidth=Math.max(.14,weight*Math.pow(1-u,1.25));
-   c.strokeStyle=rgba(255,230,106,alpha*(.94-.24*u));
-   c.shadowColor='#ffbf30';c.shadowBlur=2.5;c.lineCap='round';c.stroke();
+   c.strokeStyle=color;c.lineWidth=tipWidth+(baseWidth-tipWidth)*fade;
+   c.lineCap='round';c.stroke();
   }
  }
- // Local jagged shell paths: points are angular, not smooth radial sine waves.
- function jaggedRing(seed,radius,points,phase){
-  const result=[];
-  for(let k=0;k<points;k++){
-   const a=phase+k*TAU/points;
-   const d=radius*(.91+.16*rand(seed+k*73));
-   result.push([x+Math.cos(a)*d,y+Math.sin(a)*d]);
+ // Every major arc starts at the center. Forks emerge from existing branches,
+ // not from random points floating off the energy ball.
+ const stepCount=11;
+ for(let j=0;j<density;j++){
+  const seed=53+j*67;
+  // Stable irregular angular spacing, instead of equally fanned radial spokes.
+  const base=j*TAU/density+(rand(seed+201)-.5)*(.50+.24*inst)
+   +t*(.035+.095*inst)*(j%2?1:-1);
+  const a0=base+Math.sin(t*.9+j*1.7)*(.10+.10*inst);
+  const length=r*(.82+.17*move)*(.83+.17*rand(seed+9));
+  const pts=[[x,y]];
+  for(let k=1;k<=stepCount;k++){
+   const u=k/stepCount,phase=a0+u*(.12+.12*inst)*Math.sin(t*2.3+u*13+j);
+   const jitter=(rand(seed+k*113+Math.floor(t*(5+7*urgency))*23)-.5)*inst*u*.22;
+   const angle=phase+jitter;
+   const d=u*length;
+   pts.push([x+Math.cos(angle)*d,y+Math.sin(angle)*d]);
   }
-  result.push(result[0]);return result;
- }
- const outlineCount=1+Math.round(1+power);
- for(let shell=0;shell<outlineCount;shell++){
-  const tick=Math.floor(t*(.43+.40*inst)+shell*.37);
-  const s=2200+shell*251+tick*97;
-  const ring=jaggedRing(s,r*(.93-.075*shell),16+shell*3,t*(.025+.025*inst)+shell*.39);
-  c.save();c.globalAlpha*=.57+.35*surge;
-  c.shadowColor='#ffb52e';c.shadowBlur=5;
-  c.lineWidth=shell===0?1.06:.68;
-  c.strokeStyle=shell===0?'rgba(255,223,104,.94)':'rgba(255,164,42,.72)';
-  c.beginPath();ring.forEach((pt,k)=>k?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));
-  c.stroke();c.restore();
- }
- // Independent clocks and lifetimes ensure old cracks fade while others ignite.
- const pool=13+Math.round(power*8+urgency*5);
- for(let j=0;j<pool;j++){
-  const clock=t*(.85+1.25*urgency+.95*inst)*( .72+.45*rand(j*17+12) );
-  const shifted=clock+rand(j*43+7)*5.9,cycle=Math.floor(shifted),u=shifted-cycle;
-  const seed=700+j*211+cycle*577;
-  const alive=Math.min(1,u*10,(1-u)*7);
-  if(alive<=.02||rand(seed+13)>.53+.36*urgency)continue;
-  const alpha=alive*(.38+.50*rand(seed+17))*(.65+.35*surge);
-  // Branches begin at scattered inner/shell positions, not one spoke hub.
-  const a=rand(seed+3)*TAU,rad=r*(.17+.69*rand(seed+5));
-  const startX=x+Math.cos(a)*rad,startY=y+Math.sin(a)*rad;
-  const angle=rand(seed+23)*TAU;
-  const length=r*(.14+.34*rand(seed+37))*(.85+.32*move);
-  const count=5+Math.floor(rand(seed+41)*4),points=[[startX,startY]];
-  let xx=startX,yy=startY,dir=angle;
-  for(let k=1;k<=count;k++){
-   dir+=(rand(seed+k*29)-.5)*(.65+1.25*inst);
-   const step=length/count*(.67+.66*rand(seed+k*41));
-   xx+=Math.cos(dir)*step;yy+=Math.sin(dir)*step;
-   points.push([xx,yy]);
-  }
-  c.save();c.globalAlpha*=alpha;
-  filament(points,1.32+.65*power,.94);
-  // Side cracks split from a real parent vertex and each tip thins out.
-  if(rand(seed+61)<.39+.36*inst){
-   const split=2+Math.floor(rand(seed+67)*(count-2));
-   const fork=[points[split]],sign=rand(seed+71)<.5?-1:1;
-   let fx=fork[0][0],fy=fork[0][1],fa=dir+sign*(.65+.67*rand(seed+73));
-   for(let k=1;k<=3;k++){
-    fa+=(rand(seed+k*37+77)-.5)*.46;
-    fx+=Math.cos(fa)*length*.105;fy+=Math.sin(fa)*length*.105;
-    fork.push([fx,fy]);
+  const flash=.62+.38*rand(seed+Math.floor(t*(4+7*urgency))*19);
+  c.save();c.globalAlpha*=live*flash;
+  c.shadowColor='#ffb42e';c.shadowBlur=3.5+2.5*surge;
+  taperedArc(pts,'rgba(255,105,14,.87)',2.35+.45*power,.20);
+  taperedArc(pts,'rgba(255,208,73,.94)',1.30+.22*surge,.10);
+  c.shadowBlur=0;taperedArc(pts,'rgba(255,252,212,.92)',.62,.06);
+  // Organic side branches fork at the path's actual node.
+  if(rand(seed+17)<branchRate){
+   for(let f=0;f<2;f++){
+    const k=4+Math.floor(rand(seed+31+f*17)*5),split=pts[k];
+    const parentAngle=Math.atan2(pts[k+1][1]-pts[k-1][1],pts[k+1][0]-pts[k-1][0]);
+    const direction=parentAngle+(f?1:-1)*(.42+.75*rand(seed+51+f*11));
+    const forkLength=r*(.10+.20*inst+.12*move)*(.58+.42*rand(seed+73+f*13));
+    const fork=[[split[0],split[1]]];
+    for(let q=1;q<=4;q++){
+     const u=q/4,ang=direction+.10*Math.sin(t*3+q+j)*inst;
+     fork.push([split[0]+Math.cos(ang)*forkLength*u,split[1]+Math.sin(ang)*forkLength*u]);
+    }
+    taperedArc(fork,'rgba(255,178,43,.74)',.89,.08);
+    taperedArc(fork,'rgba(255,247,171,.66)',.39,.045);
    }
-   filament(fork,.67,.79);
   }
-  // A small glow flashes at a live crack vertex, not off the electricity.
-  if(rand(seed+101)<.23+.19*urgency){
-   const at=points[2+Math.floor(rand(seed+107)*(points.length-2))];
-   c.beginPath();c.arc(at[0],at[1],.72,0,TAU);
-   c.fillStyle='#fff3a4';c.shadowBlur=4;c.fill();
+  // Tiny sparks remain attached to existing lightning segments.
+  const tick=Math.floor(t*(6+6*urgency)),sparkSeed=seed+tick*193;
+  if(rand(sparkSeed+17)<.25+.17*urgency){
+   const k=2+Math.floor(rand(sparkSeed+31)*(stepCount-2)),u=.15+.7*rand(sparkSeed+47);
+   const px=pts[k-1][0]+(pts[k][0]-pts[k-1][0])*u;
+   const py=pts[k-1][1]+(pts[k][1]-pts[k-1][1])*u;
+   c.fillStyle='rgba(255,245,189,.95)';c.shadowColor='#ffe477';c.shadowBlur=4;
+   c.beginPath();c.arc(px,py,.65+.58*rand(sparkSeed+59),0,TAU);c.fill();
   }
   c.restore();
  }
- // Number Follow surrounds the visible number with interrupted energy layers.
+ // Independently wandering, intermittently glowing filaments break the radial pattern.
+ // Seeds change at a bounded cadence and stay stable between pulses (no pixel noise).
+ const pulseTick=Math.floor(t*(2.5+3*urgency));
+ const wanderCount=4+Math.round(7*inst+3*urgency);
+ for(let j=0;j<wanderCount;j++){
+  const seed=9401+j*191+pulseTick*977;
+  if(rand(seed+31)>.72+.19*urgency)continue;
+  const a=rand(seed+3)*TAU,rad=r*(.25+.57*rand(seed+11));
+  const ox=x+Math.cos(a)*rad,oy=y+Math.sin(a)*rad;
+  const angle=rand(seed+19)*TAU;
+  const segments=5,points=[[ox,oy]];
+  const length=r*(.12+.24*rand(seed+41))*(.75+.25*move);
+  for(let k=1;k<=segments;k++){
+   const u=k/segments;
+   const twist=(rand(seed+k*53)-.5)*(.8+1.1*inst)*u;
+   const aa=angle+twist+.27*Math.sin(u*8+seed);
+   points.push([ox+Math.cos(aa)*length*u,oy+Math.sin(aa)*length*u]);
+  }
+  const pulse=.32+.68*rand(seed+67);
+  c.save();c.globalAlpha*=pulse;
+  c.shadowColor='#ffd46b';c.shadowBlur=5+5*surge;
+  taperedArc(points,'rgba(255,149,31,.75)',.88,.055);
+  c.shadowBlur=2;taperedArc(points,'rgba(255,245,178,.91)',.32,.035);
+  c.restore();
+ }
+ // Number Follow adds nested halo outlines around the center numeral.
+ // At zero the original Core is unchanged; increasing Follow strengthens layers.
  if(follow>.001){
-  const count=1+Math.floor(follow*2.99);
-  for(let j=0;j<count;j++){
-   const seed=4100+j*123+Math.floor(t*(.7+.6*urgency));
-   const ring=jaggedRing(seed,r*(.34+j*.083),11+j*3,t*.04);
-   c.save();c.globalAlpha*=follow*(.42+.15*surge)/(1+j*.3);
-   c.shadowColor='#ffe37c';c.shadowBlur=4;c.strokeStyle='rgba(255,232,145,.9)';
-   c.lineWidth=.85;
-   // Every third segment is intentionally missing.
-   for(let k=0;k<ring.length-1;k++){
-    if((k+j+Math.floor(t*.8))%4===0)continue;
-    c.beginPath();c.moveTo(ring[k][0],ring[k][1]);c.lineTo(ring[k+1][0],ring[k+1][1]);c.stroke();
+  const ringCount=1+Math.floor(follow*2.99);
+  for(let j=0;j<ringCount;j++){
+   const rr=r*(.36+.075*j),offset=t*(.20+.08*j)*(j%2?-1:1);
+   const segments=3+j*2;
+   c.save();c.globalAlpha*=follow*(.50+.21*surge)/(1+j*.30);
+   c.strokeStyle=j===0?'rgba(255,251,196,.94)':'rgba(255,178,64,.81)';
+   c.lineWidth=(1.05+.55*follow)/(1+j*.22);
+   c.shadowColor='#ffd874';c.shadowBlur=5+4*follow;
+   // Interrupted rings read as distinct energetic layers, not a static bullseye.
+   for(let k=0;k<segments;k++){
+    const begin=offset+k*TAU/segments+.09;
+    const end=begin+TAU/segments*(.43+.25*rand(j*47+k+9));
+    c.beginPath();c.arc(x,y,rr,begin,end);c.stroke();
    }
    c.restore();
   }
  }
  c.restore();
- // A broken, angular gold outline remains visible outside the clipped fireball.
- const shellSeed=6100+Math.floor(t*(.45+.5*inst))*89;
- const outer=jaggedRing(shellSeed,r*1.025,23,t*.025);
- c.save();c.strokeStyle='rgba(255,219,86,.88)';c.lineWidth=1.1;
- c.shadowColor='#ffb322';c.shadowBlur=5;
- for(let k=0;k<outer.length-1;k++){
-  if(rand(shellSeed+k*13)<.12+.09*inst)continue;
-  c.beginPath();c.moveTo(outer[k][0],outer[k][1]);c.lineTo(outer[k+1][0],outer[k+1][1]);c.stroke();
+ // Thin, irregular arcs circle the event shell, not a thick static border.
+ for(let j=0;j<3;j++){
+  const phase=t*(.13+.04*j)+j*2.094;
+  c.save();c.beginPath();
+  for(let k=0;k<=90;k++){
+   const a=k/90*TAU+phase;
+   const rr=r*(.975+.012*Math.sin(a*11+t*2.7+j)+.009*Math.sin(a*21-t*3.3+j));
+   const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;
+   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
+  }
+  c.closePath();c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
+  c.lineWidth=j===0?1.35:.72;c.shadowColor='#ffb42a';c.shadowBlur=5;c.stroke();c.restore();
+ }
+ // A focused center flash under the number, not a screen-filling white disc.
+ glow(c,x,y,r*.40,[[0,'rgba(255,255,225,.73)'],[.23,'rgba(255,224,112,.37)'],[1,'transparent']]);
+ for(let j=0;j<11;j++){
+  const a=j*2.39996+t*(.11+.08*urgency),d=r*(1.05+.12*rand(j+100));
+  const px=x+Math.cos(a)*d,py=y+Math.sin(a)*d;
+  glow(c,px,py,r*.033,[[0,'rgba(255,189,58,.31)'],[1,'transparent']]);
+ }
+ // Additional electrical overlay: preserves every original Overcharge layer above.
+ // Independent, short-lived bursts are offset so they never blink in unison.
+ function angularStroke(pts,width,opacity){
+  c.save();c.globalAlpha*=opacity;c.lineJoin='round';c.lineCap='round';
+  c.shadowColor='#ffcb42';c.shadowBlur=3;
+  for(let q=0;q<pts.length-1;q++){
+   const fade=1-q/(pts.length-1);
+   c.beginPath();c.moveTo(pts[q][0],pts[q][1]);c.lineTo(pts[q+1][0],pts[q+1][1]);
+   c.lineWidth=Math.max(.16,width*fade);
+   c.strokeStyle='rgba(255,228,111,.92)';c.stroke();
+  }
+  c.restore();
+ }
+ // Fine irregular, occasionally broken perimeter shells, laid over existing rings.
+ for(let shell=0;shell<2;shell++){
+  const clock=t*(.40+.55*inst)+shell*.53;
+  const tick=Math.floor(clock),phase=clock-tick;
+  const seed=5910+shell*571+tick*139;
+  const gain=(.46+.25*surge)*Math.min(1,phase*9,(1-phase)*11);
+  const count=20+shell*3, radius=r*(1.025-.083*shell);
+  c.save();c.globalAlpha*=Math.max(.06,gain);
+  c.lineWidth=shell===0?1.0:.62;c.strokeStyle=shell===0?'rgba(255,220,81,.85)':'rgba(255,154,39,.61)';
+  c.shadowColor='#ffaf27';c.shadowBlur=4;
+  for(let k=0;k<count;k++){
+   if(rand(seed+k*17)<.16+.06*inst)continue;
+   const a=t*.028+k*TAU/count,an=t*.028+(k+1)*TAU/count;
+   const dr=radius*(.93+.13*rand(seed+k*37));
+   const nr=radius*(.93+.13*rand(seed+(k+1)*37));
+   c.beginPath();c.moveTo(x+Math.cos(a)*dr,y+Math.sin(a)*dr);
+   c.lineTo(x+Math.cos(an)*nr,y+Math.sin(an)*nr);c.stroke();
+  }
+  c.restore();
+ }
+ // Extra crack groups have their own lifetimes and angular positions.
+ // They supplement the existing center-rooted lightning instead of replacing it.
+ c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
+ const groups=6+Math.round(3*urgency+3*inst);
+ for(let j=0;j<groups;j++){
+  const rate=(.82+1.0*urgency+.9*inst)*(.73+.43*rand(j*31+8));
+  const clock=t*rate+rand(j*43+5)*5.2;
+  const cycle=Math.floor(clock),u=clock-cycle,seed=7913+j*211+cycle*673;
+  const alpha=Math.max(0,Math.min(1,u*12,(1-u)*9))*(.24+.38*rand(seed+7));
+  if(alpha<.04||rand(seed+11)>.65+.20*urgency)continue;
+  const angle=rand(seed+3)*TAU;
+  const radial=r*(.18+.65*rand(seed+17));
+  let px=x+Math.cos(angle)*radial,py=y+Math.sin(angle)*radial;
+  let dir=rand(seed+21)*TAU;
+  const length=r*(.12+.22*rand(seed+31))*(.76+.24*move);
+  const vertices=5+Math.floor(rand(seed+33)*3),points=[[px,py]];
+  for(let k=1;k<=vertices;k++){
+   dir+=(rand(seed+k*47)-.5)*(.7+.85*inst);
+   const step=length/vertices*(.7+.55*rand(seed+k*59));
+   px+=Math.cos(dir)*step;py+=Math.sin(dir)*step;points.push([px,py]);
+  }
+  angularStroke(points,.70,alpha);
+  if(rand(seed+71)<.38+.30*inst){
+   const idx=2+Math.floor(rand(seed+73)*(vertices-2));
+   const fork=[points[idx]],side=rand(seed+79)<.5?-1:1;
+   let fx=points[idx][0],fy=points[idx][1],fa=dir+side*(.6+.55*rand(seed+81));
+   for(let k=0;k<3;k++){
+    fa+=(rand(seed+k*19+83)-.5)*.65;
+    fx+=Math.cos(fa)*length*.11;fy+=Math.sin(fa)*length*.11;
+    fork.push([fx,fy]);
+   }
+   angularStroke(fork,.41,alpha*.85);
+  }
  }
  c.restore();
- glow(c,x,y,r*.31,[[0,'rgba(255,255,230,.64)'],[.25,'rgba(255,224,119,.34)'],[1,'transparent']]);
 }
-
 function filmNew(c,x,y,r,t,p){
  let rr=r*(1+.01*Math.sin(t*.9));c.save();c.translate(x,y);c.scale(1+.008*Math.sin(t*.8),1-.008*Math.sin(t*.8));c.translate(-x,-y);circle(c,x,y,rr,'rgba(166,207,240,.06)');clipCircle(c,x,y,rr,()=>{for(let j=0;j<15;j++){let a=j*TAU/15+t*.13;glow(c,x+Math.cos(a)*rr*.78,y+Math.sin(a)*rr*.78,rr*.28,[[0,j%3===0?'rgba(245,91,200,.12)':j%3===1?'rgba(80,232,208,.12)':'rgba(133,121,247,.12)'],[1,'transparent']])}});const g=c.createRadialGradient(x-rr*.15,y-rr*.2,rr*.12,x,y,rr);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.78,'rgba(255,255,255,.01)');g.addColorStop(.95,'rgba(136,206,245,.24)');g.addColorStop(1,'rgba(238,248,255,.68)');circle(c,x,y,rr,g);c.save();c.translate(x,y);c.rotate(-.36);ellipse(c,-rr*.33,-rr*.64,rr*.38,rr*.07,'rgba(255,255,255,.5)',-.15);c.restore();c.restore()}
 const pxPalette=['#08112b','#2040a8','#346ed8','#4fa3ff','#2de2e6','#b8f7ff','#f4fdff'];
