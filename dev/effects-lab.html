@@ -704,10 +704,12 @@ function voltageNew(c,x,y,r,t,p,controls={}){
     fx+=Math.cos(direction)*step;fy+=Math.sin(direction)*step;
     offshoot.push([fx,fy]);
    }
-   // Match the existing secondary fork weight, glow and parent flash cadence.
-   c.shadowColor='#ffb42e';c.shadowBlur=3.5+2.5*surge;
-   taperedArc(offshoot,'rgba(255,178,43,.74)',.89,.08);
-   c.shadowBlur=0;taperedArc(offshoot,'rgba(255,247,171,.66)',.39,.045);
+   // Match the main outline's golden stroke and glow while keeping the
+   // existing branch geometry and parent flash timing unchanged.
+   c.beginPath();
+   offshoot.forEach((point,k)=>k?c.lineTo(point[0],point[1]):c.moveTo(point[0],point[1]));
+   c.strokeStyle='rgba(255,235,124,.93)';c.lineWidth=1.35;
+   c.shadowColor='#ffb42a';c.shadowBlur=4.5;c.lineJoin='round';c.stroke();
   }
   // Tiny sparks remain attached to existing lightning segments.
   const tick=Math.floor(t*(6+6*urgency)),sparkSeed=seed+tick*193;
