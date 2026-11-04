@@ -743,6 +743,19 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   }
  }
  c.restore();
+ // Thin, irregular arcs circle the event shell, not a thick static border.
+ for(let j=0;j<3;j++){
+  const phase=t*(.13+.04*j)+j*2.094;
+  c.save();c.beginPath();
+  for(let k=0;k<=90;k++){
+   const a=k/90*TAU+phase;
+   const rr=r*(.975+.012*Math.sin(a*11+t*2.7+j)+.009*Math.sin(a*21-t*3.3+j));
+   const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;
+   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
+  }
+  c.closePath();c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
+  c.lineWidth=j===0?1.35:.72;c.shadowColor='#ffb42a';c.shadowBlur=5;c.stroke();c.restore();
+ }
  // One unbroken angular gold containment outline, animated between irregular forms.
  // Every vertex moves independently, but adjacent frames remain continuous.
  // The final segment reconnects to the first: no cut lines or blinking gaps.
