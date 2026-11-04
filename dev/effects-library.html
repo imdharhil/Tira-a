@@ -104,9 +104,16 @@ function updateFrame(entry,explode=false){
   entry.frame.loading='lazy';
   entry.frame.referrerPolicy='same-origin';
   entry.frame.setAttribute('sandbox','allow-scripts allow-same-origin');
+  entry.frameReady=false;
+  entry.frame.onload=()=>{entry.frameReady=true;};
   entry.visual.prepend(entry.frame);
  }
  const p={mode:0,effect:entry.fx.id,settings:settings(entry.fx.id,entry.value)};
+ // Black Hole uses a contact-driven stage transition without reloading its player.
+ if(entry.fx.id===13&&!explode&&entry.frameReady){
+  entry.frame.contentWindow.postMessage({type:'tira-gallery-bh-contact',stage:entry.value,settings:p.settings},location.origin);
+  return;
+ }
  if(entry.fx.id===13)p.displayNumber=entry.value;
  let src='./fx-gallery-player.html?galleryPreview=1&preset='+encodeURIComponent(JSON.stringify(p));
  if(explode)src+='&galleryDeath=1&replay='+Date.now();

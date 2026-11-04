@@ -60,7 +60,7 @@ const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassem
 const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.'};
 const $=id=>document.getElementById(id);
 // This is a self-contained snapshot of the approved FX renderer, not a Lab iframe.
-const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';let galleryDisplayNumber=null;if(isEffectEmbed)document.body.classList.add('effect-embed');
+const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';let galleryDisplayNumber=null;let bhContact=null;if(isEffectEmbed)document.body.classList.add('effect-embed');
 const state={mode:0,A:5,B:13,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
 let bhSpinTime=0, bhPullTime=0;
 const TAU=Math.PI*2;
@@ -788,9 +788,65 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.translate(-cx,-cy);
   }
 if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(!state.mode&&n===13&&galleryDisplayNumber!==null?galleryDisplayNumber:number,cx,cy+3);ctx.restore()}}
-function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
+
+// Gallery-only Black Hole transitions begin when an incoming Cell meets the horizon.
+const bhFields=['value','speed','urgency','inst','move','follow'];
+function bhValues(){const a={};for(const k of bhFields)a[k]=Number($(k).value);return a;}
+function bhSet(a){for(const k of bhFields)$(k).value=String(a[k]);}
+function bhValid(a){
+ if(!a||typeof a!=='object')return null;
+ const v={};for(const k of bhFields){
+  const x=Number(a[k]),el=$(k);
+  if(!Number.isFinite(x)||x<Number(el.min)||x>Number(el.max))return null;
+  v[k]=x;
+ }
+ return v;
+}
+window.addEventListener('message',e=>{
+ if(!isEffectEmbed||state.A!==13||e.source!==parent||e.origin!==location.origin)return;
+ const msg=e.data;if(!msg||msg.type!=='tira-gallery-bh-contact')return;
+ const target=bhValid(msg.settings),stage=Number(msg.stage);
+ if(!target||!Number.isInteger(stage)||stage<1||stage>6)return;
+ bhContact={start:bhValues(),target,stage,elapsed:0,contact:false};
+});
+function bhContactUpdate(dt){
+ if(!bhContact)return;
+ const tr=bhContact;tr.elapsed+=dt;
+ const factor=mix(.9,.36,clamp((tr.start.value-1)/29,0,1));
+ const canvas=$('canvasA'),rect=canvas.getBoundingClientRect();
+ const radius=Math.max(1,Math.min(rect.width,rect.height)*.29);
+ const horizon=radius*factor,arrival=.57+.18*factor;
+ const u=clamp(tr.elapsed/arrival,0,1),eased=u*u*(3-2*u);
+ const distance=(horizon+radius*.77)*(1-eased)+(horizon+radius*.012)*eased;
+ const cellRadius=Math.max(2.5,radius*.067)*(1-.42*u);
+ // Actual collision condition: incoming Cell's near edge touches the event horizon.
+ if(!tr.contact&&distance-cellRadius<=horizon){
+  tr.contact=true;tr.contactAt=tr.elapsed;galleryDisplayNumber=tr.stage;
+ }
+ if(tr.contact){
+  const q=clamp((tr.elapsed-tr.contactAt)/.38,0,1),ease=q*q*(3-2*q),a={};
+  for(const k of bhFields)a[k]=tr.start[k]+(tr.target[k]-tr.start[k])*ease;
+  bhSet(a);
+  if(q>=1){bhSet(tr.target);bhContact=null;}
+ }
+}
+function bhContactDraw(id){
+ const tr=bhContact;if(!tr||tr.contact||state.mode||state.deathStart!==null)return;
+ const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;
+ const w=bounds.width,h=bounds.height,r=Math.min(w,h)*.29;
+ const power=clamp((tr.start.value-1)/29,0,1),factor=mix(.9,.36,power);
+ const horizon=r*factor,arrival=.57+.18*factor;
+ const u=clamp(tr.elapsed/arrival,0,1),ease=u*u*(3-2*u);
+ const distance=(horizon+r*.77)*(1-ease)+(horizon+r*.012)*ease;
+ const x=w/2+Math.cos(-.71)*distance,y=h/2+Math.sin(-.71)*distance;
+ const ctx=canvas.getContext('2d');ctx.save();
+ ctx.fillStyle='#e7faff';ctx.shadowColor='#8edaff';ctx.shadowBlur=7+5*u;
+ ctx.beginPath();ctx.arc(x,y,Math.max(2.5,r*.067)*(1-.42*u),0,TAU);ctx.fill();
+ ctx.restore();
+}
+function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(isEffectEmbed&&state.A===13&&state.playing)bhContactUpdate(dt);if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
-bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
+bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(isEffectEmbed&&state.A===13)bhContactDraw('canvasA');if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
 rebuild();
 if(isEffectEmbed){
  try{
