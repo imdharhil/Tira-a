@@ -50,33 +50,12 @@ footer{margin-top:24px;font-size:12px;color:#8399b8;line-height:1.65}
  .explosion{margin-left:0}
 }
 @media(prefers-reduced-motion:reduce){*,*::after{scroll-behavior:auto!important}}
-
-/* Effects Lab-inspired compact control panels. These are read-only preset values. */
-.fx-row{grid-template-columns:minmax(230px,310px) minmax(0,1fr);align-items:start}
-.fx-visual{aspect-ratio:1.3;min-height:210px}
-.fx-content{gap:13px}
-.fx-controls{gap:9px}
-.value-buttons{flex-wrap:wrap}
-.value-buttons button{min-width:37px}
-.fx-presets{border:1px solid #293653;border-radius:12px;background:linear-gradient(160deg,#121c31,#0d1424);padding:12px;display:grid;gap:9px}
-.fx-presets[hidden]{display:none}
-.fx-presets-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.fx-presets-heading strong{font-size:12px;color:#d9e9ff}
-.fx-presets-heading span{font-size:11px;color:#8fa9d1}
-.fx-field{display:grid;gap:5px}
-.fx-field-top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:12px;color:#adbee2}
-.fx-field-top output{font-variant-numeric:tabular-nums;color:#edf4ff;font-weight:700;white-space:nowrap}
-.fx-meter{height:4px;background:#202e49;border-radius:20px;overflow:hidden}
-.fx-meter span{display:block;height:100%;background:#77b6ff;border-radius:20px}
-.fx-field.missing .fx-field-top output{color:#dbb98a}
-.fx-note{font-size:11px;line-height:1.5;color:#90a8c9}
-@media(max-width:690px){.fx-visual{min-height:185px}.fx-presets{padding:10px}.fx-field-top{font-size:11px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
- <div><div class="eyebrow">TIRA! / Visual FX Library</div><h1>TIRA! — EFFECTS GALLERY</h1><p class="intro">One FX, one entry. Choose a Core level or numbered effect preset (#0–#6), then preview its explosion.</p></div>
+ <div><div class="eyebrow">TIRA! / Visual FX Library</div><h1>TIRA! — EFFECTS GALLERY</h1><p class="intro">One FX, one entry. Choose Core 1–6 or preview its explosion.</p></div>
  <a class="back" href="./effects-lab.html">← Effects Lab</a>
 </header>
 <section aria-labelledby="publishedTitle">
@@ -85,7 +64,7 @@ footer{margin-top:24px;font-size:12px;color:#8399b8;line-height:1.65}
 </section>
 <section aria-labelledby="draftTitle">
  <div class="section-head"><h2 id="draftTitle">Draft Effects</h2><span class="count" id="draftCount">16 FX</span></div>
- <p class="note">Each appearance has one fixed entry. Six configured appearances use exact Effects Lab parameters at levels #0–#6. Other appearances retain their original Core 1–6 previews. Explosion replays the selected appearance. Sound effects are managed separately.</p>
+ <p class="note">Each appearance has one fixed entry. Core selection is saved in this browser; pressing Explosion replays that appearance’s own destruction animation. Sound effects are managed separately.</p>
  <div class="fx-list" id="fxList"></div>
 </section>
 <footer>Visual previews use an independent Gallery player. This page does not publish changes, modify gameplay, or delete Effects Lab presets.</footer>
@@ -101,7 +80,6 @@ const fx=[
  {id:12,name:'Overcharge'},{id:13,name:'Black Hole'},
  {id:14,name:'Bubble'},{id:15,name:'Arcade Pixel Core'}
 ];
-const configuredStages={"5":[[1,300,0,0,0,0],[1,300,100,15,10,0],[2,300,100,25,30,0],[3,300,100,40,45,0],[4,300,100,50,60,10],[5,300,100,64,76,20],[6,300,100,89,100,30]],"6":[[6,300,0,0,10,0],[6,300,32,0,10,100],[11,300,50,19,20,100],[20,300,70,35,30,100],[22,300,80,56,50,100],[25,300,100,81,68,100],[30,300,100,83,100,100]],"8":[[1,49,0,0,0,0],[8,49,10,0,0,0],[12,49,30,0,0,0],[15,49,53,0,0,0],[20,49,59,0,0,0],[22,49,75,0,0,0],[30,49,75,0,0,0]],"12":[[1,30,10,0,0,0],[4,60,10,0,60,0],[8,100,30,40,100,0],[11,119,40,53,100,5],[16,150,60,70,100,15],[16,200,80,70,100,25],[27,250,90,90,100,50]],"15":[[1,100,0,0,0,0],[1,130,10,5,5,0],[1,150,20,15,10,0],[1,160,35,20,20,0],[4,170,40,30,30,null],[4,170,50,40,40,0],[6,200,75,50,50,0]],"16":[[1,49,0,0,0,0],[5,49,16,0,0,0],[10,49,25,0,0,0],[12,49,38,0,0,0],[15,49,57,0,0,0],[21,49,63,0,0,0],[26,49,75,0,0,0]]};
 const storageKey='tira-fx-gallery-values-v2';
 let saved={};
 try{const value=JSON.parse(localStorage.getItem(storageKey)||'{}');if(value&&typeof value==='object'&&!Array.isArray(value))saved=value;}catch(e){}
@@ -129,59 +107,7 @@ const observer=typeof IntersectionObserver!=='undefined'?new IntersectionObserve
  });
 },{rootMargin:'180px 0px'}):null;
 const blackHoleStages=[[1,100,50,50,100,50],[3,150,57,75,100,50],[5,200,65,82,100,50],[7,231,70,92,100,50],[9,280,90,100,100,50],[11,300,100,100,100,50]];
-function hasConfiguredStages(effect){return Object.prototype.hasOwnProperty.call(configuredStages,effect);}
-function settings(effect,stage){
- const configured=hasConfiguredStages(effect);
- const a=configured?configuredStages[effect][stage]:effect===13?blackHoleStages[stage-1]:[stage,100,25,35,40,50];
- // Arcade Pixel Core #4 has no owner-supplied follow value. Render using a
- // documented 0% fallback, but keep that field visually marked as unspecified.
- return {value:a[0],speed:a[1],urgency:a[2],inst:a[3],move:a[4],follow:a[5]===null?0:a[5]};
-}
-const settingFields=[
- ['value','Core value',30,''],
- ['speed','Animation speed / pull speed',300,'speed'],
- ['urgency','Urgency / pull range',100,'%'],
- ['inst','Instability / spin',100,'%'],
- ['move','Movement / stretch',100,'%'],
- ['follow','Number follow / captured count',100,'%']
-];
-function buildSettingDisplay(entry){
- const panel=document.createElement('div');panel.className='fx-presets';
- panel.hidden=!hasConfiguredStages(entry.fx.id);
- const heading=document.createElement('div');heading.className='fx-presets-heading';
- const title=document.createElement('strong'),subtitle=document.createElement('span');
- heading.append(title,subtitle);panel.append(heading);
- const elements=new Map();
- for(const [key,label] of settingFields){
-  const field=document.createElement('div');field.className='fx-field';
-  const row=document.createElement('div');row.className='fx-field-top';
-  const name=document.createElement('span');name.textContent=label;
-  const value=document.createElement('output');row.append(name,value);
-  const meter=document.createElement('div');meter.className='fx-meter';
-  const fill=document.createElement('span');meter.append(fill);
-  field.append(row,meter);panel.append(field);elements.set(key,{field,value,fill});
- }
- const note=document.createElement('div');note.className='fx-note';
- note.textContent='Fixed preset values · Animation uses the original Gallery player.';
- panel.append(note);
- entry.settingPanel={title,subtitle,elements,note};
- return panel;
-}
-function renderSettingDisplay(entry){
- if(!entry.settingPanel)return;
- const raw=configuredStages[entry.fx.id][entry.value];
- const values=settings(entry.fx.id,entry.value);
- entry.settingPanel.title.textContent='PRESET #'+entry.value;
- entry.settingPanel.subtitle.textContent='Core value '+values.value;
- settingFields.forEach(([key,label,max,unit],i)=>{
-  const el=entry.settingPanel.elements.get(key);
-  const missing=raw[i]===null;
-  el.field.classList.toggle('missing',missing);
-  el.value.textContent=missing?'Not specified':key==='speed'?(values.speed/100).toFixed(2)+'×':String(values[key])+unit;
-  el.fill.style.width=((values[key]/max)*100)+'%';
- });
- entry.settingPanel.note.textContent=entry.fx.id===15&&entry.value===4?'Number follow is unspecified in the supplied #4 preset; its animation preview uses 0%.':'Fixed preset values · Animation uses the original Gallery player.';
-}
+function settings(effect,stage){const a=effect===13?blackHoleStages[stage-1]:[stage,100,25,35,40,50];return {value:a[0],speed:a[1],urgency:a[2],inst:a[3],move:a[4],follow:a[5]};}
 function blackHoleDescription(stage){const a=blackHoleStages[stage-1];return 'Size '+a[0]+' · Speed '+(a[1]/100).toFixed(2)+'× · Pull '+a[2]+'% · Spin '+a[3]+'% · Stretch '+a[4]+'% · Captured '+a[5]+'%';}
 function updateFrame(entry,explode=false){
  if(!entry.visible)return;
@@ -217,8 +143,7 @@ function updateFrame(entry,explode=false){
 }
 function setValue(entry,value){
  entry.value=value;
- entry.buttons.forEach((btn,i)=>btn.setAttribute('aria-pressed',String((hasConfiguredStages(entry.fx.id)?i:i+1)===value)));
- if(hasConfiguredStages(entry.fx.id))renderSettingDisplay(entry);
+ entry.buttons.forEach((btn,i)=>btn.setAttribute('aria-pressed',String(i+1===value)));
  if(entry.fx.id===13)entry.hint.textContent=blackHoleDescription(value);
  saved[entry.fx.id]=value;
  try{localStorage.setItem(storageKey,JSON.stringify(saved));}catch(e){}
@@ -226,9 +151,7 @@ function setValue(entry,value){
 }
 function makeEntry(fxItem){
  const stored=Number(saved[fxItem.id]);
- const configured=hasConfiguredStages(fxItem.id);
- const validStored=Number.isInteger(stored)&&(configured?stored>=0&&stored<=6:stored>=1&&stored<=6);
- const entry={fx:fxItem,value:validStored?stored:(configured?0:1),visible:!observer,frame:null,buttons:[]};
+ const entry={fx:fxItem,value:Number.isInteger(stored)&&stored>=1&&stored<=6?stored:1,visible:!observer,frame:null,buttons:[]};
  const card=document.createElement('article');card.className='fx-row';
  const visual=document.createElement('div');visual.className='fx-visual';card.append(visual);entry.visual=visual;
  const content=document.createElement('div');content.className='fx-content';
@@ -237,12 +160,12 @@ function makeEntry(fxItem){
  const name=document.createElement('span');name.className='fx-name';name.textContent=fxItem.name;
  heading.append(code,name);content.append(heading);
  const controls=document.createElement('div');controls.className='fx-controls';
- const label=document.createElement('span');label.className='fx-label';label.textContent=configured?'Preset level':fxItem.id===13?'Configuration':'Core Value';
+ const label=document.createElement('span');label.className='fx-label';label.textContent=fxItem.id===13?'Configuration':'Core Value';
  controls.append(label);
  const numbers=document.createElement('div');numbers.className='value-buttons';numbers.setAttribute('role','group');numbers.setAttribute('aria-label',fxItem.name+' Core Value');
- for(let n=configured?0:1;n<=6;n++){
-  const button=document.createElement('button');button.type='button';button.textContent=configured?'#'+n:String(n);
-  button.setAttribute('aria-label',configured?fxItem.name+' preset #'+n+' (Core value '+configuredStages[fxItem.id][n][0]+')':fxItem.id===13?fxItem.name+' configuration '+n+' (size '+blackHoleStages[n-1][0]+')':fxItem.name+' Core '+n);
+ for(let n=1;n<=6;n++){
+  const button=document.createElement('button');button.type='button';button.textContent=String(n);
+  button.setAttribute('aria-label',fxItem.id===13?fxItem.name+' configuration '+n+' (size '+blackHoleStages[n-1][0]+')':fxItem.name+' Core '+n);
   button.setAttribute('aria-pressed',String(entry.value===n));
   button.onclick=()=>setValue(entry,n);
   entry.buttons.push(button);numbers.append(button);
@@ -252,8 +175,7 @@ function makeEntry(fxItem){
  explode.setAttribute('aria-label','Play '+fxItem.name+' explosion');
  explode.onclick=()=>updateFrame(entry,true);
  controls.append(explode);content.append(controls);
- if(configured){content.append(buildSettingDisplay(entry));renderSettingDisplay(entry);}
- const hint=document.createElement('span');hint.className='fx-small';hint.textContent=fxItem.id===13?blackHoleDescription(entry.value):configured?'Choose #0–#6 to apply a complete effect configuration.':'Animated visual · Explosion preview on demand';entry.hint=hint;content.append(hint);
+ const hint=document.createElement('span');hint.className='fx-small';hint.textContent=fxItem.id===13?blackHoleDescription(entry.value):'Animated visual · Explosion preview on demand';entry.hint=hint;content.append(hint);
  card.append(content);list.append(card);
  card.dataset.effect=String(fxItem.id);entries.set(fxItem.id,entry);
  if(observer)observer.observe(card);else updateFrame(entry);
