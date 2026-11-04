@@ -743,19 +743,29 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   }
  }
  c.restore();
- // Thin, irregular arcs circle the event shell, not a thick static border.
- for(let j=0;j<3;j++){
-  const phase=t*(.13+.04*j)+j*2.094;
-  c.save();c.beginPath();
-  for(let k=0;k<=90;k++){
-   const a=k/90*TAU+phase;
-   const rr=r*(.975+.012*Math.sin(a*11+t*2.7+j)+.009*Math.sin(a*21-t*3.3+j));
-   const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;
-   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
-  }
-  c.closePath();c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
-  c.lineWidth=j===0?1.35:.72;c.shadowColor='#ffb42a';c.shadowBlur=5;c.stroke();c.restore();
+ // One unbroken angular gold containment outline, animated between irregular forms.
+ // Every vertex moves independently, but adjacent frames remain continuous.
+ // The final segment reconnects to the first: no cut lines or blinking gaps.
+ const outlinePoints=23,shapeRate=.40+.75*inst;
+ const shapeClock=t*shapeRate,shapePhase=shapeClock-Math.floor(shapeClock);
+ const smoothPhase=shapePhase*shapePhase*(3-2*shapePhase);
+ const previousTick=Math.floor(shapeClock);
+ const outline=[];
+ for(let k=0;k<outlinePoints;k++){
+  const angle=TAU*k/outlinePoints+t*(.016+.027*move);
+  const seed=3207+k*151;
+  const from=.91+.15*rand(seed+previousTick*127);
+  const to=.91+.15*rand(seed+(previousTick+1)*127);
+  const radius=r*(from+(to-from)*smoothPhase);
+  outline.push([x+Math.cos(angle)*radius,y+Math.sin(angle)*radius]);
  }
+ c.save();c.lineJoin='round';c.lineCap='round';
+ c.beginPath();outline.forEach((pt,k)=>k?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));
+ c.closePath(); // The outer rim always forms one complete loop.
+ c.strokeStyle='rgba(255,158,33,.35)';c.lineWidth=2.25;
+ c.shadowColor='#ffab20';c.shadowBlur=7;c.stroke();
+ c.strokeStyle='rgba(255,231,100,.95)';c.lineWidth=.86;
+ c.shadowBlur=2.5;c.stroke();c.restore();
  // A focused center flash under the number, not a screen-filling white disc.
  glow(c,x,y,r*.40,[[0,'rgba(255,255,225,.73)'],[.23,'rgba(255,224,112,.37)'],[1,'transparent']]);
  for(let j=0;j<11;j++){
@@ -763,74 +773,6 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   const px=x+Math.cos(a)*d,py=y+Math.sin(a)*d;
   glow(c,px,py,r*.033,[[0,'rgba(255,189,58,.31)'],[1,'transparent']]);
  }
- // Additional electrical overlay: preserves every original Overcharge layer above.
- // Independent, short-lived bursts are offset so they never blink in unison.
- function angularStroke(pts,width,opacity){
-  c.save();c.globalAlpha*=opacity;c.lineJoin='round';c.lineCap='round';
-  c.shadowColor='#ffcb42';c.shadowBlur=3;
-  for(let q=0;q<pts.length-1;q++){
-   const fade=1-q/(pts.length-1);
-   c.beginPath();c.moveTo(pts[q][0],pts[q][1]);c.lineTo(pts[q+1][0],pts[q+1][1]);
-   c.lineWidth=Math.max(.16,width*fade);
-   c.strokeStyle='rgba(255,228,111,.92)';c.stroke();
-  }
-  c.restore();
- }
- // Fine irregular, occasionally broken perimeter shells, laid over existing rings.
- for(let shell=0;shell<2;shell++){
-  const clock=t*(.40+.55*inst)+shell*.53;
-  const tick=Math.floor(clock),phase=clock-tick;
-  const seed=5910+shell*571+tick*139;
-  const gain=(.46+.25*surge)*Math.min(1,phase*9,(1-phase)*11);
-  const count=20+shell*3, radius=r*(1.025-.083*shell);
-  c.save();c.globalAlpha*=Math.max(.06,gain);
-  c.lineWidth=shell===0?1.0:.62;c.strokeStyle=shell===0?'rgba(255,220,81,.85)':'rgba(255,154,39,.61)';
-  c.shadowColor='#ffaf27';c.shadowBlur=4;
-  for(let k=0;k<count;k++){
-   if(rand(seed+k*17)<.16+.06*inst)continue;
-   const a=t*.028+k*TAU/count,an=t*.028+(k+1)*TAU/count;
-   const dr=radius*(.93+.13*rand(seed+k*37));
-   const nr=radius*(.93+.13*rand(seed+(k+1)*37));
-   c.beginPath();c.moveTo(x+Math.cos(a)*dr,y+Math.sin(a)*dr);
-   c.lineTo(x+Math.cos(an)*nr,y+Math.sin(an)*nr);c.stroke();
-  }
-  c.restore();
- }
- // Extra crack groups have their own lifetimes and angular positions.
- // They supplement the existing center-rooted lightning instead of replacing it.
- c.save();c.beginPath();c.arc(x,y,r,0,TAU);c.clip();
- const groups=6+Math.round(3*urgency+3*inst);
- for(let j=0;j<groups;j++){
-  const rate=(.82+1.0*urgency+.9*inst)*(.73+.43*rand(j*31+8));
-  const clock=t*rate+rand(j*43+5)*5.2;
-  const cycle=Math.floor(clock),u=clock-cycle,seed=7913+j*211+cycle*673;
-  const alpha=Math.max(0,Math.min(1,u*12,(1-u)*9))*(.24+.38*rand(seed+7));
-  if(alpha<.04||rand(seed+11)>.65+.20*urgency)continue;
-  const angle=rand(seed+3)*TAU;
-  const radial=r*(.18+.65*rand(seed+17));
-  let px=x+Math.cos(angle)*radial,py=y+Math.sin(angle)*radial;
-  let dir=rand(seed+21)*TAU;
-  const length=r*(.12+.22*rand(seed+31))*(.76+.24*move);
-  const vertices=5+Math.floor(rand(seed+33)*3),points=[[px,py]];
-  for(let k=1;k<=vertices;k++){
-   dir+=(rand(seed+k*47)-.5)*(.7+.85*inst);
-   const step=length/vertices*(.7+.55*rand(seed+k*59));
-   px+=Math.cos(dir)*step;py+=Math.sin(dir)*step;points.push([px,py]);
-  }
-  angularStroke(points,.70,alpha);
-  if(rand(seed+71)<.38+.30*inst){
-   const idx=2+Math.floor(rand(seed+73)*(vertices-2));
-   const fork=[points[idx]],side=rand(seed+79)<.5?-1:1;
-   let fx=points[idx][0],fy=points[idx][1],fa=dir+side*(.6+.55*rand(seed+81));
-   for(let k=0;k<3;k++){
-    fa+=(rand(seed+k*19+83)-.5)*.65;
-    fx+=Math.cos(fa)*length*.11;fy+=Math.sin(fa)*length*.11;
-    fork.push([fx,fy]);
-   }
-   angularStroke(fork,.41,alpha*.85);
-  }
- }
- c.restore();
 }
 function filmNew(c,x,y,r,t,p){
  let rr=r*(1+.01*Math.sin(t*.9));c.save();c.translate(x,y);c.scale(1+.008*Math.sin(t*.8),1-.008*Math.sin(t*.8));c.translate(-x,-y);circle(c,x,y,rr,'rgba(166,207,240,.06)');clipCircle(c,x,y,rr,()=>{for(let j=0;j<15;j++){let a=j*TAU/15+t*.13;glow(c,x+Math.cos(a)*rr*.78,y+Math.sin(a)*rr*.78,rr*.28,[[0,j%3===0?'rgba(245,91,200,.12)':j%3===1?'rgba(80,232,208,.12)':'rgba(133,121,247,.12)'],[1,'transparent']])}});const g=c.createRadialGradient(x-rr*.15,y-rr*.2,rr*.12,x,y,rr);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.78,'rgba(255,255,255,.01)');g.addColorStop(.95,'rgba(136,206,245,.24)');g.addColorStop(1,'rgba(238,248,255,.68)');circle(c,x,y,rr,g);c.save();c.translate(x,y);c.rotate(-.36);ellipse(c,-rr*.33,-rr*.64,rr*.38,rr*.07,'rgba(255,255,255,.5)',-.15);c.restore();c.restore()}
