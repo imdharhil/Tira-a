@@ -228,82 +228,105 @@ function breathCycle(t,value){
 }
 // Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
- // A layered flame silhouette, not a collection of rounded ribbon strokes.
+ // Organic soul-fire: continuous rounded lower flame, curling tapered upper plumes.
+ // No sharp wedge panels or detached rounded-ended tentacle strokes.
  const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.5,0,1);
- const movement=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
- const flow=t*(.78+.55*urgency),stretch=.85+.55*movement+.15*power;
- const sway=Math.sin(flow*.67)*r*(.035+.065*inst);
+ const move=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
+ const time=t*(.72+.63*urgency),stretch=.93+.43*move+.12*power;
  const palette=dark?{
-  outer:'rgba(93,35,151,',mid:'rgba(156,82,222,',inner:'rgba(222,160,255,',
-  ember:'rgba(235,194,255,',glow:'rgba(120,54,192,',mote:'#d6abff'
+  haze:[116,51,188],outer:[102,48,172],middle:[158,90,230],
+  light:[214,154,251],heart:[243,198,255],mote:'#d8b7ff'
  }:{
-  outer:'rgba(29,161,184,',mid:'rgba(73,219,225,',inner:'rgba(158,255,243,',
-  ember:'rgba(255,218,142,',glow:'rgba(79,228,228,',mote:'#e9fff8'
+  haze:[26,115,192],outer:[35,150,210],middle:[67,221,234],
+  light:[149,255,245],heart:[255,226,166],mote:'#ddffff'
  };
+ const rgba=(rgb,alpha)=>'rgba('+rgb.join(',')+','+clamp(alpha,0,1)+')';
  c.save();
- glow(c,x,y+r*.20,r*1.12,[[0,palette.glow+(.18+.12*urgency)+')'],[.65,palette.outer+'.055)'],[1,'transparent']]);
- // One broad main flame, its inner body, and a few asymmetric curling tongues.
- // Closed tapered paths make pointed tips and continuous fire rather than tentacles.
- function tongue(j,width,height,offset,opacity,layer){
-  const phase=flow*(.73+.11*j)+j*2.31;
-  const baseX=x+r*offset,baseY=y+r*(.43+.045*Math.sin(phase*.6));
-  const lean=sway+Math.sin(phase)*r*(.05+.15*inst);
-  const tipX=x+r*offset*.34+lean+Math.sin(phase*.53+j)*r*.11;
-  const tipY=baseY-r*height*stretch*(1+.07*Math.sin(phase*.87));
-  const half=r*width/2,flip=j%2?1:-1;
-  const topBend=flip*r*(.09+.12*inst)*Math.sin(phase*.65);
-  c.beginPath();
-  c.moveTo(baseX-half,baseY);
-  c.bezierCurveTo(baseX-half*1.38,baseY-r*.33,
-   tipX-topBend-half*.20,tipY+r*height*.43,tipX,tipY);
-  c.bezierCurveTo(tipX+topBend+half*.29,tipY+r*height*.29,
-   baseX+half*1.35,baseY-r*.34,baseX+half,baseY);
-  c.quadraticCurveTo(baseX,baseY+r*.07,baseX-half,baseY);
+ const centerY=y+r*.16;
+ // One broad, softly glowing fire body with a bright soul ignition at its foot.
+ glow(c,x,centerY,r*1.42,[[0,rgba(palette.middle,.22+.12*urgency)],
+  [.45,rgba(palette.outer,.12)],[1,'transparent']]);
+ // Each overlapping plume is a curving, volumetric envelope. Both sides share
+ // a meandering centerline, so their shape is continuous rather than triangular.
+ // Wide rounded lower lobes feed into tapered, asymmetrical curling upper tips.
+ function plume(index,offset,height,width,alpha,colors){
+  const phase=time*(.52+.13*index)+index*1.83;
+  const yBase=y+r*(.50-.045*index);
+  const length=r*height*stretch;
+  const drift=Math.sin(phase*.61)*(.095+.10*inst);
+  const samples=26,left=[],right=[];
+  for(let i=0;i<=samples;i++){
+   const u=i/samples;
+   const yy=yBase-u*length;
+   const bend=(.16*Math.sin(u*4.9-phase*.63)+.11*Math.sin(u*9.1+phase*.40)
+    +.12*Math.sin(u*3.3+phase))*inst;
+   const swirl=(.11+.13*move)*Math.sin(phase*.65+u*5.7+index*.49)*u;
+   const cx=x+r*(offset*(1-.48*u)+drift*u+bend*u+swirl);
+   // Broad lower body, a rounded midsection and a narrow, wandering final tip.
+   const belly=Math.pow(Math.max(0,1-u),.78)*(Math.min(1,(u+.19)*3.7));
+   const tail=Math.pow(Math.max(0,1-u),1.42);
+   const irregular=1+(.09+.15*inst)*(Math.sin(u*13+phase)+.5*Math.sin(u*24-phase));
+   const half=r*width*(.17+.83*belly)*tail*irregular;
+   left.push([cx-half*(1+.13*Math.sin(phase+u*8)),yy]);
+   right.push([cx+half*(1+.12*Math.cos(phase*.8+u*7)),yy]);
+  }
+  c.beginPath();c.moveTo(left[0][0],left[0][1]);
+  for(let i=1;i<left.length;i++)c.lineTo(left[i][0],left[i][1]);
+  for(let i=right.length-1;i>=0;i--)c.lineTo(right[i][0],right[i][1]);
   c.closePath();
-  const grad=c.createLinearGradient(baseX,baseY,tipX,tipY);
-  const start=layer===0?palette.outer:layer===1?palette.mid:palette.ember;
-  const end=layer===0?palette.mid:layer===1?palette.inner:palette.inner;
-  grad.addColorStop(0,start+Math.min(.84,opacity+.15)+')');
-  grad.addColorStop(.36,start+opacity+')');
-  grad.addColorStop(.78,end+opacity*.60+')');
-  grad.addColorStop(1,end+'.02)');
+  const grad=c.createLinearGradient(x,yBase,x+drift*r,yBase-length);
+  grad.addColorStop(0,rgba(colors[0],alpha));
+  grad.addColorStop(.36,rgba(colors[1],alpha*.86));
+  grad.addColorStop(.69,rgba(colors[2],alpha*.49));
+  grad.addColorStop(1,rgba(colors[2],.015));
   c.fillStyle=grad;c.fill();
  }
+ // A continuous primary flame with diffuse secondary curls, never a fan of spikes.
  c.globalCompositeOperation='screen';
- // Outer fire mass forms a unified broad base with a sharp, wandering tip.
- tongue(0,.96,1.18,0,.28+.10*urgency,0);
- tongue(1,.66,1.04,-.21,.27+.09*urgency,0);
- tongue(2,.57,.86,.27,.22+.08*urgency,0);
- // Three unequal, narrower flame tongues fold into the main silhouette.
- tongue(3,.39,1.29,-.19,.32+.12*urgency,1);
- tongue(4,.44,1.38,.12,.30+.12*urgency,1);
- tongue(5,.27,.91,.35,.28+.10*urgency,1);
- // Inner warm soul-fire remains concentrated near the Core, not at the tips.
- tongue(6,.45,.76,-.045,.39+.15*urgency,2);
- tongue(7,.27,.59,.115,.32+.15*urgency,2);
- c.globalCompositeOperation='source-over';
- // Soft ignition seed anchors all flames beneath the centered number.
- const seed=c.createRadialGradient(x-r*.12,y+r*.12,r*.02,x,y+r*.15,r*.66);
- if(dark){
-  seed.addColorStop(0,'rgba(218,160,255,.73)');
-  seed.addColorStop(.33,'rgba(141,68,222,.49)');
-  seed.addColorStop(.78,'rgba(58,21,100,.15)');
- }else{
-  seed.addColorStop(0,'rgba(255,245,211,.76)');
-  seed.addColorStop(.34,'rgba(245,211,136,.56)');
-  seed.addColorStop(.76,'rgba(103,229,227,.15)');
+ plume(0,0,1.54,.93,.38+.13*urgency,[palette.outer,palette.middle,palette.light]);
+ plume(1,-.23,1.30,.58,.29+.08*urgency,[palette.haze,palette.outer,palette.middle]);
+ plume(2,.29,1.07,.61,.27+.09*urgency,[palette.outer,palette.middle,palette.light]);
+ plume(3,-.11,1.44,.49,.28+.11*urgency,[palette.middle,palette.light,palette.heart]);
+ plume(4,.16,.98,.48,.26+.10*urgency,[palette.middle,palette.light,palette.heart]);
+ // Broad translucent currents curl through the body and taper away at the top.
+ // Short luminous segments use graduated widths to avoid noodle-like strokes.
+ for(let j=0;j<4;j++){
+  const phase=time*(.69+.09*j)+j*1.63;
+  const startX=x+r*(j-1.5)*.14,startY=y+r*(.36-.05*j);
+  const height=r*stretch*(.72+.18*j);
+  for(let layer=0;layer<2;layer++){
+   c.beginPath();c.moveTo(startX,startY);
+   const parts=16;
+   for(let k=1;k<=parts;k++){
+    const u=k/parts,wiggle=Math.sin(phase+u*5.4+j)*(.12+.12*inst);
+    const xx=startX+r*(wiggle*u+.23*Math.sin(phase*.48+u*3.3)*u);
+    const yy=startY-height*u;
+    c.lineTo(xx,yy);
+   }
+   c.strokeStyle=rgba(layer?palette.heart:palette.light,
+    (layer?.16:.12)*(.7+.3*urgency));
+   c.lineWidth=r*(layer?.027:.080);
+   c.lineCap='butt';c.lineJoin='round';c.stroke();
+  }
  }
- seed.addColorStop(1,'rgba(0,0,0,0)');
- c.fillStyle=seed;c.beginPath();c.ellipse(x,y+r*.14,r*.63,r*.61,0,0,TAU);c.fill();
- // Sparse embers rise with the body of the flame.
- for(let j=0;j<10;j++){
-  const cycle=(flow*(.10+.08*rand(j+301))+rand(j*17+9))%1;
-  const angle=j*2.39996,spread=r*(.22+.50*rand(j+61))*(1-.45*cycle);
-  const px=x+Math.cos(angle)*spread+sway*cycle;
-  const py=y+r*.36-cycle*r*(stretch*1.22+.70);
-  c.save();c.globalAlpha=(.13+.25*urgency)*(1-cycle);
+ c.globalCompositeOperation='source-over';
+ // Central soul light emerges from the lower flame body; number stays on top.
+ const seed=c.createRadialGradient(x-r*.09,centerY-r*.06,0,x,centerY,r*.75);
+ seed.addColorStop(0,rgba(palette.heart,.82));
+ seed.addColorStop(.26,rgba(palette.light,.51));
+ seed.addColorStop(.63,rgba(palette.middle,.17));
+ seed.addColorStop(1,rgba(palette.outer,0));
+ c.fillStyle=seed;c.beginPath();c.ellipse(x,centerY,r*.76,r*.62,0,0,TAU);c.fill();
+ // Small rising flecks, widely separated so the flame remains the main subject.
+ for(let j=0;j<11;j++){
+  const cycle=(time*(.10+.07*rand(j+301))+rand(j*17+9))%1;
+  const angle=j*2.39996,spread=r*(.26+.59*rand(j+61))*(1-.50*cycle);
+  const px=x+Math.cos(angle)*spread+r*Math.sin(time*.42+j)*.06*cycle;
+  const py=y+r*.42-cycle*r*(1.4*stretch+.55);
+  c.save();c.globalAlpha=(.13+.22*urgency)*(1-cycle);
   c.fillStyle=palette.mote;c.shadowColor=palette.mote;c.shadowBlur=3;
-  c.beginPath();c.arc(px,py,Math.max(.4,r*(.006+.008*rand(j+113))),0,TAU);c.fill();c.restore();
+  c.beginPath();c.arc(px,py,Math.max(.45,r*(.006+.01*rand(j+113))),0,TAU);
+  c.fill();c.restore();
  }
  c.restore();
 }
