@@ -743,43 +743,36 @@ function voltageNew(c,x,y,r,t,p,controls={}){
   }
  }
  c.restore();
- // Thin, irregular arcs circle the event shell, not a thick static border.
+ // Exactly three closed containment outlines. At zero Instability they overlap
+ // as one near-circle; Spin progressively separates and distorts the two outer rings.
+ // Keep the main ring bright and comparatively stable, with two finer layers.
+ const ringSamples=48,outlineClock=t*(.30+.75*inst);
+ const outlineTick=Math.floor(outlineClock),outlinePhase=outlineClock-outlineTick;
+ const outlineEase=outlinePhase*outlinePhase*(3-2*outlinePhase);
  for(let j=0;j<3;j++){
-  const phase=t*(.13+.04*j)+j*2.094;
-  c.save();c.beginPath();
-  for(let k=0;k<=90;k++){
-   const a=k/90*TAU+phase;
-   const ringRadius=j===0?.975:j===1?1.065:1.155;
-   const rr=r*(ringRadius+.012*Math.sin(a*11+t*2.7+j)+.009*Math.sin(a*21-t*3.3+j));
-   const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;
-   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
+  const baseRadius=.975+inst*(j===0?0:j===1?.085:.185);
+  const wiggle=inst*(j===0?.013:j===1?.029:.043);
+  const points=[];
+  for(let k=0;k<ringSamples;k++){
+   const a=k*TAU/ringSamples;
+   const seed=3207+j*1103+k*151;
+   const from=rand(seed+outlineTick*127)*2-1;
+   const to=rand(seed+(outlineTick+1)*127)*2-1;
+   const electrical=from+(to-from)*outlineEase;
+   // Small smooth fluctuation on the stable ring; increasingly angular
+   // independent fluctuations on the outer two without cutting the path.
+   const ripple=.003*Math.sin(a*9+t*.8+j);
+   const radius=r*(baseRadius+ripple+wiggle*electrical);
+   points.push([x+Math.cos(a)*radius,y+Math.sin(a)*radius]);
   }
-  c.closePath();c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
-  c.lineWidth=j===0?1.35:j===1?.46:.32;c.shadowColor='#ffb42a';c.shadowBlur=j===0?5:2.5;c.stroke();c.restore();
+  c.save();c.beginPath();
+  points.forEach((pt,k)=>k?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));
+  c.closePath();
+  c.strokeStyle=j===0?'rgba(255,235,124,.93)':'rgba(255,132,25,.61)';
+  c.lineWidth=j===0?1.35:j===1?.46:.32;
+  c.shadowColor='#ffb42a';c.shadowBlur=j===0?5:2.5;
+  c.lineJoin='round';c.stroke();c.restore();
  }
- // One unbroken angular gold containment outline, animated between irregular forms.
- // Every vertex moves independently, but adjacent frames remain continuous.
- // The final segment reconnects to the first: no cut lines or blinking gaps.
- const outlinePoints=23,shapeRate=.40+.75*inst;
- const shapeClock=t*shapeRate,shapePhase=shapeClock-Math.floor(shapeClock);
- const smoothPhase=shapePhase*shapePhase*(3-2*shapePhase);
- const previousTick=Math.floor(shapeClock);
- const outline=[];
- for(let k=0;k<outlinePoints;k++){
-  const angle=TAU*k/outlinePoints+t*(.016+.027*move);
-  const seed=3207+k*151;
-  const from=.91+.15*rand(seed+previousTick*127);
-  const to=.91+.15*rand(seed+(previousTick+1)*127);
-  const radius=r*(from+(to-from)*smoothPhase);
-  outline.push([x+Math.cos(angle)*radius,y+Math.sin(angle)*radius]);
- }
- c.save();c.lineJoin='round';c.lineCap='round';
- c.beginPath();outline.forEach((pt,k)=>k?c.lineTo(pt[0],pt[1]):c.moveTo(pt[0],pt[1]));
- c.closePath(); // The outer rim always forms one complete loop.
- c.strokeStyle='rgba(255,158,33,.35)';c.lineWidth=2.25;
- c.shadowColor='#ffab20';c.shadowBlur=7;c.stroke();
- c.strokeStyle='rgba(255,231,100,.95)';c.lineWidth=.86;
- c.shadowBlur=2.5;c.stroke();c.restore();
  // A focused center flash under the number, not a screen-filling white disc.
  glow(c,x,y,r*.40,[[0,'rgba(255,255,225,.73)'],[.23,'rgba(255,224,112,.37)'],[1,'transparent']]);
  for(let j=0;j<11;j++){
