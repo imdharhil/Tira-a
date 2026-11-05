@@ -371,13 +371,9 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 .proposal-grid>.proposal-card[data-copycat="duplicate"]::after{
   content:"";position:absolute;inset:7px;border-radius:9px;pointer-events:none;
-  background:
-    linear-gradient(112deg,transparent 12%,#7fece718 29%,#e8b2ff26 43%,#f9e9d71b 54%,transparent 69%),
-    repeating-linear-gradient(161deg,transparent 0 13px,#ffffff09 14px 14.5px,transparent 15px 27px);
-  background-size:240% 100%,100% 100%;
-  background-position:100% 50%,0 0;
-  mix-blend-mode:screen;opacity:.63;
-  transition:background-position .75s cubic-bezier(.2,.7,.2,1),opacity .55s ease;
+  background:radial-gradient(ellipse at 50% 46%,#c3f9ff1f 0%,#d8b7ff12 42%,transparent 76%);
+  mix-blend-mode:screen;opacity:.42;
+  transition:opacity .55s ease;
 }
 .proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-orb,
 .proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-name,
@@ -395,7 +391,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   box-shadow:inset 0 1px 0 #ffffff80,inset 0 0 19px #a6f5ee2e,0 0 18px #ba91ee45,0 9px 24px #0007;
 }
 .proposal-grid>.proposal-card[data-copycat="duplicate"][aria-pressed="true"]::after{
-  background-position:0% 50%,0 0;opacity:.9;
+  opacity:.72;
 }
 @media(prefers-reduced-motion:reduce){
   .proposal-grid>.proposal-card[data-copycat="duplicate"],
