@@ -227,6 +227,41 @@ function breathCycle(t,value){
   return {air,strain,pressure,phase};
 }
 // Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
+// Unified two-layer soul smoke. 85% visibility; twice the animation rate.
+function drawLayeredSoulSmoke(c,cx,cy,R,t,dark){
+ const colors=dark?['149,59,210','216,138,255']:['41,176,236','186,250,255'];
+ const speed=2,visibility=.85;
+ c.save();
+ for(let i=0;i<10;i++){
+  const angle=i*TAU/10+.21;
+  const phase=((t*speed*(.115+.015*(i%3))+i*.267)%1+1)%1;
+  const lift=phase*R*.60,spread=R*(.92+.15*phase);
+  const sx=cx+Math.cos(angle)*spread,sy=cy+Math.sin(angle)*spread-lift*.15;
+  const sway=Math.sin(t*speed*.72+i*2.37)*R*.13;
+  const tx=sx+sway*.44+Math.cos(angle)*R*.08,ty=sy-R*.67-lift;
+  const fade=.52+.48*Math.sin(Math.PI*phase);
+  for(let layer=0;layer<2;layer++){
+   const width=R*(.16-.055*phase)*(layer===0?1.30:.53);
+   const x=sx+(layer===0?0:R*.026);
+   c.beginPath();c.moveTo(x-width*.52,sy);
+   c.bezierCurveTo(x+sway*.45-width*.6,sy-R*.19-lift*.25,
+    x-sway*.82+Math.cos(angle)*R*.14-width*.26,sy-R*.44-lift*.51,tx,ty);
+   c.bezierCurveTo(x-sway*.82+Math.cos(angle)*R*.14+width*.26,
+    sy-R*.44-lift*.51,x+sway*.45+width*.6,sy-R*.19-lift*.25,x+width*.52,sy);
+   c.closePath();
+   const rgb=colors[layer],a=visibility*fade*(layer===0?.40:.30);
+   const g=c.createLinearGradient(x,sy,tx,ty);
+   g.addColorStop(0,'rgba('+rgb+',0)');
+   g.addColorStop(.22,'rgba('+rgb+','+(a*.20)+')');
+   g.addColorStop(.55,'rgba('+rgb+','+a+')');
+   g.addColorStop(.86,'rgba('+rgb+','+(a*.42)+')');
+   g.addColorStop(1,'rgba('+rgb+',0)');
+   c.fillStyle=g;c.shadowColor='rgba('+rgb+','+(a*.24)+')';
+   c.shadowBlur=layer===0?R*.14:R*.06;c.fill();
+  }
+ }
+ c.restore();
+}
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  // ORB-FIRST VISUAL REVIEW. No flames, tails or external image assets.
  // The orb is intentionally centered behind the Lab's Core number.
@@ -245,47 +280,11 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  };
  const rgba=(rgb,a)=>'rgba('+rgb.join(',')+','+clamp(a,0,1)+')';
  c.save();
+ drawLayeredSoulSmoke(c,cx,cy,orbR,t,dark);
  if(dark){
    // Dark Soul orb candidate: fully rounded silhouette, no flame tip.
    // Retain necromantic eyes with neon-magenta edge lighting.
    const R=orbR;
-   // Smoky Dark Soul halo: tapered curling wisps with needle-fine tips.
-   // Filled contours avoid the old round-capped stroke ends.
-   c.save();
-   for(let i=0;i<9;i++){
-     const angle=i*TAU/9+.24;
-     const phase=((t*(.13+.025*(i%3))+i*.271)%1+1)%1;
-     const lift=phase*R*.65;
-     const spread=R*(.87+.20*phase);
-     const sx=cx+Math.cos(angle)*spread;
-     const sy=cy+Math.sin(angle)*spread-lift*.13;
-     const sway=Math.sin(t*.85+i*2.31)*R*.16;
-     const fade=Math.sin(Math.PI*phase);
-     const alpha=(.09+.14*fade)*(.65+.35*urgency);
-     const w=R*(.16-.065*phase);
-     const tx=sx+sway*.42+Math.cos(angle)*R*.09;
-     const ty=sy-R*.70-lift;
-     c.beginPath();
-     c.moveTo(sx-w*.52,sy);
-     c.bezierCurveTo(
-       sx+sway*.45-w*.60,sy-R*.19-lift*.25,
-       sx-sway*.85+Math.cos(angle)*R*.15-w*.28,sy-R*.45-lift*.52,
-       tx,ty
-     );
-     c.bezierCurveTo(
-       sx-sway*.85+Math.cos(angle)*R*.15+w*.28,sy-R*.45-lift*.52,
-       sx+sway*.45+w*.60,sy-R*.19-lift*.25,
-       sx+w*.52,sy
-     );
-     c.closePath();
-     c.fillStyle=i%2===0
-       ?'rgba(184,91,238,'+alpha+')'
-       :'rgba(76,25,135,'+(alpha*.83)+')';
-     c.shadowColor='rgba(132,29,191,'+(alpha*.75)+')';
-     c.shadowBlur=R*.19;
-     c.fill();
-   }
-   c.restore();
    glow(c,cx,cy,R*1.88,[
      [0,'rgba(203,0,236,.30)'],
      [.42,'rgba(180,0,220,.18)'],
