@@ -270,9 +270,20 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const eyeGap=orbR*.34;
  const eyeX=orbR*.105,eyeY=orbR*.16;
  const eyeColor=dark?'rgba(48,37,104,.95)':'rgba(32,91,144,.95)';
+ // Synchronized gaze: noticeable but bounded, anchored to the glowing orb.
+ const lookX=Math.sin(t*1.10)*orbR*.070;
+ const lookY=Math.cos(t*.82)*orbR*.020;
+ // One quick natural blink roughly every 4.8 animation-time seconds.
+ const blinkPhase=((t+1.2)%4.8+4.8)%4.8;
+ const blinkDistance=(blinkPhase-2.4)/.17;
+ const blink= Math.exp(-blinkDistance*blinkDistance);
+ const blinkH=eyeY*(1-.86*blink);
+ const glanceWidth=eyeX*(1+.055*Math.abs(Math.sin(t*1.10)));
  c.save();c.fillStyle=eyeColor;
  for(const sign of [-1,1]){
-   c.beginPath();c.ellipse(cx+sign*eyeGap,eyesY,eyeX,eyeY,0,0,TAU);c.fill();
+   c.beginPath();
+   c.ellipse(cx+sign*eyeGap+lookX,eyesY+lookY,glanceWidth,Math.max(orbR*.018,blinkH),0,0,TAU);
+   c.fill();
  }
  c.restore();
  // Keep motes faint and close to the silhouette; no detached tail fragments.
