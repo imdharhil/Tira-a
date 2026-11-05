@@ -307,13 +307,6 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
    }
  }
  c.restore();
- // Simple four-point anime sparkle near the upper rim, pulsing gently.
- const sparkle=.35+.65*pulse,starX=cx+orbR*.64,starY=cy-orbR*.72;
- c.save();c.strokeStyle=rgba(pal.light,.28+.45*sparkle);
- c.lineCap='round';c.lineWidth=Math.max(.6,orbR*.018);
- c.beginPath();c.moveTo(starX-orbR*.09*sparkle,starY);c.lineTo(starX+orbR*.09*sparkle,starY);
- c.moveTo(starX,starY-orbR*.13*sparkle);c.lineTo(starX,starY+orbR*.13*sparkle);c.stroke();
- c.restore();
  // Keep motes faint and close to the silhouette; no detached tail fragments.
  for(let i=0;i<5;i++){
    const phase=(t*(.10+.02*i)+i*.17)%1,a=i*2.399963;
