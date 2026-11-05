@@ -263,23 +263,13 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  core.addColorStop(.59,rgba(pal.light,.54+.06*pulse));
  core.addColorStop(1,rgba(pal.mid,0));
  c.fillStyle=core;c.beginPath();c.arc(cx,cy,orbR*.83,0,TAU);c.fill();
- // Soft internal energy currents, clipped and kept away from the number center.
- c.save();c.beginPath();c.arc(cx,cy,orbR*.94,0,TAU);c.clip();
- for(let i=0;i<3;i++){
-   const phase=t*(.24+.075*i)+i*2.094,side=i%2?1:-1;
-   const ox=Math.sin(phase)*orbR*.08,oy=Math.cos(phase)*orbR*.06;
-   c.beginPath();c.moveTo(cx+side*orbR*.51+ox,cy-orbR*.63+oy);
-   c.bezierCurveTo(cx+side*orbR*.77+ox,cy-orbR*.10,
-     cx+side*orbR*.40,cy+orbR*.35,cx+side*orbR*.41,cy+orbR*.65);
-   c.strokeStyle=rgba(dark?pal.shadow:pal.outer,.055+.075*inst);
-   c.lineWidth=orbR*(.023+.012*inst);c.lineCap='round';c.stroke();
- }
- c.restore();
- // Reference sketch: two small, widely spaced oval eyes inside the luminous orb.
- // Keep them above the existing Core number to preserve its readability.
- const eyesY=cy-orbR*.61,eyeGap=orbR*.22;
- const eyeX=orbR*.037,eyeY=orbR*.061;
- const eyeColor=dark?'rgba(82,63,126,.88)':'rgba(63,82,127,.88)';
+ // Two expressive oval eyes at the lower side positions indicated in the
+ // owner's screenshot. Remove the previous upper dots and internal streaks.
+ // Two-digit numbers need more clearance, so the eyes spread outward.
+ const eyesY=cy+orbR*.20;
+ const eyeGap=orbR*(value>=10?.66:.49);
+ const eyeX=orbR*.10,eyeY=orbR*.16;
+ const eyeColor=dark?'rgba(75,62,120,.90)':'rgba(55,91,135,.88)';
  c.save();c.fillStyle=eyeColor;
  for(const sign of [-1,1]){
    c.beginPath();c.ellipse(cx+sign*eyeGap,eyesY,eyeX,eyeY,0,0,TAU);c.fill();
