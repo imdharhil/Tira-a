@@ -295,29 +295,32 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     // Soft, asymmetric spirit lights: cyan-white, with teal bloom.
-     // Each eye remains an independent organic oval; no outline or pupil.
+     // Necromantic eyes: almost circular spectral-green lights with a
+     // shadow-dark rim, vivid ghostly core, and controlled emerald bloom.
      const open=Math.max(.12,1-.86*blink);
-     const ew=orbR*.105,eh=orbR*.148*open;
-     const tilt=sign*.12;
-     c.save();
-     c.translate(ex,ey);c.rotate(tilt);
-     const aura=c.createRadialGradient(0,0,0,0,0,ew*2.65);
-     aura.addColorStop(0,'rgba(161,255,249,.65)');
-     aura.addColorStop(.32,'rgba(25,228,217,.35)');
-     aura.addColorStop(.73,'rgba(0,189,183,.12)');
-     aura.addColorStop(1,'rgba(0,175,175,0)');
-     c.fillStyle=aura;c.beginPath();c.ellipse(0,0,ew*2.65,eh*1.95,0,0,TAU);c.fill();
-     // Curved flame-drop silhouette inspired by the supplied eye sample.
-     c.beginPath();c.moveTo(-ew*.90,eh*.12);
-     c.bezierCurveTo(-ew*1.15,-eh*.53,-ew*.65,-eh*1.02,ew*.04,-eh);
-     c.bezierCurveTo(ew*.64,-eh*1.04,ew*1.13,-eh*.44,ew*.90,eh*.12);
-     c.bezierCurveTo(ew*.80,eh*.67,ew*.35,eh*.90,-ew*.16,eh*.88);
-     c.bezierCurveTo(-ew*.67,eh*.85,-ew*.92,eh*.51,-ew*.90,eh*.12);
-     c.closePath();
-     c.shadowColor='rgba(27,255,237,.90)';
-     c.shadowBlur=orbR*.18;
-     c.fillStyle='#e8ffff';c.fill();
+     const er=orbR*.125;
+     const eyeH=er*open;
+     const flicker=.94+.06*Math.sin(t*3.1+sign*.7);
+     c.save();c.translate(ex,ey);
+     // Outer supernatural haze. Restrained, so the Core number remains clear.
+     const haze=c.createRadialGradient(0,0,er*.18,0,0,er*2.4);
+     haze.addColorStop(0,'rgba(137,255,181,.26)');
+     haze.addColorStop(.32,'rgba(30,226,113,.32)');
+     haze.addColorStop(.65,'rgba(5,114,64,.16)');
+     haze.addColorStop(1,'rgba(0,55,37,0)');
+     c.fillStyle=haze;c.beginPath();
+     c.ellipse(0,0,er*2.4,eyeH*2.4,0,0,TAU);c.fill();
+     // Dark verdigris boundary preserves the round eye shape.
+     c.beginPath();c.ellipse(0,0,er*1.19,eyeH*1.19,0,0,TAU);
+     c.fillStyle='rgba(3,30,27,.95)';c.fill();
+     const spectral=c.createRadialGradient(-er*.20,-eyeH*.22,0,0,0,er*1.1);
+     spectral.addColorStop(0,'rgba(219,255,224,.99)');
+     spectral.addColorStop(.36,'rgba(119,255,163,.99)');
+     spectral.addColorStop(.73,'rgba(29,217,114,.97)');
+     spectral.addColorStop(1,'rgba(5,101,67,.96)');
+     c.shadowColor='rgba(35,255,123,.95)';
+     c.shadowBlur=er*.88*flicker;
+     c.fillStyle=spectral;c.beginPath();c.ellipse(0,0,er,eyeH,0,0,TAU);c.fill();
      c.shadowBlur=0;c.restore();
    }else{
      // Keep Pure Soul's approved rounded anime eyes unchanged.
