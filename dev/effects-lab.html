@@ -295,23 +295,21 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     // Owner reference: wide red angular eyes, black outline, no pupils.
-     // Outer tips are lifted; inner tips angle down toward the number.
-     const w=orbR*.27, lidScale=Math.max(.10,1-.86*blink);
-     const outX=ex+sign*w, inX=ex-sign*w;
-     const upperOuter=ey-orbR*.18*lidScale;
-     const upperInner=ey+orbR*.08*lidScale;
-     const lowerMid=ey+orbR*.23*lidScale;
-     c.beginPath();
-     c.moveTo(outX,upperOuter);
-     c.quadraticCurveTo(ex+sign*w*.31,ey-orbR*.085*lidScale,inX,upperInner);
-     c.quadraticCurveTo(ex-sign*w*.19,lowerMid+orbR*.07*lidScale,ex,lowerMid);
-     c.quadraticCurveTo(ex+sign*w*.53,ey+orbR*.22*lidScale,outX,upperOuter);
-     c.closePath();
-     c.fillStyle='#f12629';c.fill();
-     c.strokeStyle='#110719';
-     c.lineWidth=Math.max(1.6,orbR*.031);
+     const eyeW=glanceWidth*2.05,open=Math.max(.12,1-.86*blink);
+     const eyeH=orbR*.17*open;
+     const outerX=ex+sign*eyeW*.62,innerX=ex-sign*eyeW*.62;
+     const outerTopY=ey-eyeH*.92,innerTopY=ey-eyeH*.08;
+     const lowerMidY=ey+eyeH*.62;
+     c.beginPath();c.moveTo(outerX,outerTopY);
+     c.quadraticCurveTo(ex+sign*eyeW*.18,ey-eyeH*1.08,innerX,innerTopY);
+     c.quadraticCurveTo(ex-sign*eyeW*.40,ey+eyeH*.34,ex,lowerMidY);
+     c.quadraticCurveTo(ex+sign*eyeW*.44,ey+eyeH*.50,outerX,outerTopY);
+     c.closePath();c.fillStyle='#f12629';c.fill();
+     c.strokeStyle='#120716';c.lineWidth=Math.max(1.6,orbR*.030);
      c.lineJoin='round';c.lineCap='round';c.stroke();
+     c.beginPath();c.moveTo(outerX,outerTopY);
+     c.quadraticCurveTo(ex+sign*eyeW*.18,ey-eyeH*1.08,innerX,innerTopY);
+     c.strokeStyle='#09030f';c.lineWidth=Math.max(2,orbR*.040);c.stroke();
    }else{
      // Keep Pure Soul's approved rounded anime eyes unchanged.
      c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
