@@ -57,7 +57,7 @@ body.retro-neon .viewport{background:#080f25}
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Cute Emotional Orb'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet orb with glowing cyan-white eyes and two layers of purple smoke at 85% visibility and 2× motion.',19:'Cute Emotional Orb: a pink-peach pastel spirit with expressive glossy eyes, blush cheeks, a smile and drifting bubbles.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet orb with glowing cyan-white eyes and two layers of purple smoke at 85% visibility and 2× motion.',19:'Cute Emotional Orb: pastel cloud-orb with a softly scalloped fluffy edge, glossy eyes, blush cheeks, a smile and floating mist puffs.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const state={mode:0,A:19,B:18,t:0,last:0,dt:0,playing:true,burstStart:0,deathStart:null,view:{A:{eclipseCover:0,coronaLevel:0,identityTime:0},B:{eclipseCover:0,coronaLevel:0,identityTime:0}}};
@@ -432,9 +432,34 @@ function drawCuteEmotionalOrb(c,x,y,r,t,value,ctrl={}){
  const orb=c.createRadialGradient(cx-R*.28,cy-R*.31,R*.035,cx,cy,R*1.06);
  orb.addColorStop(0,'#fffdf8');orb.addColorStop(.36,'#fff4f1');
  orb.addColorStop(.71,'#ffdce4');orb.addColorStop(1,'#f6aebf');
- c.shadowColor='rgba(255,183,213,.38)';c.shadowBlur=R*.23;
- c.fillStyle=orb;c.beginPath();c.arc(cx,cy,R,0,TAU);c.fill();
+ // Airy edge puffs surround a stable circular core (80% orb, 20% cloud).
+ // Draw them behind the face so the Core number remains unobstructed.
+ c.save();
+ c.shadowColor='rgba(255,183,213,.31)';
+ c.shadowBlur=R*.22;
+ for(let i=0;i<11;i++){
+  const a=i*TAU/11-.28;
+  const breathe=1+.027*Math.sin(t*.75+i*1.9);
+  const dist=R*(.77+.028*Math.sin(i*2.4));
+  const pr=R*(.20+.045*(.5+.5*Math.sin(i*2.8)))*breathe;
+  const px=cx+Math.cos(a)*dist,py=cy+Math.sin(a)*dist;
+  const puff=c.createRadialGradient(px-pr*.21,py-pr*.24,pr*.05,px,py,pr);
+  puff.addColorStop(0,'rgba(255,253,252,.94)');
+  puff.addColorStop(.60,'rgba(255,227,237,.86)');
+  puff.addColorStop(1,'rgba(252,190,216,.22)');
+  c.fillStyle=puff;c.beginPath();c.arc(px,py,pr,0,TAU);c.fill();
+ }
+ c.restore();
+ // Main soft orb blends the scalloped perimeter into a friendly face.
+ c.shadowColor='rgba(255,183,213,.24)';c.shadowBlur=R*.18;
+ c.fillStyle=orb;c.beginPath();c.arc(cx,cy,R*.91,0,TAU);c.fill();
  c.shadowBlur=0;
+ // Fine translucent mist in front of the rim, avoiding face and number.
+ for(let i=0;i<7;i++){
+  const a=i*TAU/7+t*.06,dist=R*(.86+.025*Math.sin(t*.65+i));
+  const mx=cx+Math.cos(a)*dist,my=cy+Math.sin(a)*dist;
+  glow(c,mx,my,R*.23,[[0,'rgba(255,252,251,.15)'],[1,'rgba(255,215,231,0)']]);
+ }
  // Soft directional reflection and pink blush.
  c.fillStyle='rgba(255,255,255,.28)';
  c.beginPath();c.ellipse(cx-R*.30,cy-R*.57,R*.28,R*.10,-.40,0,TAU);c.fill();
@@ -455,14 +480,17 @@ function drawCuteEmotionalOrb(c,x,y,r,t,value,ctrl={}){
  // Friendly smile placed below the numeric core label.
  c.beginPath();c.arc(cx,cy+R*.34,R*.115,.18*Math.PI,.82*Math.PI);
  c.strokeStyle='#915367';c.lineWidth=Math.max(1,R*.025);c.lineCap='round';c.stroke();
- // Pastel bubbles drifting near, never covering the orb face.
- for(let i=0;i<10;i++){
-  const a=i*2.399963+t*.15;
-  const dist=R*(1.38+.17*Math.sin(t*.37+i));
-  const bx=cx+Math.cos(a)*dist,by=cy+Math.sin(a)*dist*.85;
-  const br=R*(.035+.020*(i%3));
-  glow(c,bx,by,br*2.25,[[0,'rgba(255,253,247,.27)'],[1,'rgba(255,234,238,0)']]);
-  circle(c,bx,by,br,i%3===0?'rgba(255,236,246,.65)':i%3===1?'rgba(255,208,222,.53)':'rgba(213,251,248,.55)');
+ // Floating cloudlets: soft overlapping puffs, not hard bubbles.
+ for(let i=0;i<8;i++){
+  const a=i*2.399963+t*.10;
+  const dist=R*(1.34+.11*Math.sin(t*.28+i));
+  const bx=cx+Math.cos(a)*dist,by=cy+Math.sin(a)*dist*.83;
+  const br=R*(.046+.016*(i%3));
+  glow(c,bx,by,br*2.6,[[0,'rgba(255,249,251,.25)'],[1,'rgba(255,220,236,0)']]);
+  for(let j=0;j<3;j++){
+   const dx=(j-1)*br*.62,dy=j===1?-br*.23:br*.10;
+   circle(c,bx+dx,by+dy,br*(j===1?1:.73),i%2?'rgba(255,231,241,.41)':'rgba(234,252,250,.37)');
+  }
  }
  c.restore();
 }
