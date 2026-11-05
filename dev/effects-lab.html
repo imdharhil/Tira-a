@@ -249,10 +249,9 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
    // Dark Soul orb candidate: fully rounded silhouette, no flame tip.
    // Retain necromantic eyes with neon-magenta edge lighting.
    const R=orbR;
-   // Smoky Dark Soul halo: a small, fixed number of translucent curls
-   // rise from behind the orb. No particles, textures or full-screen blur.
+   // Smoky Dark Soul halo: tapered curling wisps with needle-fine tips.
+   // Filled contours avoid the old round-capped stroke ends.
    c.save();
-   c.lineCap='round';
    for(let i=0;i<9;i++){
      const angle=i*TAU/9+.24;
      const phase=((t*(.13+.025*(i%3))+i*.271)%1+1)%1;
@@ -264,20 +263,27 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
      const fade=Math.sin(Math.PI*phase);
      const alpha=(.09+.14*fade)*(.65+.35*urgency);
      const w=R*(.16-.065*phase);
+     const tx=sx+sway*.42+Math.cos(angle)*R*.09;
+     const ty=sy-R*.70-lift;
      c.beginPath();
-     c.moveTo(sx,sy);
+     c.moveTo(sx-w*.52,sy);
      c.bezierCurveTo(
-       sx+sway*.45,sy-R*.19-lift*.25,
-       sx-sway*.85+Math.cos(angle)*R*.15,sy-R*.45-lift*.52,
-       sx+sway*.42+Math.cos(angle)*R*.09,sy-R*.70-lift
+       sx+sway*.45-w*.60,sy-R*.19-lift*.25,
+       sx-sway*.85+Math.cos(angle)*R*.15-w*.28,sy-R*.45-lift*.52,
+       tx,ty
      );
-     c.strokeStyle=i%2===0
+     c.bezierCurveTo(
+       sx-sway*.85+Math.cos(angle)*R*.15+w*.28,sy-R*.45-lift*.52,
+       sx+sway*.45+w*.60,sy-R*.19-lift*.25,
+       sx+w*.52,sy
+     );
+     c.closePath();
+     c.fillStyle=i%2===0
        ?'rgba(184,91,238,'+alpha+')'
        :'rgba(76,25,135,'+(alpha*.83)+')';
-     c.lineWidth=w;
      c.shadowColor='rgba(132,29,191,'+(alpha*.75)+')';
-     c.shadowBlur=R*.22;
-     c.stroke();
+     c.shadowBlur=R*.19;
+     c.fill();
    }
    c.restore();
    glow(c,cx,cy,R*1.88,[
