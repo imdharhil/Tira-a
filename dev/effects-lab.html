@@ -228,105 +228,99 @@ function breathCycle(t,value){
 }
 // Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
- // Organic soul-fire: continuous rounded lower flame, curling tapered upper plumes.
- // No sharp wedge panels or detached rounded-ended tentacle strokes.
- const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.5,0,1);
- const move=clamp(ctrl.move??.7,0,1),power=clamp((value-1)/29,0,1);
- const time=t*(.72+.63*urgency),stretch=.93+.43*move+.12*power;
+ // TIRA! Orb & Rise: an original animated spirit-flame inspired by classic
+ // will-o'-the-wisp anatomy. One bright round soul orb, a continuous flowing
+ // S-plume and a few short detached curls. No external artwork/assets.
+ const energy=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.4,0,1);
+ const move=clamp(ctrl.move??.55,0,1),power=clamp((value-1)/29,0,1);
+ const tau=t*(.48+.48*energy),sway=Math.sin(tau*.68)*(.08+.11*move);
+ const bob=Math.sin(tau*.94)*r*.022*(.25+.75*move);
+ const bodyY=y+r*.28+bob,bodyR=r*(.54+.035*power);
+ const height=r*(1.42+.12*power+.12*move);
  const palette=dark?{
-  haze:[116,51,188],outer:[102,48,172],middle:[158,90,230],
-  light:[214,154,251],heart:[243,198,255],mote:'#d8b7ff'
+  rim:[77,34,151],outer:[130,62,202],inner:[201,112,247],
+  light:[237,189,255],heart:[244,229,255],shadow:[27,8,65]
  }:{
-  haze:[26,115,192],outer:[35,150,210],middle:[67,221,234],
-  light:[149,255,245],heart:[255,226,166],mote:'#ddffff'
+  rim:[20,76,190],outer:[28,119,233],inner:[41,197,246],
+  light:[123,247,255],heart:[248,255,255],shadow:[7,54,135]
  };
- const rgba=(rgb,alpha)=>'rgba('+rgb.join(',')+','+clamp(alpha,0,1)+')';
+ const rgba=(rgb,a)=>'rgba('+rgb.join(',')+','+clamp(a,0,1)+')';
+ // A tapered, smoothly deforming silhouette. Each side is a coherent cubic
+ // curve, not an independently flapping stack of angular plumes.
+ const rootX=x-r*.08,tipX=x+r*(.17+sway+.075*Math.sin(tau*.47));
+ const tipY=bodyY-height;
+ const leftBend=x-r*(.39+.05*inst)+r*.08*Math.sin(tau*.63);
+ const rightBend=x+r*(.58+.04*inst)+r*.05*Math.cos(tau*.83);
+ const neckX=x+r*(.04+.18*Math.sin(tau*.50)+.09*move);
  c.save();
- const centerY=y+r*.16;
- // One broad, softly glowing fire body with a bright soul ignition at its foot.
- glow(c,x,centerY,r*1.42,[[0,rgba(palette.middle,.22+.12*urgency)],
-  [.45,rgba(palette.outer,.12)],[1,'transparent']]);
- // Each overlapping plume is a curving, volumetric envelope. Both sides share
- // a meandering centerline, so their shape is continuous rather than triangular.
- // Wide rounded lower lobes feed into tapered, asymmetrical curling upper tips.
- function plume(index,offset,height,width,alpha,colors){
-  const phase=time*(.52+.13*index)+index*1.83;
-  const yBase=y+r*(.50-.045*index);
-  const length=r*height*stretch;
-  const drift=Math.sin(phase*.61)*(.095+.10*inst);
-  const samples=26,left=[],right=[];
-  for(let i=0;i<=samples;i++){
-   const u=i/samples;
-   const yy=yBase-u*length;
-   const bend=(.16*Math.sin(u*4.9-phase*.63)+.11*Math.sin(u*9.1+phase*.40)
-    +.12*Math.sin(u*3.3+phase))*inst;
-   const swirl=(.11+.13*move)*Math.sin(phase*.65+u*5.7+index*.49)*u;
-   const cx=x+r*(offset*(1-.48*u)+drift*u+bend*u+swirl);
-   // Broad lower body, a rounded midsection and a narrow, wandering final tip.
-   const belly=Math.pow(Math.max(0,1-u),.78)*(Math.min(1,(u+.19)*3.7));
-   const tail=Math.pow(Math.max(0,1-u),1.42);
-   const irregular=1+(.09+.15*inst)*(Math.sin(u*13+phase)+.5*Math.sin(u*24-phase));
-   const half=r*width*(.17+.83*belly)*tail*irregular;
-   left.push([cx-half*(1+.13*Math.sin(phase+u*8)),yy]);
-   right.push([cx+half*(1+.12*Math.cos(phase*.8+u*7)),yy]);
-  }
-  c.beginPath();c.moveTo(left[0][0],left[0][1]);
-  for(let i=1;i<left.length;i++)c.lineTo(left[i][0],left[i][1]);
-  for(let i=right.length-1;i>=0;i--)c.lineTo(right[i][0],right[i][1]);
-  c.closePath();
-  const grad=c.createLinearGradient(x,yBase,x+drift*r,yBase-length);
-  grad.addColorStop(0,rgba(colors[0],alpha));
-  grad.addColorStop(.36,rgba(colors[1],alpha*.86));
-  grad.addColorStop(.69,rgba(colors[2],alpha*.49));
-  grad.addColorStop(1,rgba(colors[2],.015));
-  c.fillStyle=grad;c.fill();
+ // Low-opacity ambient light is drawn before the solid silhouette.
+ glow(c,x,bodyY,r*1.36,[[0,rgba(palette.inner,.22+.12*energy)],
+  [.48,rgba(palette.outer,.09)],[1,'transparent']]);
+ c.beginPath();
+ c.moveTo(x-r*.06,bodyY+bodyR*.94);
+ c.bezierCurveTo(x-r*.69,bodyY+bodyR*.83,x-r*.87,bodyY-bodyR*.28,leftBend,bodyY-bodyR*.88);
+ c.bezierCurveTo(x-r*.22,bodyY-r*.86,neckX-r*.32,bodyY-r*.97,neckX+r*.13,bodyY-r*1.25);
+ c.bezierCurveTo(neckX+r*.32,bodyY-r*1.52,tipX-r*.12,tipY+r*.16,tipX,tipY);
+ c.bezierCurveTo(tipX-r*.01,tipY+r*.28,tipX-r*.65,bodyY-r*1.06,neckX+r*.22,bodyY-r*.99);
+ c.bezierCurveTo(rightBend+r*.08,bodyY-r*.76,x+r*.71,bodyY-bodyR*.16,x+r*.64,bodyY+bodyR*.29);
+ c.bezierCurveTo(x+r*.48,bodyY+bodyR*.99,x+r*.16,bodyY+bodyR*1.11,x-r*.06,bodyY+bodyR*.94);
+ c.closePath();
+ const flame=c.createLinearGradient(x-r*.4,bodyY+r*.6,tipX,tipY);
+ flame.addColorStop(0,rgba(palette.rim,.96));
+ flame.addColorStop(.20,rgba(palette.outer,.92));
+ flame.addColorStop(.53,rgba(palette.inner,.90));
+ flame.addColorStop(.79,rgba(palette.outer,.76));
+ flame.addColorStop(1,rgba(palette.inner,.10));
+ c.fillStyle=flame;c.fill();
+ // Continuous inner ribbon bends with the main plume, reinforcing the Rise pose.
+ c.beginPath();
+ c.moveTo(x-r*.19,bodyY-r*.15);
+ c.bezierCurveTo(x-r*.34,bodyY-r*.63,neckX-r*.11,bodyY-r*.78,neckX+r*.11,bodyY-r*1.14);
+ c.bezierCurveTo(neckX+r*.23,bodyY-r*1.34,tipX-r*.13,tipY+r*.30,tipX-r*.025,tipY+r*.13);
+ c.bezierCurveTo(tipX-r*.40,bodyY-r*1.03,neckX+r*.16,bodyY-r*.95,x+r*.16,bodyY-r*.44);
+ c.bezierCurveTo(x+r*.05,bodyY-r*.16,x-r*.05,bodyY-r*.16,x-r*.19,bodyY-r*.15);
+ c.closePath();
+ const inner=c.createLinearGradient(x,bodyY,neckX,tipY);
+ inner.addColorStop(0,rgba(palette.light,.40));
+ inner.addColorStop(.6,rgba(palette.light,.53));
+ inner.addColorStop(1,rgba(palette.inner,.01));
+ c.fillStyle=inner;c.fill();
+ // Round orb is the soul's anchor: white/cyan or lavender, never replaced by a
+ // permanently solid opaque overlay. The center stays clear for the Core number.
+ glow(c,x,bodyY,bodyR*1.48,[[0,rgba(palette.heart,.30+.08*energy)],
+  [.37,rgba(palette.inner,.25)],[1,'transparent']]);
+ const orb=c.createRadialGradient(x-bodyR*.18,bodyY-bodyR*.24,bodyR*.02,
+    x+bodyR*.11,bodyY+bodyR*.12,bodyR*1.05);
+ orb.addColorStop(0,rgba(palette.heart,.98));
+ orb.addColorStop(.54,rgba(palette.light,.98));
+ orb.addColorStop(.81,rgba(palette.inner,.93));
+ orb.addColorStop(1,rgba(palette.outer,.89));
+ circle(c,x,bodyY,bodyR,orb);
+ // Restrained swirling contours reside INSIDE the orb.
+ c.save();c.beginPath();c.arc(x,bodyY,bodyR*.95,0,TAU);c.clip();
+ for(let j=0;j<3;j++){
+  const phase=tau*.38+j*2.1;
+  c.beginPath();c.moveTo(x+bodyR*.64*Math.sin(phase),bodyY-bodyR*.64);
+  c.bezierCurveTo(x+bodyR*.42*Math.cos(phase),bodyY-bodyR*.20,
+    x-bodyR*.33,bodyY+bodyR*.19,x+bodyR*.35*Math.sin(phase+.9),bodyY+bodyR*.55);
+  c.strokeStyle=rgba(j===0?palette.shadow:palette.outer,dark?.15:.12);
+  c.lineWidth=r*(.024+.010*j);c.lineCap='round';c.stroke();
  }
- // A continuous primary flame with diffuse secondary curls, never a fan of spikes.
- c.globalCompositeOperation='screen';
- plume(0,0,1.54,.93,.38+.13*urgency,[palette.outer,palette.middle,palette.light]);
- plume(1,-.23,1.30,.58,.29+.08*urgency,[palette.haze,palette.outer,palette.middle]);
- plume(2,.29,1.07,.61,.27+.09*urgency,[palette.outer,palette.middle,palette.light]);
- plume(3,-.11,1.44,.49,.28+.11*urgency,[palette.middle,palette.light,palette.heart]);
- plume(4,.16,.98,.48,.26+.10*urgency,[palette.middle,palette.light,palette.heart]);
- // Broad translucent currents curl through the body and taper away at the top.
- // Short luminous segments use graduated widths to avoid noodle-like strokes.
- for(let j=0;j<4;j++){
-  const phase=time*(.69+.09*j)+j*1.63;
-  const startX=x+r*(j-1.5)*.14,startY=y+r*(.36-.05*j);
-  const height=r*stretch*(.72+.18*j);
-  for(let layer=0;layer<2;layer++){
-   c.beginPath();c.moveTo(startX,startY);
-   const parts=16;
-   for(let k=1;k<=parts;k++){
-    const u=k/parts,wiggle=Math.sin(phase+u*5.4+j)*(.12+.12*inst);
-    const xx=startX+r*(wiggle*u+.23*Math.sin(phase*.48+u*3.3)*u);
-    const yy=startY-height*u;
-    c.lineTo(xx,yy);
-   }
-   c.strokeStyle=rgba(layer?palette.heart:palette.light,
-    (layer?.16:.12)*(.7+.3*urgency));
-   c.lineWidth=r*(layer?.027:.080);
-   c.lineCap='butt';c.lineJoin='round';c.stroke();
-  }
+ c.restore();
+ // Small bending side wisps and a few bounded soul sparks — no particle buildup.
+ for(let j=0;j<3;j++){
+  const side=j%2?-1:1,angle=tau*(.49+.12*j)+j*1.7;
+  const sx=x+side*r*(.55+.13*j),sy=bodyY-r*(.66+.22*j);
+  const dx=side*r*(.14+.04*Math.sin(angle)),dy=-r*(.15+.08*Math.cos(angle));
+  c.beginPath();c.moveTo(sx,sy);
+  c.quadraticCurveTo(sx+dx*.6,sy+dy*.2,sx+dx,sy+dy);
+  c.strokeStyle=rgba(j===1?palette.light:palette.inner,.20+.16*energy);
+  c.lineWidth=r*(.030-.005*j);c.lineCap='round';c.stroke();
  }
- c.globalCompositeOperation='source-over';
- // Central soul light emerges from the lower flame body; number stays on top.
- const seed=c.createRadialGradient(x-r*.09,centerY-r*.06,0,x,centerY,r*.75);
- seed.addColorStop(0,rgba(palette.heart,.82));
- seed.addColorStop(.26,rgba(palette.light,.51));
- seed.addColorStop(.63,rgba(palette.middle,.17));
- seed.addColorStop(1,rgba(palette.outer,0));
- c.fillStyle=seed;c.beginPath();c.ellipse(x,centerY,r*.76,r*.62,0,0,TAU);c.fill();
- // Small rising flecks, widely separated so the flame remains the main subject.
- for(let j=0;j<11;j++){
-  const cycle=(time*(.10+.07*rand(j+301))+rand(j*17+9))%1;
-  const angle=j*2.39996,spread=r*(.26+.59*rand(j+61))*(1-.50*cycle);
-  const px=x+Math.cos(angle)*spread+r*Math.sin(time*.42+j)*.06*cycle;
-  const py=y+r*.42-cycle*r*(1.4*stretch+.55);
-  c.save();c.globalAlpha=(.13+.22*urgency)*(1-cycle);
-  c.fillStyle=palette.mote;c.shadowColor=palette.mote;c.shadowBlur=3;
-  c.beginPath();c.arc(px,py,Math.max(.45,r*(.006+.01*rand(j+113))),0,TAU);
-  c.fill();c.restore();
+ for(let i=0;i<7;i++){
+  const a=i*2.39996,phase=(tau*(.09+.025*(i%3))+i*.13)%1;
+  const mx=x+Math.cos(a)*r*(.54+.14*phase),my=bodyY-r*(.20+.70*phase);
+  circle(c,mx,my,Math.max(.45,r*(.004+.003*(i%3))),rgba(palette.light,.14*(1-phase)));
  }
  c.restore();
 }
