@@ -263,11 +263,11 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  core.addColorStop(.59,rgba(pal.light,.54+.06*pulse));
  core.addColorStop(1,rgba(pal.mid,0));
  c.fillStyle=core;c.beginPath();c.arc(cx,cy,orbR*.83,0,TAU);c.fill();
- // A single pair of dark, vertical oval eyes, moved in from the far sides
- // to the owner's two marked target ovals. No gray placeholder or ghost pair.
- // Keep the same spacing for the expressive face at low and high Core values.
- const eyesY=cy+orbR*.20;
- const eyeGap=orbR*.49;
+ // The gray annotation ovals mark the target eye positions: noticeably
+ // inward (~30% closer to the number) and upward (~13% of orb radius).
+ // Render only these two dark ovals; the annotation must not be rendered.
+ const eyesY=cy+orbR*.07;
+ const eyeGap=orbR*.34;
  const eyeX=orbR*.105,eyeY=orbR*.16;
  const eyeColor=dark?'rgba(48,37,104,.95)':'rgba(32,91,144,.95)';
  c.save();c.fillStyle=eyeColor;
