@@ -431,7 +431,10 @@ function drawCuteEmotionalOrb(c,x,y,r,t,value,ctrl={}){
  ]);
  const orb=c.createRadialGradient(cx-R*.28,cy-R*.31,R*.035,cx,cy,R*1.06);
  orb.addColorStop(0,'#fffdf8');orb.addColorStop(.36,'#fff4f1');
- orb.addColorStop(.71,'#ffdce4');orb.addColorStop(1,'#f6aebf');
+ orb.addColorStop(.66,'rgba(255,220,228,.98)');
+ orb.addColorStop(.80,'rgba(250,194,214,.88)');
+ orb.addColorStop(.92,'rgba(250,194,214,.42)');
+ orb.addColorStop(1,'rgba(250,194,214,0)');
  // Airy edge puffs surround a stable circular core (80% orb, 20% cloud).
  // Draw them behind the face so the Core number remains unobstructed.
  c.save();
@@ -445,14 +448,15 @@ function drawCuteEmotionalOrb(c,x,y,r,t,value,ctrl={}){
   const px=cx+Math.cos(a)*dist,py=cy+Math.sin(a)*dist;
   const puff=c.createRadialGradient(px-pr*.21,py-pr*.24,pr*.05,px,py,pr);
   puff.addColorStop(0,'rgba(255,253,252,.94)');
-  puff.addColorStop(.60,'rgba(255,227,237,.86)');
-  puff.addColorStop(1,'rgba(252,190,216,.22)');
+  puff.addColorStop(.56,'rgba(255,227,237,.66)');
+  puff.addColorStop(.84,'rgba(252,190,216,.23)');
+  puff.addColorStop(1,'rgba(252,190,216,0)');
   c.fillStyle=puff;c.beginPath();c.arc(px,py,pr,0,TAU);c.fill();
  }
  c.restore();
  // Main soft orb blends the scalloped perimeter into a friendly face.
- c.shadowColor='rgba(255,183,213,.24)';c.shadowBlur=R*.18;
- c.fillStyle=orb;c.beginPath();c.arc(cx,cy,R*.91,0,TAU);c.fill();
+ c.shadowColor='rgba(255,183,213,.16)';c.shadowBlur=R*.25;
+ c.fillStyle=orb;c.beginPath();c.arc(cx,cy,R*.97,0,TAU);c.fill();
  c.shadowBlur=0;
  // Fine translucent mist in front of the rim, avoiding face and number.
  for(let i=0;i<7;i++){
@@ -464,7 +468,7 @@ function drawCuteEmotionalOrb(c,x,y,r,t,value,ctrl={}){
  c.fillStyle='rgba(255,255,255,.28)';
  c.beginPath();c.ellipse(cx-R*.30,cy-R*.57,R*.28,R*.10,-.40,0,TAU);c.fill();
  for(const side of [-1,1]){
-  const eyeX=cx+side*R*.52,eyeY=cy-R*.22;
+  const eyeX=cx+side*R*.34,eyeY=cy-R*.10;
   const blinkPhase=((t+side*.12)%5+5)%5;
   const blink=Math.exp(-Math.pow((blinkPhase-2.0)/.13,2));
   const eyeH=R*.14*(1-.87*blink);
