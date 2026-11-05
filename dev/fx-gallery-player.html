@@ -55,7 +55,7 @@ body.retro-neon .viewport{background:#080f25}
 </div>
 <script>
 (()=>{'use strict';
-const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Unused','Dark Soul — Custom Wisp'];
+const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Unused','Dark Soul — Custom Wisp','Pure Soul — Custom Wisp'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
 const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.'};
 const $=id=>document.getElementById(id);
@@ -351,13 +351,24 @@ function darkWispPoint(w,u,t){
  }
  return {x:px,y:py};
 }
-function darkWispColor(w,t){
+function darkWispColor(w,t,pure=false){
  const hex=w[8],r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
  const theta=.5*t*.7+w[0]*.618,shift=Math.sin(theta)*.35;
  const f=1+.11*shift;
+ if(pure){
+  // Retain each strand's light/dark variation, changing only its palette.
+  // Cached palette constants are derived from the owner's nine smoke shades.
+  const light=(Math.max(r,g,b)+Math.min(r,g,b))/510;
+  const bright=.28+.72*light;
+  return [
+   Math.min(255,Math.round((32+113*bright)*(1+.05*shift))),
+   Math.min(255,Math.round((137+115*bright)*(1+.06*shift))),
+   Math.min(255,Math.round((190+65*bright)*(1-.04*shift)))
+  ];
+ }
  return [Math.min(255,Math.round(r*f)),Math.min(255,Math.round(g*(1+.22*shift))),Math.min(255,Math.round(b*(1-.06*shift)))];
 }
-function drawCustomDarkSoul(c,x,y,r,t){
+function drawCustomDarkSoul(c,x,y,r,t,pure=false){
  const scale=Math.max(.001,r/173),cx=x,cy=y;
  c.save();
  // Fit the full authored 800×800 composition in a Gallery preview.
@@ -368,9 +379,14 @@ function drawCustomDarkSoul(c,x,y,r,t){
  for(const front of [0,1]){
   if(front===1){
    const base=c.createRadialGradient(381,367,8,400,405,183);
-   base.addColorStop(0,'#b856ff');base.addColorStop(.42,'#8522d2');
-   base.addColorStop(.83,'#5c1199');base.addColorStop(1,'#df1cd9');
-   c.shadowColor='rgba(213,45,239,.48)';c.shadowBlur=27;
+   if(pure){
+    base.addColorStop(0,'#ffffff');base.addColorStop(.42,'#c5faff');
+    base.addColorStop(.83,'#45b7e8');base.addColorStop(1,'#2372bb');
+   }else{
+    base.addColorStop(0,'#b856ff');base.addColorStop(.42,'#8522d2');
+    base.addColorStop(.83,'#5c1199');base.addColorStop(1,'#df1cd9');
+   }
+   c.shadowColor=pure?'rgba(83,221,252,.56)':'rgba(213,45,239,.48)';c.shadowBlur=27;
    c.fillStyle=base;c.beginPath();c.arc(400,405,173,0,Math.PI*2);c.fill();c.shadowBlur=0;
    for(const sign of [-1,1]){
     const ey=392,ex=400+sign*67;
@@ -380,7 +396,7 @@ function drawCustomDarkSoul(c,x,y,r,t){
   }
   for(const w of CUSTOM_DARK_WISPS){
    if(w[9]!==front)continue;
-   const col=darkWispColor(w,t),colStr=col.join(',');
+   const col=darkWispColor(w,t,pure),colStr=col.join(',');
    const n=28,pts=[];
    for(let i=0;i<=n;i++){
     const u=i/n,pt=darkWispPoint(w,u,t),a=darkWispPoint(w,Math.max(0,u-.004),t),b=darkWispPoint(w,Math.min(1,u+.004),t);
@@ -554,10 +570,11 @@ case 13:{
 case 14:{filmNew(ctx,x,y,r,t,stress);break;}
 case 15:{spriteNew(ctx,x,y,r,t,stress,opts.arcadeControls);break;}
 case 17:case 18:{drawSoulWisp(ctx,x,y,r,t,value,n===18,opts.soulControls);break;}
-case 20:{drawCustomDarkSoul(ctx,x,y,r,t);break;}
+case 20:{drawCustomDarkSoul(ctx,x,y,r,t,false);break;}
+case 21:{drawCustomDarkSoul(ctx,x,y,r,t,true);break;}
 }}
 function drawIdentityDeath(ctx,n,x,y,r,elapsed,value){const q=clamp(elapsed/1.5,0,1),u=easeOut(q);if(q>=1)return;if(n===15){shatterNew(ctx,x,y,r,q,{inst:+$('inst').value/100,move:+$('move').value/100,urgency:+$('urgency').value/100,value});return;}const draw=(id,scale=1,alpha=1)=>{ctx.save();ctx.globalAlpha*=alpha;ctx.translate(x,y);ctx.scale(scale,scale);drawAppearance(ctx,id,0,0,r,elapsed*2+1,value);ctx.restore()};ctx.save();switch(n){
-case 17:case 18:case 20:{
+case 17:case 18:case 20:case 21:{
  if(q<.72)draw(n,1+.1*q,1-q);
  for(let j=0;j<16;j++){
   const a=j*2.39996,dist=r*(.12+u*.9)*(.5+.5*rand(j+47));
@@ -1131,7 +1148,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible&&n!==20){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(!state.mode&&galleryDisplayNumber!==null?galleryDisplayNumber:number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible&&n!==20&&n!==21){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(!state.mode&&galleryDisplayNumber!==null?galleryDisplayNumber:number,cx,cy+3);ctx.restore()}}
 
 // Gallery-only Black Hole cosmetics: button presses immediately start a visual
 // transition. Gameplay controls collision, timing, and progression separately.
@@ -1202,7 +1219,7 @@ if(isEffectEmbed){
  try{
   const raw=embedParams.get('preset');if(!raw||raw.length>1600)throw Error('Missing preview settings');
   const p=JSON.parse(raw);const mode=Number(p.mode),effect=Number(p.effect);
-  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:20))throw Error('Invalid effect');
+  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:21))throw Error('Invalid effect');
   state.mode=mode;state.A=effect;state.B=effect;for(const k of ['value','speed','urgency','inst','move','follow']){const input=$(k);const n=Number(p.settings?.[k]);if(!Number.isFinite(n))throw Error('Invalid settings');input.value=Math.min(Number(input.max),Math.max(Number(input.min),n));input.dispatchEvent(new Event('input'));}
   if(p.displayNumber!==undefined){const display=Number(p.displayNumber);const minStage=effect===13?1:0;if(!Number.isInteger(display)||display<minStage||display>6)throw Error('Invalid display number');galleryDisplayNumber=display;}
   rebuild();
