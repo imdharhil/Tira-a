@@ -235,7 +235,7 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const move=clamp(ctrl.move??.55,0,1),power=clamp((value-1)/29,0,1);
  const tau=t*(.48+.48*energy),sway=Math.sin(tau*.68)*(.08+.11*move);
  const bob=Math.sin(tau*.94)*r*.022*(.25+.75*move);
- const bodyY=y+r*.28+bob,bodyR=r*(.54+.035*power);
+ const bodyY=y+r*.09+bob,bodyR=r*(.54+.035*power);
  const height=r*(1.42+.12*power+.12*move);
  const palette=dark?{
   rim:[77,34,151],outer:[130,62,202],inner:[201,112,247],
