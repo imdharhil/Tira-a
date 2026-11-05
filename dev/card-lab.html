@@ -267,6 +267,41 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* Proposed cards: scoped to the design library, never match logic. */
 .proposal-library{margin-top:26px;border-top:1px solid #31566e;padding-top:22px}.proposal-library>p{font-size:13px;line-height:1.6}.proposal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.proposal-card{position:relative;aspect-ratio:.68;min-width:0;border:1px solid #4c7189;border-radius:13px;background:linear-gradient(145deg,#19354b,#101e31 70%,#0b1625);color:#e8f6ff;padding:20px 6px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center}.proposal-card .proposal-orb{width:clamp(44px,7vw,67px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:clamp(19px,3vw,27px);font-weight:900;color:#fff;background:radial-gradient(circle at 30% 22%,#d9f7ff,#4baddc 42%,#164a7b 86%);box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005}.proposal-card .proposal-name{font-size:clamp(9px,1.1vw,12px);font-weight:800;line-height:1.3;overflow-wrap:anywhere}.proposal-card .proposal-family{font-size:9px;color:#a9c9d9;text-transform:uppercase;letter-spacing:.07em}.proposal-card .proposal-tag{position:absolute;top:7px;left:7px;font-size:8px;letter-spacing:.06em;color:#d6e5ee}.proposal-card[data-family="Protect"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#e5ffff,#59bdc9 45%,#0e5264 88%);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);border-radius:0}.proposal-card[data-family="Neutralizer"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#f1e5ff,#a578d5 43%,#4b286c 90%)}.proposal-card[data-family="Odds"] .proposal-orb,.proposal-card[data-family="Trade"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#fff1c9,#c69c4e 43%,#665022 90%)}.proposal-card[aria-pressed="true"]{border:2px solid #79d7ff;box-shadow:0 0 16px #4dc2ef55;transform:translateY(-3px)}.proposal-events{display:grid;gap:10px}.proposal-events>div{padding:12px;border:1px solid #31566e;border-radius:10px;background:#0a2031}.proposal-events p{margin:5px 0 0;font-size:12px;color:#a8c8d7;line-height:1.5}@media(max-width:470px){.proposal-grid{gap:7px}.proposal-card{padding:19px 3px 9px}.proposal-card .proposal-orb{width:clamp(42px,13vw,56px)}.proposal-card .proposal-name{font-size:10px}}@media(prefers-reduced-motion:reduce){.proposal-card[aria-pressed="true"]{transform:none}}
 
+/* Card Lab selection effect: ink-comic reveal, only on the selected card.
+   Decorative only; no art, rules, or card-theme changes. */
+.card-grid>.card,.proposal-grid>.proposal-card{isolation:isolate}
+.card-grid>.card[aria-pressed="true"]::after,
+.proposal-grid>.proposal-card[aria-pressed="true"]::after{
+  content:"";display:block;position:absolute;inset:5px;z-index:0;
+  border-radius:9px;pointer-events:none;
+  background:
+    repeating-conic-gradient(from 3deg at 50% 49%,transparent 0deg 12deg,rgba(0,0,0,.32) 12deg 13deg,transparent 13deg 24deg),
+    radial-gradient(circle at 8% 17%,rgba(0,0,0,.65) 0 1px,transparent 1.4px),
+    radial-gradient(circle at 90% 85%,rgba(0,0,0,.65) 0 1px,transparent 1.4px);
+  background-size:100% 100%,7px 7px,8px 8px;
+  background-position:center,left top,right bottom;
+  background-repeat:no-repeat,repeat,repeat;
+  -webkit-mask-image:radial-gradient(ellipse at center,transparent 0 39%,#000 72%);
+  mask-image:radial-gradient(ellipse at center,transparent 0 39%,#000 72%);
+  opacity:.48;animation:tira-ink-appear .34s ease-out both;
+}
+.card-grid>.card[aria-pressed="true"]::after,
+.proposal-grid>.proposal-card:not([data-card-name="Taunt"])[aria-pressed="true"]::after{
+  filter:invert(1);
+}
+.card-grid>.card[aria-pressed="true"] .card-main,
+.proposal-grid>.proposal-card[aria-pressed="true"]>.proposal-orb,
+.proposal-grid>.proposal-card[aria-pressed="true"]>.taunt-art,
+.proposal-grid>.proposal-card[aria-pressed="true"]>.proposal-name,
+.proposal-grid>.proposal-card[aria-pressed="true"]>.proposal-family,
+.proposal-grid>.proposal-card[aria-pressed="true"]>.proposal-tag{
+  position:relative;z-index:1;
+}
+@keyframes tira-ink-appear{from{opacity:0;transform:scale(.85)}to{opacity:.48;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){
+ .card-grid>.card[aria-pressed="true"]::after,
+ .proposal-grid>.proposal-card[aria-pressed="true"]::after{animation:none;opacity:.48}
+}
 /* Proposed cards: approved card geometry, typography and border standard.
    Retain family palettes and proposed-status indicators; Taunt retains its own art. */
 .proposal-grid>.proposal-card{
@@ -398,7 +433,7 @@ const storageKey='tira-dev-special-card-lab-v1';let drafts={};try{const v=JSON.p
 const el=id=>document.getElementById(id);const cards=[...document.querySelectorAll('.card, .proposal-card')];let selected='cell1';
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
-function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));b.querySelector('.card-name').textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
+function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
 cards.forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.id;render();el('editorStatus').textContent='Viewing '+defs[selected].name}));
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
