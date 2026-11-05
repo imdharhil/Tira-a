@@ -295,30 +295,23 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     // Angry anime eye: upper lid slopes down toward the center.
-     // The slanted brow is part of the eye, not a separate eyebrow.
-     const outerX=ex+sign*glanceWidth*1.24;
-     const innerX=ex-sign*glanceWidth*1.24;
-     const topOuter=ey-eh*.99,topInner=ey-eh*.13;
-     const bottom=ey+eh*.80;
+     // Owner reference: wide red angular eyes, black outline, no pupils.
+     // Outer tips are lifted; inner tips angle down toward the number.
+     const w=orbR*.27, lidScale=Math.max(.10,1-.86*blink);
+     const outX=ex+sign*w, inX=ex-sign*w;
+     const upperOuter=ey-orbR*.18*lidScale;
+     const upperInner=ey+orbR*.08*lidScale;
+     const lowerMid=ey+orbR*.23*lidScale;
      c.beginPath();
-     c.moveTo(outerX,topOuter);
-     c.quadraticCurveTo(ex,ey-eh*.92,innerX,topInner);
-     c.quadraticCurveTo(ex,bottom+eh*.34,outerX,topOuter);
-     c.closePath();c.fillStyle='rgba(13,2,29,.99)';c.fill();
-     // Deep magenta iris, narrow and menacing rather than cute.
-     c.save();c.clip();
-     c.beginPath();c.ellipse(ex+lookX*.08,ey+eh*.10,glanceWidth*.43,eh*.83,0,0,TAU);
-     c.fillStyle='rgba(193,39,148,.94)';c.fill();
-     c.beginPath();c.ellipse(ex+lookX*.08,ey+eh*.13,glanceWidth*.18,eh*.67,0,0,TAU);
-     c.fillStyle='rgba(28,2,42,.99)';c.fill();
-     if(blink<.72){c.beginPath();c.ellipse(ex-glanceWidth*.12,ey-eh*.30,glanceWidth*.11,eh*.14,0,0,TAU);c.fillStyle='rgba(255,175,245,.82)';c.fill();}
-     c.restore();
-     // Bold lid emphasizes the hostile inward-downward stare.
-     c.beginPath();c.moveTo(outerX,topOuter);
-     c.quadraticCurveTo(ex,ey-eh*.92,innerX,topInner);
-     c.strokeStyle='rgba(17,2,40,.99)';
-     c.lineWidth=Math.max(1,orbR*.042);c.lineCap='round';c.stroke();
+     c.moveTo(outX,upperOuter);
+     c.quadraticCurveTo(ex+sign*w*.31,ey-orbR*.085*lidScale,inX,upperInner);
+     c.quadraticCurveTo(ex-sign*w*.19,lowerMid+orbR*.07*lidScale,ex,lowerMid);
+     c.quadraticCurveTo(ex+sign*w*.53,ey+orbR*.22*lidScale,outX,upperOuter);
+     c.closePath();
+     c.fillStyle='#f12629';c.fill();
+     c.strokeStyle='#110719';
+     c.lineWidth=Math.max(1.6,orbR*.031);
+     c.lineJoin='round';c.lineCap='round';c.stroke();
    }else{
      // Keep Pure Soul's approved rounded anime eyes unchanged.
      c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
