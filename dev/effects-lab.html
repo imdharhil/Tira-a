@@ -256,6 +256,16 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  shell.addColorStop(.86,rgba(pal.outer,.90));
  shell.addColorStop(1,rgba(pal.aura,.26));
  c.fillStyle=shell;c.beginPath();c.arc(cx,cy,orbR,0,TAU);c.fill();
+ // Anime-style cel-shading: two intentional color zones and a soft
+ // directional highlight. All marks stay within the orb silhouette.
+ c.save();c.beginPath();c.arc(cx,cy,orbR*.985,0,TAU);c.clip();
+ c.fillStyle=rgba(pal.outer,dark?.19:.13);
+ c.beginPath();c.ellipse(cx+orbR*.31,cy+orbR*.53,orbR*.92,orbR*.52,-.36,0,TAU);c.fill();
+ c.fillStyle=rgba(pal.light,.26+.05*pulse);
+ c.beginPath();c.ellipse(cx-orbR*.30,cy-orbR*.46,orbR*.35,orbR*.14,-.47,0,TAU);c.fill();
+ // The second short glint adds the readable anime "polished" look.
+ c.beginPath();c.ellipse(cx+orbR*.28,cy-orbR*.57,orbR*.095,orbR*.040,.35,0,TAU);c.fill();
+ c.restore();
  // Bright inner light sits behind the number; no opaque white disk.
  const core=c.createRadialGradient(cx-orbR*.13,cy-orbR*.13,0,cx,cy,orbR*.83);
  core.addColorStop(0,rgba(pal.core,.96));
@@ -263,6 +273,8 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  core.addColorStop(.59,rgba(pal.light,.54+.06*pulse));
  core.addColorStop(1,rgba(pal.mid,0));
  c.fillStyle=core;c.beginPath();c.arc(cx,cy,orbR*.83,0,TAU);c.fill();
+ // Anime face: retain the owner's marked eye positions, with tiny
+ // catchlights and lower reflective spots for a more expressive look.
  // The gray annotation ovals mark the target eye positions: noticeably
  // inward (~30% closer to the number) and upward (~13% of orb radius).
  // Render only these two dark ovals; the annotation must not be rendered.
@@ -279,12 +291,28 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const blink= Math.exp(-blinkDistance*blinkDistance);
  const blinkH=eyeY*(1-.86*blink);
  const glanceWidth=eyeX*(1+.055*Math.abs(Math.sin(t*1.10)));
- c.save();c.fillStyle=eyeColor;
+ c.save();
  for(const sign of [-1,1]){
-   c.beginPath();
-   c.ellipse(cx+sign*eyeGap+lookX,eyesY+lookY,glanceWidth,Math.max(orbR*.018,blinkH),0,0,TAU);
-   c.fill();
+   const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
+   // Thin navy/violet rim separates the eyes from the bright orb body.
+   c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
+   c.fillStyle=dark?'rgba(37,18,83,.92)':'rgba(15,63,119,.94)';c.fill();
+   c.beginPath();c.ellipse(ex,ey,glanceWidth,eh,0,0,TAU);
+   c.fillStyle=eyeColor;c.fill();
+   if(blink<.72){
+     c.beginPath();c.ellipse(ex-glanceWidth*.27,ey-eh*.42,glanceWidth*.27,eh*.22,-.20,0,TAU);
+     c.fillStyle='rgba(255,255,255,.91)';c.fill();
+     c.beginPath();c.arc(ex+glanceWidth*.30,ey+eh*.32,Math.max(.34,orbR*.014),0,TAU);
+     c.fillStyle='rgba(255,255,255,.50)';c.fill();
+   }
  }
+ c.restore();
+ // Simple four-point anime sparkle near the upper rim, pulsing gently.
+ const sparkle=.35+.65*pulse,starX=cx+orbR*.64,starY=cy-orbR*.72;
+ c.save();c.strokeStyle=rgba(pal.light,.28+.45*sparkle);
+ c.lineCap='round';c.lineWidth=Math.max(.6,orbR*.018);
+ c.beginPath();c.moveTo(starX-orbR*.09*sparkle,starY);c.lineTo(starX+orbR*.09*sparkle,starY);
+ c.moveTo(starX,starY-orbR*.13*sparkle);c.lineTo(starX,starY+orbR*.13*sparkle);c.stroke();
  c.restore();
  // Keep motes faint and close to the silhouette; no detached tail fragments.
  for(let i=0;i<5;i++){
