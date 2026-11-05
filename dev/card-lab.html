@@ -355,6 +355,52 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(prefers-reduced-motion:reduce){
   .proposal-grid>.proposal-card[data-copycat="duplicate"] .copycat{transition:none}
 }
+/* DUPLICATE Legendary concept: restrained iridescent foil, no gameplay or cat-motion changes. */
+.proposal-grid>.proposal-card[data-copycat="duplicate"]{
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 17% 12%,#94f7ee2b 0%,transparent 47%),
+    radial-gradient(ellipse at 93% 79%,#de8dff30 0%,transparent 52%),
+    linear-gradient(137deg,#41424f 0%,#242634 34%,#34313f 61%,#151a27 100%);
+  border:1px solid #b2a2c4;
+  box-shadow:inset 0 1px 0 #ffffff53,inset 0 0 13px #9d94dd25,0 9px 24px #0007;
+  transition:background-position .7s ease,box-shadow .55s ease,border-color .55s ease,transform .3s ease;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"]::before{
+  border-color:#ddd0ec75;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"]::after{
+  content:"";position:absolute;inset:7px;border-radius:9px;pointer-events:none;
+  background:
+    linear-gradient(112deg,transparent 12%,#7fece718 29%,#e8b2ff26 43%,#f9e9d71b 54%,transparent 69%),
+    repeating-linear-gradient(161deg,transparent 0 13px,#ffffff09 14px 14.5px,transparent 15px 27px);
+  background-size:240% 100%,100% 100%;
+  background-position:100% 50%,0 0;
+  mix-blend-mode:screen;opacity:.63;
+  transition:background-position .75s cubic-bezier(.2,.7,.2,1),opacity .55s ease;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-orb,
+.proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-name,
+.proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-family{
+  position:relative;z-index:1;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-orb::before{
+  background:radial-gradient(ellipse at 50% 66%,#d8abfa4d,transparent 69%);
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"] .proposal-name{
+  color:#f8f0ff;text-shadow:0 0 9px #cab8ff64;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"][aria-pressed="true"]{
+  border:1px solid #ddc9ee;
+  box-shadow:inset 0 1px 0 #ffffff80,inset 0 0 19px #a6f5ee2e,0 0 18px #ba91ee45,0 9px 24px #0007;
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"][aria-pressed="true"]::after{
+  background-position:0% 50%,0 0;opacity:.9;
+}
+@media(prefers-reduced-motion:reduce){
+  .proposal-grid>.proposal-card[data-copycat="duplicate"],
+  .proposal-grid>.proposal-card[data-copycat="duplicate"]::after{transition:none}
+}
 /* Taunt-only comic ink: black speed marks, halftone and red emphasis.
    Preserve approved card size, red reference artwork, double frame and name. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]{isolation:isolate}
