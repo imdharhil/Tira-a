@@ -267,72 +267,44 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* Proposed cards: scoped to the design library, never match logic. */
 .proposal-library{margin-top:26px;border-top:1px solid #31566e;padding-top:22px}.proposal-library>p{font-size:13px;line-height:1.6}.proposal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.proposal-card{position:relative;aspect-ratio:.68;min-width:0;border:1px solid #4c7189;border-radius:13px;background:linear-gradient(145deg,#19354b,#101e31 70%,#0b1625);color:#e8f6ff;padding:20px 6px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center}.proposal-card .proposal-orb{width:clamp(44px,7vw,67px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:clamp(19px,3vw,27px);font-weight:900;color:#fff;background:radial-gradient(circle at 30% 22%,#d9f7ff,#4baddc 42%,#164a7b 86%);box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005}.proposal-card .proposal-name{font-size:clamp(9px,1.1vw,12px);font-weight:800;line-height:1.3;overflow-wrap:anywhere}.proposal-card .proposal-family{font-size:9px;color:#a9c9d9;text-transform:uppercase;letter-spacing:.07em}.proposal-card .proposal-tag{position:absolute;top:7px;left:7px;font-size:8px;letter-spacing:.06em;color:#d6e5ee}.proposal-card[data-family="Protect"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#e5ffff,#59bdc9 45%,#0e5264 88%);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);border-radius:0}.proposal-card[data-family="Neutralizer"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#f1e5ff,#a578d5 43%,#4b286c 90%)}.proposal-card[data-family="Odds"] .proposal-orb,.proposal-card[data-family="Trade"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#fff1c9,#c69c4e 43%,#665022 90%)}.proposal-card[aria-pressed="true"]{border:2px solid #79d7ff;box-shadow:0 0 16px #4dc2ef55;transform:translateY(-3px)}.proposal-events{display:grid;gap:10px}.proposal-events>div{padding:12px;border:1px solid #31566e;border-radius:10px;background:#0a2031}.proposal-events p{margin:5px 0 0;font-size:12px;color:#a8c8d7;line-height:1.5}@media(max-width:470px){.proposal-grid{gap:7px}.proposal-card{padding:19px 3px 9px}.proposal-card .proposal-orb{width:clamp(42px,13vw,56px)}.proposal-card .proposal-name{font-size:10px}}@media(prefers-reduced-motion:reduce){.proposal-card[aria-pressed="true"]{transform:none}}
 
-/* Optional white/black manga palette. Same original TIRA! geometry and orb art.
-   Scoped to this design lab; dark remains the default. */
-.theme-preview-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 18px}
-.theme-preview-controls .theme-label{font-size:12px;color:#b5d6e5;font-weight:700}
-.theme-preview-controls button{padding:9px 13px;border-radius:10px;background:#0d2637;color:#d9eff9;border:1px solid #426982;font-size:12px;font-weight:800}
-.theme-preview-controls button[aria-pressed="true"]{border-color:#9ce7ff;background:#1c5572;color:#fff}
-.theme-preview-controls .theme-hint{font-size:11px;color:#9bbbc9}
-body[data-card-theme="manga"] .card,body[data-card-theme="manga"] .proposal-card{background:linear-gradient(155deg,#fff 0%,#f6f7f8 65%,#e6ebef 100%);border:2px solid #111;color:#16191e;box-shadow:inset 0 0 0 2px #fff,0 7px 18px #0005}
-body[data-card-theme="manga"] .card::before{border-color:#1119}
-body[data-card-theme="manga"] .card .card-name,body[data-card-theme="manga"] .proposal-card .proposal-name{color:#121820;font-weight:900}
-body[data-card-theme="manga"] .proposal-card .proposal-family{color:#45505b}
-body[data-card-theme="manga"] .proposal-card .proposal-tag{color:#41454a}
-body[data-card-theme="manga"] .card .card-foot{color:#24323e}
-body[data-card-theme="manga"] .card[aria-pressed="true"],body[data-card-theme="manga"] .proposal-card[aria-pressed="true"]{border:3px solid #0c1016;outline:2px solid #81dfff;outline-offset:2px}
-body[data-card-theme="manga"] .card.gold,body[data-card-theme="manga"] .card.protect-card,body[data-card-theme="manga"] .card.emergency{background:linear-gradient(155deg,#fff,#f6f7f8 65%,#e6ebef);border-color:#111}
-body[data-card-theme="manga"] .card .convert-indicator{filter:drop-shadow(0 0 2px #000)}
-body[data-card-theme="manga"] .card .convert-mark{filter:brightness(.65)}
-body[data-card-theme="manga"] .proposal-card .proposal-orb{box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0004}
-.proposal-card[data-family="Other"][data-card-name="Taunt"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#ffe7e7 0%,#f56b6b 25%,#cc2028 67%,#7d1018 100%);color:#e32229}
-.proposal-card .taunt-mark{width:65%;height:65%;display:block;filter:drop-shadow(0 1px 1px #450c13aa)}
-.proposal-card .taunt-mark path{fill:#e3282d;stroke:#651019;stroke-width:2.5;stroke-linejoin:round}
-
-/* White card study: strictly white card face, solid black frame.
-   Match all card dimensions and retain the existing art and game logic. */
-.card-grid,.proposal-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(9px,1.5vw,17px)}
-.card-grid>.card,.proposal-grid>.proposal-card{width:100%;height:auto;min-height:0;aspect-ratio:0.68;border-radius:16px;padding:clamp(10px,1.2vw,15px);gap:7px;box-sizing:border-box}
-.proposal-grid>.proposal-card{justify-content:center}
-.proposal-grid>.proposal-card .proposal-orb{width:57px;height:57px;min-width:0;flex:0 0 auto}
-.proposal-grid>.proposal-card .proposal-name{font-size:10px;line-height:1.3;letter-spacing:.07em}
-body[data-card-theme="manga"] .card,
-body[data-card-theme="manga"] .card.gold,
-body[data-card-theme="manga"] .card.protect-card,
-body[data-card-theme="manga"] .card.emergency,
-body[data-card-theme="manga"] .proposal-card{
-  background:#fff!important;
-  background-image:none!important;
-  border:3px solid #000!important;
-  color:#000!important;
-  box-shadow:inset 0 0 0 2px #fff,0 5px 13px #0004!important;
+/* Taunt-only card experiment: preserve the existing library appearance everywhere else. */
+.proposal-grid>.proposal-card[data-card-name="Taunt"]{
+  background:#fff!important;background-image:none!important;
+  border:3px solid #000!important;color:#000!important;
+  box-shadow:inset 0 0 0 2px #fff,0 5px 14px #0005!important;
+  width:100%;aspect-ratio:.68;min-height:0;box-sizing:border-box;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:clamp(12px,1.5vw,20px) 7px;gap:clamp(9px,1.5vw,16px);
 }
-body[data-card-theme="manga"] .card::before{border:1px solid #000!important;inset:6px}
-body[data-card-theme="manga"] .card::after{display:none}
-body[data-card-theme="manga"] .card .card-name,
-body[data-card-theme="manga"] .card .card-top,
-body[data-card-theme="manga"] .card .card-foot,
-body[data-card-theme="manga"] .proposal-card .proposal-name,
-body[data-card-theme="manga"] .proposal-card .proposal-family,
-body[data-card-theme="manga"] .proposal-card .proposal-tag{color:#000!important;text-shadow:none}
-body[data-card-theme="manga"] .card[aria-pressed="true"],
-body[data-card-theme="manga"] .proposal-card[aria-pressed="true"]{
-  border:3px solid #000!important;
-  outline:2px solid #3f8eb8;outline-offset:2px;
+.proposal-card[data-card-name="Taunt"] .proposal-tag,
+.proposal-card[data-card-name="Taunt"] .proposal-name,
+.proposal-card[data-card-name="Taunt"] .proposal-family{color:#000!important;text-shadow:none}
+.proposal-card[data-card-name="Taunt"] .taunt-art{
+  display:grid;place-items:center;width:100%;height:auto;flex:0 0 auto;
+  background:none!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;clip-path:none!important;padding:0!important;
+}
+.proposal-card[data-card-name="Taunt"] .taunt-mark{
+  display:block;width:clamp(66px,80%,118px);height:auto;aspect-ratio:1;
+  filter:drop-shadow(0 2px 1px #590f1433);overflow:visible;
+}
+.proposal-card[data-card-name="Taunt"] .taunt-mark path{
+  fill:#e3282d;stroke:#651019;stroke-width:1.4;stroke-linejoin:round;
+}
+.proposal-card[data-card-name="Taunt"][aria-pressed="true"]{
+  border:3px solid #000!important;outline:2px solid #81dfff;outline-offset:2px;
 }
 @media(max-width:470px){
-  .card-grid,.proposal-grid{gap:7px}
-  .card-grid>.card,.proposal-grid>.proposal-card{padding:22px 4px 10px;border-radius:12px}
-  .proposal-grid>.proposal-card .proposal-orb{width:clamp(40px,14vw,57px);height:auto;aspect-ratio:1}
+ .proposal-grid>.proposal-card[data-card-name="Taunt"]{padding:22px 4px 10px;gap:8px}
+ .proposal-card[data-card-name="Taunt"] .taunt-mark{width:min(85%,92px)}
 }
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
-<style id="white-card-theme-override">body[data-card-theme="manga"] .card,body[data-card-theme="manga"] .card.gold,body[data-card-theme="manga"] .card.protect-card,body[data-card-theme="manga"] .card.emergency,body[data-card-theme="manga"] .proposal-card{background:#fff!important;background-image:none!important;border:3px solid #000!important;color:#000!important}body[data-card-theme="manga"] .card .card-name,body[data-card-theme="manga"] .proposal-card .proposal-name{color:#000!important}</style>
+
 </head>
-<body data-card-theme="manga"><div class="shell">
+<body><div class="shell">
 <header class="top"><a class="back" href="./index.html?screen=labs">← DEV LABS</a><div class="tira">TIRA<strong>!</strong></div><span class="status">CARD LIBRARY · LOCAL PREVIEW</span></header>
 <h1>CARD LIBRARY</h1><p class="intro">Explore the Special Cards, inspect what they do, and experiment with their presentation. This lab is separate from live matches: adjustments stay in this browser and do not change gameplay.</p>
-<div class="theme-preview-controls" role="group" aria-label="Card appearance preview"><span class="theme-label">CARD APPEARANCE</span><button type="button" id="themeDark" aria-pressed="false">Original · Dark</button><button type="button" id="themeManga" aria-pressed="true">White · Black Border</button><span class="theme-hint">Preview only · does not change match cards</span></div>
 <div class="workspace">
 <section class="panel" aria-labelledby="collectionTitle"><h2 id="collectionTitle">Card Library</h2><div class="card-grid" id="collection">
 <button class="card cell" type="button" data-id="cell1" aria-pressed="true"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+1</span><small class="card-name">CELL</small></span></button>
@@ -382,7 +354,7 @@ emergency:{name:'EMERGENCY',description:'Hidden one-time rescue card. When no le
 const proposedCards=[{"id":"proposal1","name":"Bounce Protect","family":"Protect","description":"Reflects an incoming attack; PP recipient is unresolved.","effect":"Reflect attack; PP allocation TBD"},{"id":"proposal2","name":"Snatch Protect","family":"Protect","description":"Protects the Core and captures the incoming Cell Card. Ownership and timing unresolved.","effect":"Capture incoming Cell Card"},{"id":"proposal3","name":"Break Protect","family":"Protect","description":"Historical candidate; exact effect needs confirmation.","effect":"Effect not finalized"},{"id":"proposal4","name":"Copy","family":"Copycell","description":"Copy the last move; restrictions and duration unresolved.","effect":"Copy last move"},{"id":"proposal5","name":"Randy","family":"Copycell","description":"Copy three random cards from the opponent's hand and keep one. Copy rules unresolved.","effect":"Choose one of three copies"},{"id":"proposal6","name":"Select","family":"Copycell","description":"Copy one Special Card or Cell Card; selection restrictions unresolved.","effect":"Copy selected card"},{"id":"proposal7","name":"Reserve Copy","family":"Copycell","description":"Copy one card from the opponent's reserve. Eligibility unresolved.","effect":"Copy reserve card"},{"id":"proposal8","name":"Duplicate","family":"Copycell","description":"Duplicate one of your cards from hand or reserve. Legendary interactions unresolved.","effect":"Duplicate owned card"},{"id":"proposal9","name":"Spy","family":"Spy","description":"Spy-family candidate; exact information revealed is unresolved.","effect":"Effect not finalized"},{"id":"proposal10","name":"Select Copy","family":"Spy","description":"Spy-family candidate; distinct from Copycell Select. Exact effect unresolved.","effect":"Effect not finalized"},{"id":"proposal11","name":"Reveal All","family":"Spy","description":"Reveal information; targets and duration unresolved.","effect":"Reveal scope TBD"},{"id":"proposal12","name":"Rare Neutralizer","family":"Neutralizer","description":"Proposed: Core stays at zero for two turns; shots become PP. Three uses. Timing unresolved.","effect":"Two-turn neutralization"},{"id":"proposal13","name":"Epic Neutralizer","family":"Neutralizer","description":"Proposed: two-turn Core neutralization and double PP. One use. Timing unresolved.","effect":"Double-PP neutralization"},{"id":"proposal14","name":"Legendary Neutralizer","family":"Neutralizer","description":"Proposed: five-turn scoring contest with PP loot and Core reset. Tie and shield interactions unresolved.","effect":"Five-turn PP contest"},{"id":"proposal15","name":"Opposite Odds","family":"Odds","description":"Legendary proposal to flip odds. Mathematical definition and duration unresolved.","effect":"Flip odds; formula TBD"},{"id":"proposal16","name":"PP Exchange Odds","family":"Odds","description":"Proposed exchange of all available PP for improved odds, at 0.01 per PP. Final formula unresolved.","effect":"Exchange PP for odds"},{"id":"proposal17","name":"Card Exchange","family":"Trade","description":"Working name: exchange an owned card for a better one. Selection rules unresolved.","effect":"Upgrade via exchange"},{"id":"proposal18","name":"Force Trade","family":"Trade","description":"Legendary proposal: opponent can decline trade by paying PP. Amount and recipient unresolved.","effect":"Trade or pay PP"},{"id":"proposal19","name":"PASS","family":"Other","description":"Historical tactical pass candidate. Exact restrictions unresolved.","effect":"Pass turn; rules TBD"},{"id":"proposal20","name":"Undo","family":"Other","description":"Historical action-reversal candidate. Restrictions unresolved.","effect":"Undo; rules TBD"},{"id":"proposal21","name":"Auto Pick","family":"Other","description":"Historical automatic card-selection candidate. Selection behavior unresolved.","effect":"Auto selection TBD"},{"id":"proposal22","name":"Taunt","family":"Other","description":"Historical opponent-interference candidate. Exact effect unresolved.","effect":"Effect not finalized"},{"id":"proposal23","name":"+1 Core","family":"Other","description":"Historical Core bonus candidate; distinct from numerical Cell +1. Exact behavior unresolved.","effect":"Core bonus TBD"},{"id":"proposal24","name":"Recharge","family":"Other","description":"Historical replenishment candidate. What is restored remains unresolved.","effect":"Recharge target TBD"},{"id":"proposal25","name":"Freeze","family":"Other","description":"Historical concept; exact effect unresolved.","effect":"Effect not finalized"},{"id":"proposal26","name":"Reverse","family":"Other","description":"Historical concept; exact effect unresolved.","effect":"Effect not finalized"},{"id":"proposal27","name":"Scramble","family":"Other","description":"Historical concept; exact effect unresolved.","effect":"Effect not finalized"}];
 const proposalSymbols={Protect:'⬡',Copycell:'⧉',Spy:'◉',Neutralizer:'⊘',Odds:'%',Trade:'⇄',Other:'✦'};
 const proposalContainer=document.getElementById('proposalCollection');
-for(const p of proposedCards){const button=document.createElement('button');button.type='button';button.className='proposal-card';button.dataset.id=p.id;button.dataset.family=p.family;button.setAttribute('aria-pressed','false');const tag=document.createElement('span');tag.className='proposal-tag';tag.textContent='PROPOSED';const orb=document.createElement('span');orb.className='proposal-orb';orb.setAttribute('aria-hidden','true');orb.textContent=proposalSymbols[p.family];if(p.name==='Taunt'){button.dataset.cardName='Taunt';orb.textContent='';orb.innerHTML='<svg class="taunt-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M17 5 Q42 24 35 44 Q28 58 5 51 L2 65 Q48 87 53 42 Q53 17 30 0Z"/><path d="M70 0 Q45 20 50 42 Q56 82 98 64 L94 50 Q72 60 63 44 Q55 28 83 8Z"/><path d="M5 74 Q29 50 48 69 Q65 85 49 99 L35 92 Q45 73 28 71 Q19 71 11 82Z"/><path d="M95 74 Q71 50 52 69 Q35 85 51 99 L65 92 Q55 73 72 71 Q81 71 89 82Z"/></svg>';}const name=document.createElement('span');name.className='proposal-name card-name';name.textContent=p.name;const family=document.createElement('span');family.className='proposal-family';family.textContent=p.family;button.append(tag,orb,name,family);proposalContainer.appendChild(button);defs[p.id]={name:p.name,description:p.description,effect:p.effect,cost:'Not approved',turn:'Not approved',cooldown:'Not approved',status:'Proposed · design preview only',note:'Not implemented in live matches. Rarity, cost, timing and balance remain unapproved unless explicitly noted in the private design record.'};}
+for(const p of proposedCards){const button=document.createElement('button');button.type='button';button.className='proposal-card';button.dataset.id=p.id;button.dataset.family=p.family;button.setAttribute('aria-pressed','false');const tag=document.createElement('span');tag.className='proposal-tag';tag.textContent='PROPOSED';const orb=document.createElement('span');orb.className='proposal-orb';orb.setAttribute('aria-hidden','true');orb.textContent=proposalSymbols[p.family];if(p.name==='Taunt'){button.dataset.cardName='Taunt';orb.className='taunt-art';orb.textContent='';orb.innerHTML='<svg class="taunt-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M17 5 Q42 24 35 44 Q28 58 5 51 L2 65 Q48 87 53 42 Q53 17 30 0Z"/><path d="M70 0 Q45 20 50 42 Q56 82 98 64 L94 50 Q72 60 63 44 Q55 28 83 8Z"/><path d="M5 74 Q29 50 48 69 Q65 85 49 99 L35 92 Q45 73 28 71 Q19 71 11 82Z"/><path d="M95 74 Q71 50 52 69 Q35 85 51 99 L65 92 Q55 73 72 71 Q81 71 89 82Z"/></svg>';}const name=document.createElement('span');name.className='proposal-name card-name';name.textContent=p.name;const family=document.createElement('span');family.className='proposal-family';family.textContent=p.family;button.append(tag,orb,name,family);proposalContainer.appendChild(button);defs[p.id]={name:p.name,description:p.description,effect:p.effect,cost:'Not approved',turn:'Not approved',cooldown:'Not approved',status:'Proposed · design preview only',note:'Not implemented in live matches. Rarity, cost, timing and balance remain unapproved unless explicitly noted in the private design record.'};}
 const storageKey='tira-dev-special-card-lab-v1';let drafts={};try{const v=JSON.parse(localStorage.getItem(storageKey)||'{}');if(v&&typeof v==='object')drafts=v}catch{}
 const el=id=>document.getElementById(id);const cards=[...document.querySelectorAll('.card, .proposal-card')];let selected='cell1';
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';return saved||defs[id].name}
@@ -392,7 +364,6 @@ cards.forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.id;render();
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
 el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,kind:'visual-card-drafts',cards:drafts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='tira-special-card-lab-drafts.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);el('editorStatus').textContent='Local draft file exported. No gameplay data included.'});
-const themeDark=document.getElementById('themeDark');const themeManga=document.getElementById('themeManga');function setCardTheme(mode){const manga=mode==='manga';document.body.dataset.cardTheme=manga?'manga':'dark';themeDark.setAttribute('aria-pressed',String(!manga));themeManga.setAttribute('aria-pressed',String(manga));}themeDark.addEventListener('click',()=>setCardTheme('dark'));themeManga.addEventListener('click',()=>setCardTheme('manga'));setCardTheme('manga');
 render();
 })();
 </script></body></html>
