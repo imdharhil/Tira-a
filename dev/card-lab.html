@@ -327,11 +327,12 @@ body[data-card-theme="manga"] .proposal-card[aria-pressed="true"]{
 }
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
+<style id="white-card-theme-override">body[data-card-theme="manga"] .card,body[data-card-theme="manga"] .card.gold,body[data-card-theme="manga"] .card.protect-card,body[data-card-theme="manga"] .card.emergency,body[data-card-theme="manga"] .proposal-card{background:#fff!important;background-image:none!important;border:3px solid #000!important;color:#000!important}body[data-card-theme="manga"] .card .card-name,body[data-card-theme="manga"] .proposal-card .proposal-name{color:#000!important}</style>
 </head>
-<body><div class="shell">
+<body data-card-theme="manga"><div class="shell">
 <header class="top"><a class="back" href="./index.html?screen=labs">← DEV LABS</a><div class="tira">TIRA<strong>!</strong></div><span class="status">CARD LIBRARY · LOCAL PREVIEW</span></header>
 <h1>CARD LIBRARY</h1><p class="intro">Explore the Special Cards, inspect what they do, and experiment with their presentation. This lab is separate from live matches: adjustments stay in this browser and do not change gameplay.</p>
-<div class="theme-preview-controls" role="group" aria-label="Card appearance preview"><span class="theme-label">CARD APPEARANCE</span><button type="button" id="themeDark" aria-pressed="true">Original · Dark</button><button type="button" id="themeManga" aria-pressed="false">White · Black Border</button><span class="theme-hint">Preview only · does not change match cards</span></div>
+<div class="theme-preview-controls" role="group" aria-label="Card appearance preview"><span class="theme-label">CARD APPEARANCE</span><button type="button" id="themeDark" aria-pressed="false">Original · Dark</button><button type="button" id="themeManga" aria-pressed="true">White · Black Border</button><span class="theme-hint">Preview only · does not change match cards</span></div>
 <div class="workspace">
 <section class="panel" aria-labelledby="collectionTitle"><h2 id="collectionTitle">Card Library</h2><div class="card-grid" id="collection">
 <button class="card cell" type="button" data-id="cell1" aria-pressed="true"><span class="convert-indicator" aria-hidden="true" title="Convertible to Cell Pieces"><span class="convert-mark" aria-hidden="true"></span></span><span class="card-main"><span class="orb" aria-hidden="true">+1</span><small class="card-name">CELL</small></span></button>
@@ -391,7 +392,7 @@ cards.forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.id;render();
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
 el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,kind:'visual-card-drafts',cards:drafts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='tira-special-card-lab-drafts.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);el('editorStatus').textContent='Local draft file exported. No gameplay data included.'});
-const themeDark=document.getElementById('themeDark');const themeManga=document.getElementById('themeManga');function setCardTheme(mode){const manga=mode==='manga';document.body.dataset.cardTheme=manga?'manga':'dark';themeDark.setAttribute('aria-pressed',String(!manga));themeManga.setAttribute('aria-pressed',String(manga));}themeDark.addEventListener('click',()=>setCardTheme('dark'));themeManga.addEventListener('click',()=>setCardTheme('manga'));setCardTheme('dark');
+const themeDark=document.getElementById('themeDark');const themeManga=document.getElementById('themeManga');function setCardTheme(mode){const manga=mode==='manga';document.body.dataset.cardTheme=manga?'manga':'dark';themeDark.setAttribute('aria-pressed',String(!manga));themeManga.setAttribute('aria-pressed',String(manga));}themeDark.addEventListener('click',()=>setCardTheme('dark'));themeManga.addEventListener('click',()=>setCardTheme('manga'));setCardTheme('manga');
 render();
 })();
 </script></body></html>
