@@ -331,31 +331,30 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     // Necromantic eyes: almost circular spectral-green lights with a
-     // shadow-dark rim, vivid ghostly core, and controlled emerald bloom.
+     // Rounded cyan-white spirit eyes, with cool turquoise light blooming
+     // into the dark violet orb; preserve gaze, blinking and flicker.
      const open=Math.max(.12,1-.86*blink);
      const er=orbR*.125;
      const eyeH=er*open;
      const flicker=.94+.06*Math.sin(t*3.1+sign*.7);
      c.save();c.translate(ex,ey);
-     // Outer supernatural haze. Restrained, so the Core number remains clear.
      const haze=c.createRadialGradient(0,0,er*.18,0,0,er*2.4);
-     haze.addColorStop(0,'rgba(137,255,181,.26)');
-     haze.addColorStop(.32,'rgba(30,226,113,.32)');
-     haze.addColorStop(.65,'rgba(5,114,64,.16)');
-     haze.addColorStop(1,'rgba(0,55,37,0)');
+     haze.addColorStop(0,'rgba(235,255,255,.30)');
+     haze.addColorStop(.32,'rgba(81,249,255,.38)');
+     haze.addColorStop(.65,'rgba(7,163,200,.18)');
+     haze.addColorStop(1,'rgba(0,73,132,0)');
      c.fillStyle=haze;c.beginPath();
      c.ellipse(0,0,er*2.4,eyeH*2.4,0,0,TAU);c.fill();
-     // Dark verdigris boundary preserves the round eye shape.
+     // A thin dark-cyan boundary prevents white eyes blending into the number.
      c.beginPath();c.ellipse(0,0,er*1.19,eyeH*1.19,0,0,TAU);
-     c.fillStyle='rgba(3,30,27,.95)';c.fill();
+     c.fillStyle='rgba(8,54,92,.83)';c.fill();
      const spectral=c.createRadialGradient(-er*.20,-eyeH*.22,0,0,0,er*1.1);
-     spectral.addColorStop(0,'rgba(219,255,224,.99)');
-     spectral.addColorStop(.36,'rgba(119,255,163,.99)');
-     spectral.addColorStop(.73,'rgba(29,217,114,.97)');
-     spectral.addColorStop(1,'rgba(5,101,67,.96)');
-     c.shadowColor='rgba(35,255,123,.95)';
-     c.shadowBlur=er*.88*flicker;
+     spectral.addColorStop(0,'rgba(255,255,255,1)');
+     spectral.addColorStop(.39,'rgba(242,255,255,1)');
+     spectral.addColorStop(.76,'rgba(151,251,255,.99)');
+     spectral.addColorStop(1,'rgba(37,203,240,.98)');
+     c.shadowColor='rgba(64,245,255,.97)';
+     c.shadowBlur=er*1.02*flicker;
      c.fillStyle=spectral;c.beginPath();c.ellipse(0,0,er,eyeH,0,0,TAU);c.fill();
      c.shadowBlur=0;c.restore();
    }else{
