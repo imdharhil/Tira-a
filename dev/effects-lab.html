@@ -237,8 +237,8 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const driftY=Math.cos(t*(.58+.28*move))*r*.014*move;
  const cx=x+driftX,cy=y+driftY,orbR=r*(.72+.022*power);
  const pal=dark?{
-   aura:[67,28,137],outer:[106,55,191],mid:[171,100,237],
-   light:[224,190,255],core:[255,244,255],shadow:[36,13,83]
+   aura:[22,3,57],outer:[49,9,99],mid:[94,26,150],
+   light:[157,73,209],core:[84,29,139],shadow:[13,3,38]
  }:{
    aura:[12,71,174],outer:[29,126,226],mid:[74,213,246],
    light:[184,250,255],core:[255,255,255],shadow:[21,81,154]
@@ -250,11 +250,11 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
    [.40,rgba(pal.outer,.09+.05*urgency)],[1,'transparent']]);
  glow(c,cx,cy,orbR*1.35,[[0,rgba(pal.light,.12)], [.55,rgba(pal.mid,.08)],[1,'transparent']]);
  const shell=c.createRadialGradient(cx-orbR*.18,cy-orbR*.21,orbR*.04,cx,cy,orbR*1.03);
- shell.addColorStop(0,rgba(pal.core,.42));
- shell.addColorStop(.25,rgba(pal.light,.78));
+ shell.addColorStop(0,rgba(pal.core,dark?.91:.42));
+ shell.addColorStop(.25,rgba(pal.light,dark?.64:.78));
  shell.addColorStop(.57,rgba(pal.mid,.88));
- shell.addColorStop(.86,rgba(pal.outer,.90));
- shell.addColorStop(1,rgba(pal.aura,.26));
+ shell.addColorStop(.86,rgba(pal.outer,.96));
+ shell.addColorStop(1,rgba(pal.aura,dark?.78:.26));
  c.fillStyle=shell;c.beginPath();c.arc(cx,cy,orbR,0,TAU);c.fill();
  // Anime-style cel-shading: two intentional color zones and a soft
  // directional highlight. All marks stay within the orb silhouette.
@@ -270,7 +270,7 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const core=c.createRadialGradient(cx-orbR*.13,cy-orbR*.13,0,cx,cy,orbR*.83);
  core.addColorStop(0,rgba(pal.core,.96));
  core.addColorStop(.27,rgba(pal.core,.89));
- core.addColorStop(.59,rgba(pal.light,.54+.06*pulse));
+ core.addColorStop(.59,rgba(pal.light,(dark?.24:.54)+.06*pulse));
  core.addColorStop(1,rgba(pal.mid,0));
  c.fillStyle=core;c.beginPath();c.arc(cx,cy,orbR*.83,0,TAU);c.fill();
  // Anime face: retain the owner's marked eye positions, with tiny
@@ -281,7 +281,7 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  const eyesY=cy+orbR*.07;
  const eyeGap=orbR*.34;
  const eyeX=orbR*.105,eyeY=orbR*.16;
- const eyeColor=dark?'rgba(48,37,104,.95)':'rgba(32,91,144,.95)';
+ const eyeColor=dark?'rgba(21,4,45,.98)':'rgba(32,91,144,.95)';
  // Synchronized gaze: noticeable but bounded, anchored to the glowing orb.
  const lookX=Math.sin(t*1.10)*orbR*.070;
  const lookY=Math.cos(t*.82)*orbR*.020;
@@ -294,16 +294,43 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  c.save();
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
-   // Thin navy/violet rim separates the eyes from the bright orb body.
-   c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
-   c.fillStyle=dark?'rgba(37,18,83,.92)':'rgba(15,63,119,.94)';c.fill();
-   c.beginPath();c.ellipse(ex,ey,glanceWidth,eh,0,0,TAU);
-   c.fillStyle=eyeColor;c.fill();
-   if(blink<.72){
-     c.beginPath();c.ellipse(ex-glanceWidth*.27,ey-eh*.42,glanceWidth*.27,eh*.22,-.20,0,TAU);
-     c.fillStyle='rgba(255,255,255,.91)';c.fill();
-     c.beginPath();c.arc(ex+glanceWidth*.30,ey+eh*.32,Math.max(.34,orbR*.014),0,TAU);
-     c.fillStyle='rgba(255,255,255,.50)';c.fill();
+   if(dark){
+     // Angry anime eye: upper lid slopes down toward the center.
+     // The slanted brow is part of the eye, not a separate eyebrow.
+     const outerX=ex+sign*glanceWidth*1.24;
+     const innerX=ex-sign*glanceWidth*1.24;
+     const topOuter=ey-eh*.99,topInner=ey-eh*.13;
+     const bottom=ey+eh*.80;
+     c.beginPath();
+     c.moveTo(outerX,topOuter);
+     c.quadraticCurveTo(ex,ey-eh*.92,innerX,topInner);
+     c.quadraticCurveTo(ex,bottom+eh*.34,outerX,topOuter);
+     c.closePath();c.fillStyle='rgba(13,2,29,.99)';c.fill();
+     // Deep magenta iris, narrow and menacing rather than cute.
+     c.save();c.clip();
+     c.beginPath();c.ellipse(ex+lookX*.08,ey+eh*.10,glanceWidth*.43,eh*.83,0,0,TAU);
+     c.fillStyle='rgba(193,39,148,.94)';c.fill();
+     c.beginPath();c.ellipse(ex+lookX*.08,ey+eh*.13,glanceWidth*.18,eh*.67,0,0,TAU);
+     c.fillStyle='rgba(28,2,42,.99)';c.fill();
+     if(blink<.72){c.beginPath();c.ellipse(ex-glanceWidth*.12,ey-eh*.30,glanceWidth*.11,eh*.14,0,0,TAU);c.fillStyle='rgba(255,175,245,.82)';c.fill();}
+     c.restore();
+     // Bold lid emphasizes the hostile inward-downward stare.
+     c.beginPath();c.moveTo(outerX,topOuter);
+     c.quadraticCurveTo(ex,ey-eh*.92,innerX,topInner);
+     c.strokeStyle='rgba(17,2,40,.99)';
+     c.lineWidth=Math.max(1,orbR*.042);c.lineCap='round';c.stroke();
+   }else{
+     // Keep Pure Soul's approved rounded anime eyes unchanged.
+     c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
+     c.fillStyle='rgba(15,63,119,.94)';c.fill();
+     c.beginPath();c.ellipse(ex,ey,glanceWidth,eh,0,0,TAU);
+     c.fillStyle=eyeColor;c.fill();
+     if(blink<.72){
+       c.beginPath();c.ellipse(ex-glanceWidth*.27,ey-eh*.42,glanceWidth*.27,eh*.22,-.20,0,TAU);
+       c.fillStyle='rgba(255,255,255,.91)';c.fill();
+       c.beginPath();c.arc(ex+glanceWidth*.30,ey+eh*.32,Math.max(.34,orbR*.014),0,TAU);
+       c.fillStyle='rgba(255,255,255,.50)';c.fill();
+     }
    }
  }
  c.restore();
