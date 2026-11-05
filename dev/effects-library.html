@@ -80,7 +80,7 @@ footer{margin-top:24px;font-size:12px;color:#8399b8;line-height:1.65}
  <div class="published-empty" id="publishedEmpty">No effects are published yet.</div>
 </section>
 <section aria-labelledby="draftTitle">
- <div class="section-head"><h2 id="draftTitle">Draft Effects</h2><span class="count" id="draftCount">19 FX</span></div>
+ <div class="section-head"><h2 id="draftTitle">Draft Effects</h2><span class="count" id="draftCount">20 FX</span></div>
  <p class="note">Each appearance has one fixed entry. Configured effects use your exact Effects Lab values. Stage changes animate continuously after the preview is ready. Explosion replays destruction separately. Sound effects are managed separately.</p>
  <div class="fx-list" id="fxList"></div>
 </section>
@@ -96,7 +96,7 @@ const fx=[
  {id:10,name:'Cracking'},{id:11,name:'Planet Spin'},
  {id:12,name:'Overcharge'},{id:13,name:'Black Hole'},
  {id:14,name:'Bubble'},{id:15,name:'Arcade Pixel Core'},
- {id:17,name:'Pure Soul (Wisp)'},{id:18,name:'Dark Soul (Wisp)'},{id:20,name:'Dark Soul — Custom Wisp'}
+ {id:17,name:'Pure Soul (Wisp)'},{id:18,name:'Dark Soul (Wisp)'},{id:20,name:'Dark Soul — Custom Wisp'},{id:21,name:'Pure Soul — Custom Wisp'}
 ];
 const configuredStages={"5":[[1,300,0,0,0,0],[1,300,100,15,10,0],[2,300,100,25,30,0],[3,300,100,40,45,0],[4,300,100,50,60,10],[5,300,100,64,76,20],[6,300,100,89,100,30]],"6":[[6,300,0,0,10,0],[6,300,32,0,10,100],[11,300,50,19,20,100],[20,300,70,35,30,100],[22,300,80,56,50,100],[25,300,100,81,68,100],[30,300,100,83,100,100]],"8":[[1,49,0,0,0,0],[8,49,10,0,0,0],[12,49,30,0,0,0],[15,49,53,0,0,0],[20,49,59,0,0,0],[22,49,75,0,0,0],[30,49,75,0,0,0]],"12":[[1,30,10,0,0,0],[4,60,10,0,60,0],[8,100,30,40,100,0],[11,119,40,53,100,5],[16,150,60,70,100,15],[21,200,80,70,100,25],[27,250,90,90,100,50]],"15":[[1,100,0,0,0,0],[1,130,10,5,5,0],[1,150,20,15,10,0],[1,160,35,20,20,0],[4,170,40,30,30,null],[4,170,50,40,40,0],[6,200,75,50,50,0]],"16":[[1,49,0,0,0,0],[5,49,16,0,0,0],[10,49,25,0,0,0],[12,49,38,0,0,0],[15,49,57,0,0,0],[21,49,63,0,0,0],[26,49,75,0,0,0]]};
 const settingFields=[
@@ -236,7 +236,7 @@ function makeEntry(fxItem){
  const name=document.createElement('span');name.className='fx-name';name.textContent=fxItem.name;
  heading.append(code,name);content.append(heading);
  const controls=document.createElement('div');controls.className='fx-controls';
- const label=document.createElement('span');label.className='fx-label';label.textContent=configured?'Preset level':fxItem.id===13?'Configuration':fxItem.id===20?'Preview level':'Core Value';
+ const label=document.createElement('span');label.className='fx-label';label.textContent=configured?'Preset level':fxItem.id===13?'Configuration':(fxItem.id===20||fxItem.id===21)?'Preview level':'Core Value';
  controls.append(label);
  const numbers=document.createElement('div');numbers.className='value-buttons';numbers.setAttribute('role','group');numbers.setAttribute('aria-label',fxItem.name+' Core Value');
  for(let n=configured?0:1;n<=6;n++){
@@ -252,7 +252,7 @@ function makeEntry(fxItem){
  explode.onclick=()=>updateFrame(entry,true);
  controls.append(explode);content.append(controls);
  if(configured){content.append(addSettingPanel(entry));showSettings(entry);}
- const hint=document.createElement('span');hint.className='fx-small';hint.textContent=fxItem.id===13?blackHoleDescription(entry.value):fxItem.id===20?'Owner-designed 42-strand Dark Soul smoke · draft preview · no Core number':configured?'Choose a preset to smoothly transition its appearance.':'Animated visual · Explosion preview on demand';entry.hint=hint;content.append(hint);
+ const hint=document.createElement('span');hint.className='fx-small';hint.textContent=fxItem.id===13?blackHoleDescription(entry.value):fxItem.id===20?'Owner-designed 42-strand Dark Soul smoke · draft preview · no Core number':fxItem.id===21?'Same 42 owner-designed strands · cyan-white Pure Soul palette · draft preview · no Core number':configured?'Choose a preset to smoothly transition its appearance.':'Animated visual · Explosion preview on demand';entry.hint=hint;content.append(hint);
  card.append(content);list.append(card);
  card.dataset.effect=String(fxItem.id);entries.set(fxItem.id,entry);
  if(observer)observer.observe(card);else updateFrame(entry);
