@@ -267,6 +267,35 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* Proposed cards: scoped to the design library, never match logic. */
 .proposal-library{margin-top:26px;border-top:1px solid #31566e;padding-top:22px}.proposal-library>p{font-size:13px;line-height:1.6}.proposal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.proposal-card{position:relative;aspect-ratio:.68;min-width:0;border:1px solid #4c7189;border-radius:13px;background:linear-gradient(145deg,#19354b,#101e31 70%,#0b1625);color:#e8f6ff;padding:20px 6px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center}.proposal-card .proposal-orb{width:clamp(44px,7vw,67px);aspect-ratio:1;display:grid;place-items:center;border-radius:50%;font-size:clamp(19px,3vw,27px);font-weight:900;color:#fff;background:radial-gradient(circle at 30% 22%,#d9f7ff,#4baddc 42%,#164a7b 86%);box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005}.proposal-card .proposal-name{font-size:clamp(9px,1.1vw,12px);font-weight:800;line-height:1.3;overflow-wrap:anywhere}.proposal-card .proposal-family{font-size:9px;color:#a9c9d9;text-transform:uppercase;letter-spacing:.07em}.proposal-card .proposal-tag{position:absolute;top:7px;left:7px;font-size:8px;letter-spacing:.06em;color:#d6e5ee}.proposal-card[data-family="Protect"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#e5ffff,#59bdc9 45%,#0e5264 88%);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);border-radius:0}.proposal-card[data-family="Neutralizer"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#f1e5ff,#a578d5 43%,#4b286c 90%)}.proposal-card[data-family="Odds"] .proposal-orb,.proposal-card[data-family="Trade"] .proposal-orb{background:radial-gradient(circle at 30% 22%,#fff1c9,#c69c4e 43%,#665022 90%)}.proposal-card[aria-pressed="true"]{border:2px solid #79d7ff;box-shadow:0 0 16px #4dc2ef55;transform:translateY(-3px)}.proposal-events{display:grid;gap:10px}.proposal-events>div{padding:12px;border:1px solid #31566e;border-radius:10px;background:#0a2031}.proposal-events p{margin:5px 0 0;font-size:12px;color:#a8c8d7;line-height:1.5}@media(max-width:470px){.proposal-grid{gap:7px}.proposal-card{padding:19px 3px 9px}.proposal-card .proposal-orb{width:clamp(42px,13vw,56px)}.proposal-card .proposal-name{font-size:10px}}@media(prefers-reduced-motion:reduce){.proposal-card[aria-pressed="true"]{transform:none}}
 
+/* Proposed cards: approved card geometry, typography and border standard.
+   Retain family palettes and proposed-status indicators; Taunt retains its own art. */
+.proposal-grid>.proposal-card{
+  width:100%;min-width:0;aspect-ratio:.68;min-height:0;
+  border:1px solid #2c526d;border-radius:13px;
+  box-shadow:inset 0 1px 0 #7bbce42e,0 9px 24px #0005;
+  padding:31px 5px 12px;gap:7px;
+  justify-content:center;box-sizing:border-box;
+}
+.proposal-grid>.proposal-card::before{
+  content:"";position:absolute;inset:5px;
+  border:1px solid #70bce51c;border-radius:12px;pointer-events:none;
+}
+.proposal-grid>.proposal-card .proposal-orb{
+  width:57px;height:57px;max-width:100%;aspect-ratio:1;flex:0 0 auto;
+  font-size:23px;
+}
+.proposal-grid>.proposal-card .proposal-name{
+  font-size:10px;font-weight:700;line-height:1.3;
+  letter-spacing:.07em;color:#a8c6db;
+}
+.proposal-grid>.proposal-card[aria-pressed="true"]{
+  border:2px solid #79d7ff;
+  box-shadow:inset 0 1px 0 #7bbce42e,0 9px 24px #0005;
+}
+@media(max-width:470px){
+ .proposal-grid>.proposal-card{padding:29px 4px 10px}
+ .proposal-grid>.proposal-card .proposal-orb{width:57px;height:57px}
+}
 /* Taunt uses approved match-card proportions and art/name spacing.
    Its white face and double black frame remain Taunt-specific. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]{
