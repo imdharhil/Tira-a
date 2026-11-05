@@ -295,21 +295,30 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     const eyeW=glanceWidth*2.05,open=Math.max(.12,1-.86*blink);
-     const eyeH=orbR*.17*open;
-     const outerX=ex+sign*eyeW*.62,innerX=ex-sign*eyeW*.62;
-     const outerTopY=ey-eyeH*.92,innerTopY=ey-eyeH*.08;
-     const lowerMidY=ey+eyeH*.62;
-     c.beginPath();c.moveTo(outerX,outerTopY);
-     c.quadraticCurveTo(ex+sign*eyeW*.18,ey-eyeH*1.08,innerX,innerTopY);
-     c.quadraticCurveTo(ex-sign*eyeW*.40,ey+eyeH*.34,ex,lowerMidY);
-     c.quadraticCurveTo(ex+sign*eyeW*.44,ey+eyeH*.50,outerX,outerTopY);
-     c.closePath();c.fillStyle='#f12629';c.fill();
-     c.strokeStyle='#120716';c.lineWidth=Math.max(1.6,orbR*.030);
-     c.lineJoin='round';c.lineCap='round';c.stroke();
-     c.beginPath();c.moveTo(outerX,outerTopY);
-     c.quadraticCurveTo(ex+sign*eyeW*.18,ey-eyeH*1.08,innerX,innerTopY);
-     c.strokeStyle='#09030f';c.lineWidth=Math.max(2,orbR*.040);c.stroke();
+     // Soft, asymmetric spirit lights: cyan-white, with teal bloom.
+     // Each eye remains an independent organic oval; no outline or pupil.
+     const open=Math.max(.12,1-.86*blink);
+     const ew=orbR*.105,eh=orbR*.148*open;
+     const tilt=sign*.12;
+     c.save();
+     c.translate(ex,ey);c.rotate(tilt);
+     const aura=c.createRadialGradient(0,0,0,0,0,ew*2.65);
+     aura.addColorStop(0,'rgba(161,255,249,.65)');
+     aura.addColorStop(.32,'rgba(25,228,217,.35)');
+     aura.addColorStop(.73,'rgba(0,189,183,.12)');
+     aura.addColorStop(1,'rgba(0,175,175,0)');
+     c.fillStyle=aura;c.beginPath();c.ellipse(0,0,ew*2.65,eh*1.95,0,0,TAU);c.fill();
+     // Curved flame-drop silhouette inspired by the supplied eye sample.
+     c.beginPath();c.moveTo(-ew*.90,eh*.12);
+     c.bezierCurveTo(-ew*1.15,-eh*.53,-ew*.65,-eh*1.02,ew*.04,-eh);
+     c.bezierCurveTo(ew*.64,-eh*1.04,ew*1.13,-eh*.44,ew*.90,eh*.12);
+     c.bezierCurveTo(ew*.80,eh*.67,ew*.35,eh*.90,-ew*.16,eh*.88);
+     c.bezierCurveTo(-ew*.67,eh*.85,-ew*.92,eh*.51,-ew*.90,eh*.12);
+     c.closePath();
+     c.shadowColor='rgba(27,255,237,.90)';
+     c.shadowBlur=orbR*.18;
+     c.fillStyle='#e8ffff';c.fill();
+     c.shadowBlur=0;c.restore();
    }else{
      // Keep Pure Soul's approved rounded anime eyes unchanged.
      c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
