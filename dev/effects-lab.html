@@ -228,108 +228,59 @@ function breathCycle(t,value){
 }
 // Procedural soul-flame cosmetics: luminous cyan-gold or translucent violet ribbons.
 function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
- // Orb & Rise v2: one smooth closed flame silhouette. All contours are sampled
- // from a single continuous centerline; avoid disconnected polygon ribbons.
- const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.4,0,1);
- const move=clamp(ctrl.move??.55,0,1),power=clamp((value-1)/29,0,1);
- const time=t*(.46+.36*urgency),swing=Math.sin(time*.65)*(.07+.09*move);
- const ry=y+r*.10+Math.sin(time*.84)*r*.014*move;
- const rgba=(rgb,a)=>'rgba('+rgb.join(',')+','+clamp(a,0,1)+')';
- const col=dark?{
-  edge:[70,25,131],base:[120,56,192],middle:[181,107,247],
-  light:[235,186,255],heart:[252,242,255]
+ // ORB-FIRST VISUAL REVIEW. No flames, tails or external image assets.
+ // The orb is intentionally centered behind the Lab's Core number.
+ const urgency=clamp(ctrl.urgency??.35,0,1),inst=clamp(ctrl.inst??.35,0,1);
+ const move=clamp(ctrl.move??.35,0,1),power=clamp((value-1)/29,0,1);
+ const pulse=.5+.5*Math.sin(t*(.75+.72*urgency));
+ const driftX=Math.sin(t*(.48+.34*move))*r*.016*move;
+ const driftY=Math.cos(t*(.58+.28*move))*r*.014*move;
+ const cx=x+driftX,cy=y+driftY,orbR=r*(.72+.022*power);
+ const pal=dark?{
+   aura:[67,28,137],outer:[106,55,191],mid:[171,100,237],
+   light:[224,190,255],core:[255,244,255],shadow:[36,13,83]
  }:{
-  edge:[18,57,158],base:[28,112,215],middle:[34,194,251],
-  light:[145,246,255],heart:[255,255,255]
+   aura:[12,71,174],outer:[29,126,226],mid:[74,213,246],
+   light:[184,250,255],core:[255,255,255],shadow:[21,81,154]
  };
- // The flame starts at the rounded bottom and winds up in one slim hooked tip.
- // Width and curvature are smooth functions, so the surface never folds over itself.
- const steps=44,tailLength=r*(1.86+.11*power+.12*move);
- const center=u=>{
-  const bend=Math.sin(Math.PI*u)*(.09+.085*move)+Math.sin(u*5.4-time*.36)*(.07+.085*inst)*u;
-  const hook=.20*u*u+(.10+swing)*Math.pow(u,3);
-  return x+r*(bend+hook-.06);
- };
- const yAt=u=>ry+r*.62-u*tailLength;
- const width=u=>{
-  const bulge=Math.pow(Math.max(0,Math.sin(Math.PI*u)),.72);
-  const shoulder=1-.36*u;
-  return r*.71*bulge*shoulder;
- };
- // Draw a single cubic-smoothed outline using point midpoints.
- function silhouette(scale=1,offsetY=0){
-  const l=[],h=[];
-  for(let i=0;i<=steps;i++){
-   const u=i/steps,xx=center(u),yy=yAt(u)+offsetY,ww=width(u)*scale;
-   l.push([xx-ww,yy]);h.push([xx+ww,yy]);
-  }
-  c.beginPath();c.moveTo(l[0][0],l[0][1]);
-  for(let i=1;i<l.length;i++){
-   const prev=l[i-1],cur=l[i];
-   c.quadraticCurveTo(prev[0],prev[1],(prev[0]+cur[0])/2,(prev[1]+cur[1])/2);
-  }
-  c.lineTo(l[steps][0],l[steps][1]);
-  for(let i=steps;i>0;i--){
-   const prev=h[i],cur=h[i-1];
-   c.quadraticCurveTo(prev[0],prev[1],(prev[0]+cur[0])/2,(prev[1]+cur[1])/2);
-  }
-  c.lineTo(h[0][0],h[0][1]);c.closePath();
- }
+ const rgba=(rgb,a)=>'rgba('+rgb.join(',')+','+clamp(a,0,1)+')';
  c.save();
- // Diffuse atmosphere: the orb and flame belong to one luminous shape.
- glow(c,x,ry,r*1.35,[[0,rgba(col.middle,.20+.13*urgency)],
-  [.49,rgba(col.base,.10)],[1,'transparent']]);
- glow(c,x+r*.13,ry-r*.60,r*1.05,[[0,rgba(col.middle,.09+.07*urgency)],[1,'transparent']]);
- // Unified outer body. No strokes, angular panels or pasted circular border.
- silhouette();
- const fill=c.createLinearGradient(x-r*.5,ry+r*.65,x+r*.18,ry-r*1.48);
- fill.addColorStop(0,rgba(col.edge,.93));
- fill.addColorStop(.24,rgba(col.base,.95));
- fill.addColorStop(.56,rgba(col.middle,.91));
- fill.addColorStop(.80,rgba(col.base,.73));
- fill.addColorStop(1,rgba(col.middle,.04));
- c.fillStyle=fill;c.fill();
- // Internal soft stream is clipped to the SAME silhouette: it cannot protrude
- // into disconnected polygon slabs when the tail bends.
- c.save();silhouette();c.clip();
- const inner=c.createRadialGradient(x-r*.20,ry-r*.21,r*.03,x+r*.10,ry-r*.20,r*.90);
- inner.addColorStop(0,rgba(col.heart,.91));
- inner.addColorStop(.26,rgba(col.light,.91));
- inner.addColorStop(.60,rgba(col.middle,.55));
- inner.addColorStop(1,rgba(col.base,0));
- c.fillStyle=inner;c.fillRect(x-r,ry-r*1.9,r*2.2,r*2.7);
- // One diffuse curved highlight follows the upward axis. Its soft edges blend
- // into the flame, rather than reading as a second hard opaque stripe.
- c.beginPath();
- c.moveTo(x-r*.20,ry-r*.36);
- c.bezierCurveTo(x-r*.25,ry-r*.72,center(.68)-r*.11,yAt(.68),center(.91),yAt(.91));
- c.strokeStyle=rgba(col.light,.14+.09*urgency);
- c.lineWidth=r*.16;c.lineCap='round';c.stroke();
- c.restore();
- // Feathered luminous central orb, integrated into the body (no hard circle).
- const orb=c.createRadialGradient(x-r*.13,ry-r*.08,0,x,ry,r*.67);
- orb.addColorStop(0,rgba(col.heart,.97));
- orb.addColorStop(.37,rgba(col.heart,.88));
- orb.addColorStop(.66,rgba(col.light,.64));
- orb.addColorStop(.85,rgba(col.middle,.27));
- orb.addColorStop(1,rgba(col.middle,0));
- c.fillStyle=orb;c.beginPath();c.arc(x,ry,r*.67,0,TAU);c.fill();
- // A tiny soft glow at the tip, with no sharp geometric cap.
- glow(c,center(.94),yAt(.94),r*.17,[[0,rgba(col.light,.10)],[1,'transparent']]);
- // Secondary wisps are curved, tapered, and subtle; never thick detached bars.
- for(let i=0;i<2;i++){
-  const side=i?1:-1,yy=ry-r*(.67+i*.20),xx=x+side*r*(.56+i*.15);
-  const twist=Math.sin(time*(.55+i*.14)+i*2)*r*.055;
-  c.beginPath();c.moveTo(xx,yy);
-  c.quadraticCurveTo(xx+side*r*.09,yy-r*.09,xx+side*r*.09+twist,yy-r*.21);
-  c.strokeStyle=rgba(col.middle,.10+.07*urgency);
-  c.lineWidth=r*.012;c.lineCap='round';c.stroke();
+ // Feathered halo, never a thick dark or bright ring.
+ glow(c,cx,cy,orbR*1.90,[[0,rgba(pal.mid,.18+.08*urgency+.04*pulse)],
+   [.40,rgba(pal.outer,.09+.05*urgency)],[1,'transparent']]);
+ glow(c,cx,cy,orbR*1.35,[[0,rgba(pal.light,.12)], [.55,rgba(pal.mid,.08)],[1,'transparent']]);
+ const shell=c.createRadialGradient(cx-orbR*.18,cy-orbR*.21,orbR*.04,cx,cy,orbR*1.03);
+ shell.addColorStop(0,rgba(pal.core,.42));
+ shell.addColorStop(.25,rgba(pal.light,.78));
+ shell.addColorStop(.57,rgba(pal.mid,.88));
+ shell.addColorStop(.86,rgba(pal.outer,.90));
+ shell.addColorStop(1,rgba(pal.aura,.26));
+ c.fillStyle=shell;c.beginPath();c.arc(cx,cy,orbR,0,TAU);c.fill();
+ // Bright inner light sits behind the number; no opaque white disk.
+ const core=c.createRadialGradient(cx-orbR*.13,cy-orbR*.13,0,cx,cy,orbR*.83);
+ core.addColorStop(0,rgba(pal.core,.96));
+ core.addColorStop(.27,rgba(pal.core,.89));
+ core.addColorStop(.59,rgba(pal.light,.54+.06*pulse));
+ core.addColorStop(1,rgba(pal.mid,0));
+ c.fillStyle=core;c.beginPath();c.arc(cx,cy,orbR*.83,0,TAU);c.fill();
+ // Soft internal energy currents, clipped and kept away from the number center.
+ c.save();c.beginPath();c.arc(cx,cy,orbR*.94,0,TAU);c.clip();
+ for(let i=0;i<3;i++){
+   const phase=t*(.24+.075*i)+i*2.094,side=i%2?1:-1;
+   const ox=Math.sin(phase)*orbR*.08,oy=Math.cos(phase)*orbR*.06;
+   c.beginPath();c.moveTo(cx+side*orbR*.51+ox,cy-orbR*.63+oy);
+   c.bezierCurveTo(cx+side*orbR*.77+ox,cy-orbR*.10,
+     cx+side*orbR*.40,cy+orbR*.35,cx+side*orbR*.41,cy+orbR*.65);
+   c.strokeStyle=rgba(dark?pal.shadow:pal.outer,.055+.075*inst);
+   c.lineWidth=orbR*(.023+.012*inst);c.lineCap='round';c.stroke();
  }
- // Bounded twinkles: no long free-floating stroke fragments.
+ c.restore();
+ // Keep motes faint and close to the silhouette; no detached tail fragments.
  for(let i=0;i<5;i++){
-  const phase=(time*.08+i*.21)%1;
-  const a=i*2.39996,xx=x+Math.cos(a)*r*(.35+.22*phase),yy=ry-r*(.19+.70*phase);
-  circle(c,xx,yy,Math.max(.35,r*.003),rgba(col.light,.08*(1-phase)));
+   const phase=(t*(.10+.02*i)+i*.17)%1,a=i*2.399963;
+   const d=orbR*(.97+.23*phase),mx=cx+Math.cos(a)*d;
+   const my=cy+Math.sin(a)*d*.88-orbR*.12*phase;
+   circle(c,mx,my,Math.max(.4,orbR*.012),rgba(pal.light,.09*(1-phase)));
  }
  c.restore();
 }
