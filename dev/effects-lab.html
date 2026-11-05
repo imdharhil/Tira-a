@@ -331,32 +331,32 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  for(const sign of [-1,1]){
    const ex=cx+sign*eyeGap+lookX,ey=eyesY+lookY,eh=Math.max(orbR*.018,blinkH);
    if(dark){
-     // Rounded cyan-white spirit eyes, with cool turquoise light blooming
-     // into the dark violet orb; preserve gaze, blinking and flicker.
-     const open=Math.max(.12,1-.86*blink);
-     const er=orbR*.125;
-     const eyeH=er*open;
+     // Identical eye geometry to Pure Soul; Dark Soul only changes
+     // coloring, lighting and glow. Gaze and blink remain shared.
      const flicker=.94+.06*Math.sin(t*3.1+sign*.7);
-     c.save();c.translate(ex,ey);
-     const haze=c.createRadialGradient(0,0,er*.18,0,0,er*2.4);
-     haze.addColorStop(0,'rgba(235,255,255,.30)');
-     haze.addColorStop(.32,'rgba(81,249,255,.38)');
-     haze.addColorStop(.65,'rgba(7,163,200,.18)');
-     haze.addColorStop(1,'rgba(0,73,132,0)');
-     c.fillStyle=haze;c.beginPath();
-     c.ellipse(0,0,er*2.4,eyeH*2.4,0,0,TAU);c.fill();
-     // A thin dark-cyan boundary prevents white eyes blending into the number.
-     c.beginPath();c.ellipse(0,0,er*1.19,eyeH*1.19,0,0,TAU);
+     c.save();
+     c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
      c.fillStyle='rgba(8,54,92,.83)';c.fill();
-     const spectral=c.createRadialGradient(-er*.20,-eyeH*.22,0,0,0,er*1.1);
+     const spectral=c.createRadialGradient(
+       ex-glanceWidth*.20,ey-eh*.22,0,ex,ey,glanceWidth*1.10);
      spectral.addColorStop(0,'rgba(255,255,255,1)');
-     spectral.addColorStop(.39,'rgba(242,255,255,1)');
-     spectral.addColorStop(.76,'rgba(151,251,255,.99)');
+     spectral.addColorStop(.36,'rgba(242,255,255,1)');
+     spectral.addColorStop(.74,'rgba(151,251,255,.99)');
      spectral.addColorStop(1,'rgba(37,203,240,.98)');
      c.shadowColor='rgba(64,245,255,.97)';
-     c.shadowBlur=er*1.02*flicker;
-     c.fillStyle=spectral;c.beginPath();c.ellipse(0,0,er,eyeH,0,0,TAU);c.fill();
-     c.shadowBlur=0;c.restore();
+     c.shadowBlur=orbR*.11*flicker;
+     c.beginPath();c.ellipse(ex,ey,glanceWidth,eh,0,0,TAU);
+     c.fillStyle=spectral;c.fill();
+     c.shadowBlur=0;
+     if(blink<.72){
+       c.beginPath();
+       c.ellipse(ex-glanceWidth*.27,ey-eh*.42,glanceWidth*.27,eh*.22,-.20,0,TAU);
+       c.fillStyle='rgba(255,255,255,.95)';c.fill();
+       c.beginPath();
+       c.arc(ex+glanceWidth*.30,ey+eh*.32,Math.max(.34,orbR*.014),0,TAU);
+       c.fillStyle='rgba(210,255,255,.58)';c.fill();
+     }
+     c.restore();
    }else{
      // Keep Pure Soul's approved rounded anime eyes unchanged.
      c.beginPath();c.ellipse(ex,ey,glanceWidth*1.13,eh*1.10,0,0,TAU);
