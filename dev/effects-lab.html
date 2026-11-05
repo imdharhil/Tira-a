@@ -275,6 +275,16 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
    c.lineWidth=orbR*(.023+.012*inst);c.lineCap='round';c.stroke();
  }
  c.restore();
+ // Reference sketch: two small, widely spaced oval eyes inside the luminous orb.
+ // Keep them above the existing Core number to preserve its readability.
+ const eyesY=cy-orbR*.61,eyeGap=orbR*.22;
+ const eyeX=orbR*.037,eyeY=orbR*.061;
+ const eyeColor=dark?'rgba(82,63,126,.88)':'rgba(63,82,127,.88)';
+ c.save();c.fillStyle=eyeColor;
+ for(const sign of [-1,1]){
+   c.beginPath();c.ellipse(cx+sign*eyeGap,eyesY,eyeX,eyeY,0,0,TAU);c.fill();
+ }
+ c.restore();
  // Keep motes faint and close to the silhouette; no detached tail fragments.
  for(let i=0;i<5;i++){
    const phase=(t*(.10+.02*i)+i*.17)%1,a=i*2.399963;
