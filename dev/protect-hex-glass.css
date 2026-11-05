@@ -50,7 +50,8 @@
 
 /* Protect 1: apply the holographic pass to the shield-sized hexagon only.
    Original teal orb geometry and Protect 2/3 previews remain untouched. */
-.card.protect-card[data-id="protect"] .protect-hex-glass-top{display:none}
+/* Protect 1 shares the same small card-level foil as Protect 2/3. */
+.card.protect-card[data-id="protect"] .protect-hex-glass-top{display:block}
 .card.protect-card[data-id="protect"] .orb.protect-hex{position:relative;isolation:isolate;overflow:hidden}
 .card.protect-card[data-id="protect"] .orb.protect-hex::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
