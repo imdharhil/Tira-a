@@ -47,3 +47,25 @@
 .card.protect-card::before{z-index:5;pointer-events:none}
 /* The inverse mask leaves the hexagon faces entirely unaltered. */
 .card.protect-card .card-main{z-index:4}
+
+/* Protect 1: apply the holographic pass to the shield-sized hexagon only.
+   Original teal orb geometry and Protect 2/3 previews remain untouched. */
+.card.protect-card[data-id="protect"] .protect-hex-glass-top{display:none}
+.card.protect-card[data-id="protect"] .orb.protect-hex{position:relative;isolation:isolate;overflow:hidden}
+.card.protect-card[data-id="protect"] .orb.protect-hex::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(110deg,transparent 13%,#e4ffff70 37%,#ded2ff90 50%,#89f8f55c 62%,transparent 84%);
+  background-size:270% 100%;background-position:100% 50%;opacity:0;
+}
+.card.protect-card[data-id="protect"][aria-pressed="true"] .orb.protect-hex::after{
+  animation:tiraProtectSymbolHolo 1.8s ease-out 1 both;
+}
+@keyframes tiraProtectSymbolHolo{
+  0%{opacity:0;background-position:100% 50%}
+  20%{opacity:.75}
+  80%{opacity:.75}
+  100%{opacity:0;background-position:0% 50%}
+}
+@media(prefers-reduced-motion:reduce){
+  .card.protect-card[data-id="protect"] .orb.protect-hex::after{animation:none}
+}
