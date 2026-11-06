@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">TIRA Reserve</title>
+<!-- Flat red ring and blue plus, without outlines. -->
+<circle cx="256" cy="256" r="207" fill="none" stroke="#ce0024" stroke-width="30"/>
+<g fill="#ce0024">
+<path d="M105 131 H250 L216 164 H96Z"/>
+<path d="M375 117 L399 142 V261 L371 230 V135Z"/>
+<path d="M405 375 H263 L295 344 H417Z"/>
+<path d="M115 396 L94 370 V257 L124 287 V378Z"/>
+</g>
+<path d="M235 157 H277 V235 H355 V277 H277 V355 H235 V277 H157 V235 H235Z" fill="#034ba9"/>
+</svg>
