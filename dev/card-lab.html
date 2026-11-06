@@ -408,28 +408,54 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   .proposal-grid>.proposal-card[data-copycat="random"] .copycat{transition:none}
   .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"]::after{animation:none}
 }
-/* SELECT shows three deliberate, player-chosen candidates, not a random outcome. */
-.proposal-grid>.proposal-card[data-copycat="select"]{isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 18%,#a8dfd91d,transparent 62%),linear-gradient(145deg,#253b48,#1b2838 60%,#121b2c);border-color:#7aafbd}
-.proposal-grid>.proposal-card[data-copycat="select"]::before{border-color:#a5e5d354}
-/* SELECT card-level foil: soft prismatic reflection instead of cat glow or indicator. */
+/* SELECT uses DUPLICATE foil, preserving manual player choice. */
+.proposal-grid>.proposal-card[data-copycat="select"]{
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 17% 12%,#94f7ee2b 0%,transparent 47%),
+    radial-gradient(ellipse at 93% 79%,#de8dff30 0%,transparent 52%),
+    linear-gradient(137deg,#41424f 0%,#242634 34%,#34313f 61%,#151a27 100%);
+  border:1px solid #b2a2c4;
+  box-shadow:inset 0 1px 0 #ffffff53,inset 0 0 13px #9d94dd25,0 9px 24px #0007;
+  transition:background-position .7s ease,box-shadow .55s ease,border-color .55s ease,transform .3s ease;
+}
+.proposal-grid>.proposal-card[data-copycat="select"]::before{
+  border-color:#ddd0ec75;
+}
 .proposal-grid>.proposal-card[data-copycat="select"]::after{
-  content:"";position:absolute;inset:6px;border-radius:9px;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse at 24% 25%,#bfa9f02c,transparent 54%),
-    radial-gradient(ellipse at 79% 72%,#7fe5e12a,transparent 56%),
-    radial-gradient(ellipse at 53% 50%,#f6ce9020,transparent 60%);
-  background-size:150% 150%;background-position:25% 42%;opacity:.34;
+  content:"";position:absolute;inset:7px;border-radius:9px;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%,#c3f9ff1f 0%,#d8b7ff12 42%,transparent 76%);
+  mix-blend-mode:screen;opacity:.42;
+  transition:opacity .55s ease;
+}
+.proposal-grid>.proposal-card[data-copycat="select"] .proposal-orb,
+.proposal-grid>.proposal-card[data-copycat="select"] .proposal-name,
+.proposal-grid>.proposal-card[data-copycat="select"] .proposal-family{
+  position:relative;z-index:1;
+}
+.proposal-grid>.proposal-card[data-copycat="select"] .proposal-orb::before{
+  background:none;
+}
+.proposal-grid>.proposal-card[data-copycat="select"] .proposal-name{
+  color:#f8f0ff;text-shadow:0 0 9px #cab8ff64;
+}
+.proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]{
+  border:1px solid #ddc9ee;
+  box-shadow:inset 0 1px 0 #ffffff80,inset 0 0 19px #a6f5ee2e,0 0 18px #ba91ee45,0 9px 24px #0007;
 }
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{
-  animation:tiraSelectFoil 3.3s ease-in-out infinite alternate;
+  opacity:.72;
+  background-size:155% 155%;
+  animation:tiraSelectSoftFoil 2.8s ease-in-out infinite alternate;
 }
-@keyframes tiraSelectFoil{
-  from{background-position:0% 32%;opacity:.48}
-  to{background-position:100% 68%;opacity:.72}
+@keyframes tiraSelectSoftFoil{
+  from{background-position:0% 35%;opacity:.5}
+  to{background-position:100% 65%;opacity:.78}
 }
 @media(prefers-reduced-motion:reduce){
-  .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{animation:none}
+  .proposal-grid>.proposal-card[data-copycat="select"],
+  .proposal-grid>.proposal-card[data-copycat="select"]::after{transition:none;animation:none}
 }
-
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-orb{position:relative;z-index:1;width:min(100%,108px);max-width:100%;height:78px;flex:0 0 78px;overflow:hidden;background:none;box-shadow:none;border-radius:0}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat{width:46%;height:76px;bottom:0;left:50%;transform-origin:center bottom;opacity:1;filter:drop-shadow(0 2px 2px #0007);transition:transform .55s cubic-bezier(.2,.72,.18,1),opacity .2s ease .32s,filter .3s ease}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(1){fill:#bb91ec;transform:translateX(-112%) scale(.67)}
