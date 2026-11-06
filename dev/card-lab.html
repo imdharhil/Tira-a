@@ -454,6 +454,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"] .copycat{cursor:pointer}
 /* BLIND SELECT: press-only scan, then one centered unknown cat, then reveal. No glow. */
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat{pointer-events:none}
+/* Only the currently pressed cat receives a scale animation; the others remain still. */
 .proposal-grid>.proposal-card[data-copycat="select"].blind-final .copycat.blind-picked{
   transform:translateX(-50%) scale(.91);opacity:1;z-index:2;fill:#bcb8c5;filter:none;
 }
@@ -731,7 +732,19 @@ async function playBlindSelect(){
   if(!reduced){
     for(const index of sequence){
       if(!active())return;
-      await motion(cats[index],[{transform:blindBase[index]},{transform:blindPress[index]},{transform:blindBase[index]}],132);
+      // Each press completes and releases before the next cat starts.
+      // Explicit cancellation prevents previously finished fill-mode animations
+      // from stacking on top of subsequent steps in Safari.
+      const cat=cats[index];
+      const press=cat.animate([
+        {transform:blindBase[index],offset:0},
+        {transform:blindPress[index],offset:.32},
+        {transform:blindPress[index],offset:.58},
+        {transform:blindBase[index],offset:1}
+      ],{duration:260,easing:'ease-in-out',fill:'forwards'});
+      await press.finished.catch(()=>{});
+      press.cancel();
+      if(!active())return;
     }
     if(!active())return;
     const moves=cats.map((cat,i)=>motion(cat,[
