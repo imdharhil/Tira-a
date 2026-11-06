@@ -452,12 +452,19 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(3){transform:translateX(12%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"] .copycat{cursor:pointer}
-.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat.select-picked{
-  transform:translateX(-50%) scale(.91);z-index:2;opacity:1;
+/* BLIND SELECT: press-only scan, then one centered unknown cat, then reveal. No glow. */
+.proposal-grid>.proposal-card[data-copycat="select"] .copycat{pointer-events:none}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-final .copycat.blind-picked{
+  transform:translateX(-50%) scale(.91);opacity:1;z-index:2;fill:#bcb8c5;filter:none;
+}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-final .copycat:not(.blind-picked){
+  transform:translateX(-50%) scale(.66);opacity:0;pointer-events:none;
+}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-revealed .copycat.blind-picked{
   fill:var(--blind-reveal-color,#bcb8c5);filter:none;
 }
-.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat:not(.select-picked){
-  transform:translateX(-50%) scale(.66);opacity:0;pointer-events:none;
+@media(prefers-reduced-motion:reduce){
+  .proposal-grid>.proposal-card[data-copycat="select"] .copycat{transition:none}
 }
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-name,
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-family{position:relative;z-index:1}
@@ -694,7 +701,82 @@ const el=id=>document.getElementById(id);const cards=[...document.querySelectorA
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();if(id==='proposal6'&&saved.toLowerCase()==='select')return 'Blind Select';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
 function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
-cards.forEach(b=>b.addEventListener('click',(event)=>{if(b.dataset.id===selected){if(b.dataset.copycat==='select'){const picked=event.target.closest('.copycat');const cats=[...b.querySelectorAll('.copycat')];if(b.classList.contains('select-has-choice')){b.classList.remove('select-has-choice');cats.forEach(cat=>cat.classList.remove('select-picked'));el('editorStatus').textContent='BLIND SELECT preview: choose a hidden position.';}else if(picked&&cats.includes(picked)){picked.classList.add('select-picked');b.style.setProperty('--blind-reveal-color',b._blindColors[cats.indexOf(picked)]);b.classList.add('select-has-choice');el('editorStatus').textContent='BLIND SELECT preview: only your chosen option is revealed. Tap the card again to reset.';}}return;}const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());if(b.dataset.copycat==='random'){const cats=[...b.querySelectorAll('.copycat')];cats.forEach(cat=>cat.classList.remove('random-winner'));const winner=Math.floor(Math.random()*cats.length);cats[winner]?.classList.add('random-winner');}selected=b.dataset.id;render();if(b.dataset.copycat==='select'){b.classList.remove('select-has-choice');b.querySelectorAll('.copycat').forEach(cat=>cat.classList.remove('select-picked'));const hiddenColors=['#bb91ec','#70dce1','#f3be77'];for(let i=hiddenColors.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[hiddenColors[i],hiddenColors[j]]=[hiddenColors[j],hiddenColors[i]];}b._blindColors=hiddenColors;b.style.removeProperty('--blind-reveal-color');el('editorStatus').textContent='BLIND SELECT preview: choose one of the three identical hidden cats.';}if(b.dataset.copycat==='copy'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const motions=b.querySelectorAll('.copy-outline-motion');motions[0]?.beginElement?.();motions[1]?.beginElementAt?.(.38)}if(b.dataset.copycat!=='select')el('editorStatus').textContent='Viewing '+defs[selected].name}));
+/* Visual-only BLIND SELECT: one of three 6-step scans; unknown merge precedes reveal. */
+const blindCard=document.querySelector('.proposal-card[data-copycat="select"]');
+const blindPatterns=[[0,1,2,1,0,1],[1,2,1,0,1,2],[2,1,2,0,1,0]];
+const blindBase=['translateX(-112%) scale(.67)','translateX(-50%) scale(.67)','translateX(12%) scale(.67)'];
+const blindPress=['translateX(-112%) scale(.61)','translateX(-50%) scale(.61)','translateX(12%) scale(.61)'];
+let blindRun=0;
+function resetBlindSelect(){
+  blindRun++;
+  if(!blindCard)return;
+  blindCard.querySelectorAll('.copycat').forEach(cat=>{cat.getAnimations().forEach(anim=>anim.cancel());cat.classList.remove('blind-picked');});
+  blindCard.classList.remove('blind-final','blind-revealed');
+  blindCard.style.removeProperty('--blind-reveal-color');
+}
+async function playBlindSelect(){
+  if(!blindCard)return;
+  resetBlindSelect();
+  const run=blindRun;
+  const cats=[...blindCard.querySelectorAll('.copycat')];
+  if(cats.length!==3)return;
+  const sequence=blindPatterns[Math.floor(Math.random()*blindPatterns.length)];
+  const winner=sequence[5];
+  const revealColors=['#bb91ec','#70dce1','#f3be77'];
+  const revealColor=revealColors[Math.floor(Math.random()*revealColors.length)];
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const active=()=>run===blindRun&&selected===blindCard.dataset.id;
+  const motion=(cat,frames,duration)=>cat.animate(frames,{duration,easing:'ease-in-out',fill:'forwards'}).finished.catch(()=>{});
+  el('editorStatus').textContent='BLIND SELECT: '+sequence.map(i=>i+1).join(', ')+' → unknown → reveal.';
+  if(!reduced){
+    for(const index of sequence){
+      if(!active())return;
+      await motion(cats[index],[{transform:blindBase[index]},{transform:blindPress[index]},{transform:blindBase[index]}],132);
+    }
+    if(!active())return;
+    const moves=cats.map((cat,i)=>motion(cat,[
+      {transform:blindBase[i],opacity:1},
+      {transform:i===winner?'translateX(-50%) scale(.91)':'translateX(-50%) scale(.66)',opacity:i===winner?1:0}
+    ],380));
+    await Promise.all(moves);
+    if(!active())return;
+  }
+  cats.forEach((cat,i)=>cat.classList.toggle('blind-picked',i===winner));
+  blindCard.classList.add('blind-final');
+  cats.forEach(cat=>cat.getAnimations().forEach(anim=>anim.cancel()));
+  if(!reduced){
+    await motion(cats[winner],[{opacity:1},{opacity:1}],170);
+    if(!active())return;
+    cats[winner].getAnimations().forEach(anim=>anim.cancel());
+  }
+  blindCard.style.setProperty('--blind-reveal-color',revealColor);
+  blindCard.classList.add('blind-revealed');
+  el('editorStatus').textContent='BLIND SELECT: final mystery cat revealed. Preview only; no gameplay copying.';
+}
+cards.forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.id===selected){
+    if(b.dataset.copycat==='select')void playBlindSelect();
+    return;
+  }
+  const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);
+  previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());
+  resetBlindSelect();
+  if(b.dataset.copycat==='random'){
+    const cats=[...b.querySelectorAll('.copycat')];
+    cats.forEach(cat=>cat.classList.remove('random-winner'));
+    const winner=Math.floor(Math.random()*cats.length);
+    cats[winner]?.classList.add('random-winner');
+  }
+  selected=b.dataset.id;
+  render();
+  if(b.dataset.copycat==='select')void playBlindSelect();
+  if(b.dataset.copycat==='copy'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const motions=b.querySelectorAll('.copy-outline-motion');
+    motions[0]?.beginElement?.();
+    motions[1]?.beginElementAt?.(.38);
+  }
+  if(b.dataset.copycat!=='select')el('editorStatus').textContent='Viewing '+defs[selected].name;
+}));
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
 el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,kind:'visual-card-drafts',cards:drafts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='tira-special-card-lab-drafts.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);el('editorStatus').textContent='Local draft file exported. No gameplay data included.'});
