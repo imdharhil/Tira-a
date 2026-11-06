@@ -452,12 +452,31 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(3){transform:translateX(12%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"] .copycat{cursor:pointer}
-.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat.select-picked{
-  transform:translateX(-50%) scale(.91);z-index:2;opacity:1;
-  fill:var(--blind-reveal-color,#bcb8c5);filter:none;
+/* BLIND SELECT: six quiet press pulses, 1-2-3-2-1-2, no reveal. */
+.proposal-grid>.proposal-card[data-copycat="select"] .copycat{pointer-events:none}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-scanning .copycat:nth-child(1){animation:blindCheckOne 1.05s linear both}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-scanning .copycat:nth-child(2){animation:blindCheckTwo 1.05s linear both}
+.proposal-grid>.proposal-card[data-copycat="select"].blind-scanning .copycat:nth-child(3){animation:blindCheckThree 1.05s linear both}
+@keyframes blindCheckOne{
+0%,3%,11%,65%,76%,100%{transform:translateX(-112%) scale(.67)}
+7%,71%{transform:translateX(-112%) scale(.61)}
 }
-.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat:not(.select-picked){
-  transform:translateX(-50%) scale(.66);opacity:0;pointer-events:none;
+@keyframes blindCheckTwo{
+0%,16%,25%,47%,58%,80%,91%,100%{transform:translateX(-50%) scale(.67)}
+21%,53%,86%{transform:translateX(-50%) scale(.61)}
+}
+@keyframes blindCheckThree{
+0%,32%,43%,100%{transform:translateX(12%) scale(.67)}
+37%{transform:translateX(12%) scale(.61)}
+}
+.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat:nth-child(2){
+transform:translateX(-50%) scale(.91);z-index:2;opacity:1;fill:#bcb8c5;filter:none
+}
+.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat:not(:nth-child(2)){
+transform:translateX(-50%) scale(.66);opacity:0;pointer-events:none
+}
+@media(prefers-reduced-motion:reduce){
+.proposal-grid>.proposal-card[data-copycat="select"].blind-scanning .copycat{animation:none}
 }
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-name,
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-family{position:relative;z-index:1}
