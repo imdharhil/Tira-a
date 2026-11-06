@@ -408,21 +408,36 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   .proposal-grid>.proposal-card[data-copycat="random"] .copycat{transition:none}
   .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"]::after{animation:none}
 }
-/* BLIND SELECT: three visually identical, truly hidden positions until a player picks. */
+/* BLIND SELECT: DUPLICATE-family foil with no emitted glow, bloom, or halos. */
 .proposal-grid>.proposal-card[data-copycat="select"]{
   isolation:isolate;overflow:hidden;
-  background:linear-gradient(137deg,#41424f 0%,#242634 34%,#34313f 61%,#151a27 100%);
-  border:1px solid #a99db6;
+  background:
+    radial-gradient(ellipse at 17% 12%,#94f7ee2b 0%,transparent 47%),
+    radial-gradient(ellipse at 93% 79%,#de8dff30 0%,transparent 52%),
+    linear-gradient(137deg,#41424f 0%,#242634 34%,#34313f 61%,#151a27 100%);
+  border:1px solid #b2a2c4;
   box-shadow:0 9px 24px #0007;
 }
-.proposal-grid>.proposal-card[data-copycat="select"]::before{border-color:#c0b5ce57}
+.proposal-grid>.proposal-card[data-copycat="select"]::before{border-color:#ddd0ec75}
 .proposal-grid>.proposal-card[data-copycat="select"]::after{
   content:"";position:absolute;inset:7px;border-radius:9px;pointer-events:none;z-index:0;
-  background:linear-gradient(120deg,#f3eaff0c 0%,transparent 42%,#d8f0fa0b 68%,transparent 100%);
-  opacity:.55;
+  background:
+    radial-gradient(ellipse at 50% 46%,#c3f9ff1f 0%,#d8b7ff12 42%,transparent 76%);
+  background-size:155% 155%;background-position:18% 35%;
+  mix-blend-mode:screen;opacity:.54;
 }
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]{
-  border:2px solid #bdb1ca;box-shadow:0 9px 24px #0007;
+  border:1px solid #ddc9ee;box-shadow:0 9px 24px #0007;
+}
+.proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{
+  animation:tiraBlindSelectFoil 2.8s ease-in-out infinite alternate;
+}
+@keyframes tiraBlindSelectFoil{
+  from{background-position:0% 35%;opacity:.5}
+  to{background-position:100% 65%;opacity:.78}
+}
+@media(prefers-reduced-motion:reduce){
+  .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{animation:none}
 }
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-orb{
   position:relative;z-index:1;width:min(100%,108px);max-width:100%;
