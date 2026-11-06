@@ -706,7 +706,7 @@ const el=id=>document.getElementById(id);const cards=[...document.querySelectorA
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();if(id==='proposal6'&&saved.toLowerCase()==='select')return 'Blind Select';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
 function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
-/* Visual-only BLIND SELECT: three sequential 67→75 handoffs, final 67→75→61→100 reveal. */
+/* Visual-only BLIND SELECT: three sequential 67→75 handoffs, final 75→61→100 reveal. */
 const blindCard=document.querySelector('.proposal-card[data-copycat="select"]');
 const blindPatterns=[[0,1,2],[2,1,0],[1,2,1],[1,0,1]];
 const blindOffsets=['-112%','-50%','12%'];
@@ -754,13 +754,8 @@ async function playBlindSelect(){
       if(!active())return;
       previous=index;
     }
-    // Final cat gets a full release, a second emphasis, then a small anticipation.
-    cats[winner].style.transform=blindBase[winner];
-    await wait(235);
-    if(!active())return;
-    cats[winner].style.transform=blindScale(winner,'.75');
-    await wait(255);
-    if(!active())return;
+    // The final emphasis is already at 75%: go directly to 61%, then 100%.
+    // Do not release to 67% or re-emphasize the final cat.
     cats[winner].style.transform=blindScale(winner,'.61');
     await wait(195);
     if(!active())return;
