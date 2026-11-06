@@ -713,7 +713,50 @@ const el=id=>document.getElementById(id);const cards=[...document.querySelectorA
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();if(id==='proposal6'&&saved.toLowerCase()==='select')return 'Blind Select';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
 function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
-cards.forEach(b=>b.addEventListener('click',(event)=>{if(b.dataset.id===selected){if(b.dataset.copycat==='select'){const picked=event.target.closest('.copycat');const cats=[...b.querySelectorAll('.copycat')];if(b.classList.contains('select-has-choice')){b.classList.remove('select-has-choice');cats.forEach(cat=>cat.classList.remove('select-picked'));el('editorStatus').textContent='BLIND SELECT preview: choose a hidden position.';}else if(picked&&cats.includes(picked)){picked.classList.add('select-picked');b.style.setProperty('--blind-reveal-color',b._blindColors[cats.indexOf(picked)]);b.classList.add('select-has-choice');el('editorStatus').textContent='BLIND SELECT preview: only your chosen option is revealed. Tap the card again to reset.';}}return;}const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());if(b.dataset.copycat==='random'){const cats=[...b.querySelectorAll('.copycat')];cats.forEach(cat=>cat.classList.remove('random-winner'));const winner=Math.floor(Math.random()*cats.length);cats[winner]?.classList.add('random-winner');}selected=b.dataset.id;render();if(b.dataset.copycat==='select'){b.classList.remove('select-has-choice');b.querySelectorAll('.copycat').forEach(cat=>cat.classList.remove('select-picked'));const hiddenColors=['#bb91ec','#70dce1','#f3be77'];for(let i=hiddenColors.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[hiddenColors[i],hiddenColors[j]]=[hiddenColors[j],hiddenColors[i]];}b._blindColors=hiddenColors;b.style.removeProperty('--blind-reveal-color');el('editorStatus').textContent='BLIND SELECT preview: choose one of the three identical hidden cats.';}if(b.dataset.copycat==='copy'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const motions=b.querySelectorAll('.copy-outline-motion');motions[0]?.beginElement?.();motions[1]?.beginElementAt?.(.38)}if(b.dataset.copycat!=='select')el('editorStatus').textContent='Viewing '+defs[selected].name}));
+/* Card preview only: automatically check 1,2,3,2,1,2, then retain the unknown center cat. */
+const blindCard=document.querySelector('.proposal-card[data-copycat="select"]');
+function playBlindSelect(){
+  if(!blindCard)return;
+  blindCard.classList.remove('blind-scanning','select-has-choice');
+  void blindCard.offsetWidth;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    blindCard.classList.add('select-has-choice');
+  }else{
+    blindCard.classList.add('blind-scanning');
+  }
+  el('editorStatus').textContent='BLIND SELECT: checking 1, 2, 3, 2, 1, 2. No identity is revealed.';
+}
+blindCard?.addEventListener('animationend',event=>{
+  if(event.animationName==='blindCheckTwo'&&blindCard.classList.contains('blind-scanning')){
+    blindCard.classList.remove('blind-scanning');
+    blindCard.classList.add('select-has-choice');
+    el('editorStatus').textContent='BLIND SELECT: one unknown cat remains.';
+  }
+});
+cards.forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.id===selected){
+    if(b.dataset.copycat==='select')playBlindSelect();
+    return;
+  }
+  const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);
+  previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());
+  blindCard?.classList.remove('blind-scanning','select-has-choice');
+  if(b.dataset.copycat==='random'){
+    const cats=[...b.querySelectorAll('.copycat')];
+    cats.forEach(cat=>cat.classList.remove('random-winner'));
+    const winner=Math.floor(Math.random()*cats.length);
+    cats[winner]?.classList.add('random-winner');
+  }
+  selected=b.dataset.id;
+  render();
+  if(b.dataset.copycat==='select')playBlindSelect();
+  if(b.dataset.copycat==='copy'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const motions=b.querySelectorAll('.copy-outline-motion');
+    motions[0]?.beginElement?.();
+    motions[1]?.beginElementAt?.(.38);
+  }
+  if(b.dataset.copycat!=='select')el('editorStatus').textContent='Viewing '+defs[selected].name;
+}));
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
 el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,kind:'visual-card-drafts',cards:drafts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='tira-special-card-lab-drafts.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);el('editorStatus').textContent='Local draft file exported. No gameplay data included.'});
