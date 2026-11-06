@@ -334,25 +334,30 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   flex:0 0 78px;overflow:hidden;background:none;box-shadow:none;border-radius:0;
 }
 .proposal-grid>.proposal-card[data-copycat="randy"] .copycat{
-  width:39%;height:76px;bottom:0;left:50%;
+  width:46%;height:76px;bottom:0;left:50%;
   transform-origin:center bottom;
   filter:drop-shadow(0 2px 2px #0009);
-  transition:transform .54s cubic-bezier(.2,.72,.2,1),opacity .3s ease .23s;
+  transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease;
 }
 .proposal-grid>.proposal-card[data-copycat="randy"] .copycat:nth-child(1){
-  fill:#bb91ec;transform:translateX(-118%) scale(.78);
+  fill:#bb91ec;transform:translateX(-108%) scale(.70);
 }
 .proposal-grid>.proposal-card[data-copycat="randy"] .copycat:nth-child(2){
-  fill:#70dce1;transform:translateX(-50%) scale(.78);
+  fill:#70dce1;transform:translateX(-50%) scale(.70);
 }
 .proposal-grid>.proposal-card[data-copycat="randy"] .copycat:nth-child(3){
-  fill:#f3be77;transform:translateX(18%) scale(.78);
+  fill:#f3be77;transform:translateX(8%) scale(.70);
 }
 .proposal-grid>.proposal-card[data-copycat="randy"][aria-pressed="true"] .copycat{
-  transform:translateX(-50%) scale(.89);
+  transform:translateX(-50%) scale(.91);
+}
+.proposal-grid>.proposal-card[data-copycat="randy"][aria-pressed="true"] .copycat.randy-winner{
+  z-index:3;opacity:1;
 }
 .proposal-grid>.proposal-card[data-copycat="randy"][aria-pressed="true"] .copycat:not(.randy-winner){
   opacity:0;
+  /* The losing colors meet in the center before fading; no disappearing jump. */
+  transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease .44s;
 }
 .proposal-grid>.proposal-card[data-copycat="randy"] .proposal-name,
 .proposal-grid>.proposal-card[data-copycat="randy"] .proposal-family{
@@ -595,7 +600,7 @@ const el=id=>document.getElementById(id);const cards=[...document.querySelectorA
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
 function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
-cards.forEach(b=>b.addEventListener('click',()=>{if(b.dataset.copycat==='randy'){const cats=[...b.querySelectorAll('.copycat')];cats.forEach(cat=>cat.classList.remove('randy-winner'));const winner=Math.floor(Math.random()*cats.length);cats[winner]?.classList.add('randy-winner');}selected=b.dataset.id;render();el('editorStatus').textContent='Viewing '+defs[selected].name}));
+cards.forEach(b=>b.addEventListener('click',()=>{if(b.dataset.id===selected)return;if(b.dataset.copycat==='randy'){const cats=[...b.querySelectorAll('.copycat')];cats.forEach(cat=>cat.classList.remove('randy-winner'));const winner=Math.floor(Math.random()*cats.length);cats[winner]?.classList.add('randy-winner');}selected=b.dataset.id;render();el('editorStatus').textContent='Viewing '+defs[selected].name}));
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
 el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,kind:'visual-card-drafts',cards:drafts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='tira-special-card-lab-drafts.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);el('editorStatus').textContent='Local draft file exported. No gameplay data included.'});
