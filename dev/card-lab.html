@@ -301,6 +301,39 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-card[data-copycat] .proposal-orb{position:relative;width:100%;height:76px;background:none;box-shadow:none;border-radius:0}
 .proposal-card[data-copycat] .copycat{position:absolute;bottom:0;left:50%;width:58%;height:100%;fill:#a98bcf;transform-origin:center 85%;transition:transform .4s ease,opacity .4s ease}
 .proposal-card[data-copycat] .copycat.matte{fill:#d9d2df;opacity:.35}
+/* COPY card foil: two soft overlapping reflections echo the imitation concept. */
+.proposal-grid>.proposal-card[data-copycat="copy"]{
+  isolation:isolate;overflow:hidden;
+  background:radial-gradient(ellipse at 16% 17%,#b6a1ed29,transparent 54%),
+    radial-gradient(ellipse at 84% 78%,#73d9ed1b,transparent 55%),
+    linear-gradient(145deg,#302b48 0%,#20283a 58%,#141c2b 100%);
+  border-color:#9787be;
+  box-shadow:inset 0 1px 0 #e9ddff30,0 9px 24px #0005;
+}
+.proposal-grid>.proposal-card[data-copycat="copy"]::before{border-color:#c9bbeb48}
+.proposal-grid>.proposal-card[data-copycat="copy"]::after{
+  content:"";position:absolute;inset:6px;border-radius:9px;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 30%,#e0baff22,transparent 58%),
+    radial-gradient(ellipse at 80% 67%,#91e7f12b,transparent 58%);
+  background-size:145% 145%;background-position:35% 40%;
+  opacity:.32;transition:opacity .35s ease;z-index:0;
+}
+.proposal-grid>.proposal-card[data-copycat="copy"][aria-pressed="true"]::after{
+  opacity:.68;animation:tiraCopyFoil 3.6s ease-in-out infinite alternate;
+}
+@keyframes tiraCopyFoil{
+  from{background-position:0% 30%;opacity:.43}
+  to{background-position:100% 70%;opacity:.69}
+}
+.proposal-grid>.proposal-card[data-copycat="copy"] .proposal-orb,
+.proposal-grid>.proposal-card[data-copycat="copy"] .proposal-name,
+.proposal-grid>.proposal-card[data-copycat="copy"] .proposal-family{position:relative;z-index:1}
+.proposal-grid>.proposal-card[data-copycat="copy"] .proposal-name{color:#f3eaff}
+.proposal-grid>.proposal-card[data-copycat="copy"] .proposal-family{color:#c7bdda}
+@media(prefers-reduced-motion:reduce){
+ .proposal-grid>.proposal-card[data-copycat="copy"][aria-pressed="true"]::after{animation:none}
+}
+
 /* COPY: the smaller original demonstrates; the closer cat imitates after a beat. */
 .proposal-card[data-copycat="copy"] .proposal-orb{width:min(100%,112px);height:84px;flex:0 0 84px;overflow:hidden}
 .proposal-card[data-copycat="copy"] .copy-gesture{position:absolute;bottom:0;width:46%;height:82px;overflow:visible;transition:opacity .3s ease;filter:drop-shadow(0 2px 2px #0007)}
