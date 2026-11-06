@@ -411,16 +411,35 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* SELECT shows three deliberate, player-chosen candidates, not a random outcome. */
 .proposal-grid>.proposal-card[data-copycat="select"]{isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 18%,#a8dfd91d,transparent 62%),linear-gradient(145deg,#253b48,#1b2838 60%,#121b2c);border-color:#7aafbd}
 .proposal-grid>.proposal-card[data-copycat="select"]::before{border-color:#a5e5d354}
+/* SELECT card-level foil: soft prismatic reflection instead of cat glow or indicator. */
+.proposal-grid>.proposal-card[data-copycat="select"]::after{
+  content:"";position:absolute;inset:6px;border-radius:9px;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 24% 25%,#bfa9f02c,transparent 54%),
+    radial-gradient(ellipse at 79% 72%,#7fe5e12a,transparent 56%),
+    radial-gradient(ellipse at 53% 50%,#f6ce9020,transparent 60%);
+  background-size:150% 150%;background-position:25% 42%;opacity:.34;
+}
+.proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{
+  animation:tiraSelectFoil 3.3s ease-in-out infinite alternate;
+}
+@keyframes tiraSelectFoil{
+  from{background-position:0% 32%;opacity:.48}
+  to{background-position:100% 68%;opacity:.72}
+}
+@media(prefers-reduced-motion:reduce){
+  .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]::after{animation:none}
+}
+
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-orb{position:relative;z-index:1;width:min(100%,108px);max-width:100%;height:78px;flex:0 0 78px;overflow:hidden;background:none;box-shadow:none;border-radius:0}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat{width:46%;height:76px;bottom:0;left:50%;transform-origin:center bottom;opacity:1;filter:drop-shadow(0 2px 2px #0007);transition:transform .55s cubic-bezier(.2,.72,.18,1),opacity .2s ease .32s,filter .3s ease}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(1){fill:#bb91ec;transform:translateX(-112%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(2){fill:#70dce1;transform:translateX(-50%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(3){fill:#f3be77;transform:translateX(12%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"] .copycat{cursor:pointer}
-.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat.select-picked{transform:translateX(-50%) scale(.91);z-index:2;opacity:1;filter:drop-shadow(0 0 5px #a8f8df80) drop-shadow(0 2px 2px #0008)}
+.proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat.select-picked{transform:translateX(-50%) scale(.91);z-index:2;opacity:1;filter:drop-shadow(0 2px 2px #0008)}
 .proposal-grid>.proposal-card[data-copycat="select"].select-has-choice .copycat:not(.select-picked){transform:translateX(-50%) scale(.66);opacity:0;pointer-events:none}
 .proposal-grid>.proposal-card[data-copycat="select"] .proposal-name,.proposal-grid>.proposal-card[data-copycat="select"] .proposal-family{position:relative;z-index:1}
-.proposal-grid>.proposal-card[data-copycat="select"][aria-pressed="true"]:not(.select-has-choice) .proposal-orb::after{content:"";position:absolute;bottom:0;left:50%;width:31%;height:3px;border-radius:4px;transform:translateX(-50%);background:#a6e8d2;opacity:.55;pointer-events:none}
+
 @media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-copycat="select"] .copycat{transition:none}}
 @media(prefers-reduced-motion:reduce){.proposal-card[data-copycat] .copycat{transition:none}}
 /* DUPLICATE-only design preview: one charcoal cat becomes two matching cats. */
