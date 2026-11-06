@@ -418,7 +418,7 @@ function reserveOpen(){
   const card=document.createElement('div');card.className='reserve-slot-card'+(reserveSelected===i?' active':'');
   if(item?.type==='special')card.classList.add(item.slot===4?'protect-card':'gold');
   const select=document.createElement('button');select.type='button';select.className='reserve-slot-select';
-  select.innerHTML=!item?'<img class="reserve-mini-logo" src="./assets/reserve-logo.svg" alt=""><small>SLOT EMPTY</small>':item.type==='cell'?'<span class="orb">+'+item.value+'</span><small>CELL CARD</small>':'<span class="orb">'+(item.slot===3?'+4':item.slot===4?'⬡':'▣')+'</span><small>'+(item.slot===3?'GOLD +4':item.slot===4?'PROTECT':'GOLD DRAW')+'</small>';
+  select.innerHTML=!item?'<img class="reserve-mini-logo" src="./assets/reserve-logo-flat.svg" alt=""><small>SLOT EMPTY</small>':item.type==='cell'?'<span class="orb">+'+item.value+'</span><small>CELL CARD</small>':'<span class="orb">'+(item.slot===3?'+4':item.slot===4?'⬡':'▣')+'</span><small>'+(item.slot===3?'GOLD +4':item.slot===4?'PROTECT':'GOLD DRAW')+'</small>';
   select.setAttribute('aria-label','Reserve slot '+(i+1)+(item?' occupied':' empty'));
   select.onclick=()=>reservePickSlot(i);
   if(item&&reserveSelected===i){const use=document.createElement('button');use.type='button';use.className='reserve-use';use.textContent='USE';use.onclick=()=>reserveUse(i);card.appendChild(use)}
@@ -435,7 +435,7 @@ function reserveRender(){
   entry.disabled=phase!=='human'||g.ended;
   entry.classList.toggle('reserve-mini-selected',reserveSelected===i||reservePicking===i);
   if(!item){
-   entry.innerHTML='<img class="reserve-mini-logo" src="./assets/reserve-logo.svg" alt="">';
+   entry.innerHTML='<img class="reserve-mini-logo" src="./assets/reserve-logo-flat.svg" alt="">';
   }else if(item.type==='cell'){
    entry.innerHTML='<span class="reserve-mini-card"><span class="orb">+'+item.value+'</span><small>CELL</small></span>';
   }else{
