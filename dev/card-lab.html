@@ -704,7 +704,7 @@ function description(id){return typeof draft(id).description==='string'&&draft(i
 function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
 /* Visual-only BLIND SELECT: three sequential 67→75 handoffs, final 67→75→61→100 reveal. */
 const blindCard=document.querySelector('.proposal-card[data-copycat="select"]');
-const blindPatterns=[[0,1,2],[2,1,0],[1,2,1]];
+const blindPatterns=[[0,1,2],[2,1,0],[1,0,1]];
 const blindOffsets=['-112%','-50%','12%'];
 const blindBase=blindOffsets.map(x=>'translateX('+x+') scale(.67)');
 const blindScale=(i,scale)=>'translateX('+blindOffsets[i]+') scale('+scale+')';
