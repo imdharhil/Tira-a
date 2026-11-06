@@ -715,6 +715,7 @@ function resetBlindSelect(){
   blindCard.querySelectorAll('.copycat').forEach(cat=>{
     cat.getAnimations().forEach(anim=>anim.cancel());
     cat.style.removeProperty('transform');
+    cat.style.removeProperty('opacity');
     cat.style.removeProperty('transition');
     cat.classList.remove('blind-picked');
   });
