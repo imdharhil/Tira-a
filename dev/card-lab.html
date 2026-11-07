@@ -776,6 +776,14 @@ async function playBlindSelect(){
     }
     // The final emphasis is already at 75%: go directly to 61%, then 100%.
     // Do not release to 67% or re-emphasize the final cat.
+    // Once the final candidate is known, remove both unchosen silhouettes
+    // before the anticipation and zoom. They must never ghost behind the winner.
+    cats.forEach((cat,i)=>{
+      if(i!==winner){
+        cat.style.transition='none';
+        cat.style.opacity='0';
+      }
+    });
     cats[winner].style.transform=blindScale(winner,'.61');
     await wait(195);
     if(!active())return;
@@ -787,7 +795,7 @@ async function playBlindSelect(){
       finalCat.addEventListener('transitionend',onEnd);
       setTimeout(()=>{finalCat.removeEventListener('transitionend',onEnd);resolve()},650);
     });
-    cats.forEach((cat,i)=>{cat.classList.toggle('blind-picked',i===winner);cat.style.transition=i===winner?'transform 420ms linear,fill 0s':'transform 420ms linear,opacity 0s';cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';if(i!==winner)cat.style.opacity='0'});
+    cats.forEach((cat,i)=>{cat.classList.toggle('blind-picked',i===winner);cat.style.transition=i===winner?'transform 420ms linear,fill 0s':'none';cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';if(i!==winner)cat.style.opacity='0'});
     await finished;
     if(!active())return;
   }else{
