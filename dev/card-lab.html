@@ -637,9 +637,11 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 
 /* Cell Card proportion refinement: scale the numbered orb down without changing the card frame or other special-card icons. */
 .card.cell .orb{
-  /* Match the Skip Card proposal-orb sizing across viewport widths. */
-  width:clamp(44px,7vw,67px);
-  font-size:clamp(19px,3vw,27px);
+  /* Match Skip Card's visible orb-to-card ratio, not its viewport pixel size. */
+  width:53%;
+  max-width:100px;
+  min-width:0;
+  font-size:clamp(20px,3vw,31px);
   box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005;
 }
 </style>
