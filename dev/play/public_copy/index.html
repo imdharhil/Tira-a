@@ -259,10 +259,10 @@ html[data-motion=off] .card.selected{transform:none}
  #bonusModal:not(.gold-draw-modal) .new-card-choice-actions{margin-top:10px}
 }
 </style><style id="tira-reserve-select-card-art-v1">
-/* Reserve mode: a transparent no-plus ring wraps the original blue Cell orb. */
-.cards .card.reserve-target .card-main .reserve-select-orb{position:relative;isolation:isolate;overflow:visible;flex:none;width:clamp(64px,15vw,88px);height:clamp(64px,15vw,88px);display:grid;place-items:center;background:transparent;box-shadow:none;border:0;border-radius:50%;color:#e8f9ff;text-shadow:0 1px 3px #082339}
-.cards .card.reserve-target .reserve-select-orb::after{content:"";position:absolute;z-index:0;left:17%;top:17%;width:66%;height:66%;border-radius:50%;background:radial-gradient(circle at 30% 20%,#b9f6ff,#329fe9 43%,#1550a6 90%);box-shadow:0 5px 17px #077fbc66;pointer-events:none}
-.cards .card.reserve-target .reserve-select-orb::before{content:"";position:absolute;z-index:1;inset:0;background:url("./assets/reserve-no-plus-button.png") center/contain no-repeat;pointer-events:none}
+/* Selected Cell: use the original blue orb once, with only a transparent reserve ring layered over it. */
+.cards .card.reserve-target .card-main .reserve-select-orb{position:relative;isolation:isolate;overflow:visible;flex:none;display:grid;place-items:center;width:clamp(54px,12vw,76px);height:clamp(54px,12vw,76px);aspect-ratio:1;border-radius:50%;color:#e8f9ff;text-shadow:0 1px 3px #082339}
+.cards .card.reserve-target .reserve-select-orb::after{content:none!important}
+.cards .card.reserve-target .reserve-select-orb::before{content:"";position:absolute;inset:-19%;z-index:1;background:url("./assets/reserve-no-plus-button.png") center/contain no-repeat;pointer-events:none}
 .cards .card.reserve-target .reserve-select-value{position:relative;z-index:2;font-size:clamp(17px,4.5vw,25px);font-weight:900;line-height:1}
 .cards .card.reserve-target .card-main{cursor:pointer}
 .cards .card.reserve-target .reserve-mode-convert-icon{display:block;width:21px;height:21px;object-fit:contain;pointer-events:none}
