@@ -540,41 +540,46 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   .proposal-grid>.proposal-card[data-copycat="duplicate"],
   .proposal-grid>.proposal-card[data-copycat="duplicate"]::after{transition:none;animation:none}
 }
-/* TAUNT: holographic anime ink, three pulses then a rest; no outer glow. */
+/* TAUNT: preserve original black manga speed lines and halftone.
+   Restore the earlier two-beat icon pump; never add colored holographic glow. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]{isolation:isolate}
 .proposal-grid>.proposal-card[data-card-name="Taunt"]::after{
  content:"";position:absolute;inset:10px;z-index:0;pointer-events:none;
- background:repeating-conic-gradient(from 10deg at 50% 54%,transparent 0deg 12deg,#111 12.4deg 13.4deg,transparent 13.8deg 25deg),
- linear-gradient(115deg,transparent 12%,#64dce8 27%,#bd83f0 39%,#f7b9db 49%,#ffe59b 59%,transparent 74%);
- background-size:100% 100%,240% 100%;
- -webkit-mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 35%,#000a 52%,#000 68%);
- mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 35%,#000a 52%,#000 68%);
- opacity:0;
+ background:
+  radial-gradient(circle,#111 1px,transparent 1.6px) 0 0/7px 7px,
+  repeating-conic-gradient(from 10deg at 50% 54%,transparent 0deg 12deg,#090909 12.4deg 13.4deg,transparent 13.8deg 25deg);
+ -webkit-mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 40%,#0008 51%,#000 62%);
+ mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 40%,#0008 51%,#000 62%);
+ opacity:0;transform:scale(.97);transform-origin:50% 54%;
+ transition:opacity .32s cubic-bezier(.2,.7,.2,1),transform .42s cubic-bezier(.2,.7,.2,1);
 }
 .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after{
- opacity:.72;animation:tiraTauntHolo 3.2s linear infinite;
+ opacity:.83;transform:scale(1);animation:none;
 }
 .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark{
- transform-origin:50% 54%;animation:tiraTauntTriplePump 3.2s ease-in-out infinite;
+ transform-origin:50% 54%;animation:tiraTauntHeartbeat 1.15s ease-in-out infinite;
 }
-@keyframes tiraTauntTriplePump{
- 0%,12%,23%,35%,46%,58%,100%{transform:scale(1)}
- 6%,29%,52%{transform:scale(1.14)}
- 9%,32%,55%{transform:scale(.97)}
-}
-@keyframes tiraTauntHolo{
- 0%{background-position:0 0,110% 0}
- 60%{background-position:0 0,-45% 0}
- 100%{background-position:0 0,-45% 0}
+@keyframes tiraTauntHeartbeat{
+ 0%,100%{transform:scale(1)}
+ 13%{transform:scale(1.13)}
+ 25%{transform:scale(.97)}
+ 38%{transform:scale(1.09)}
+ 52%,82%{transform:scale(1)}
 }
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.taunt-art,
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.proposal-name{position:relative;z-index:1}
-.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark path{fill:#ce2027;stroke:#000;stroke-width:8}
-.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]{box-shadow:0 9px 24px #0005!important}
+.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark path{
+ fill:#ce2027;stroke:#000;stroke-width:8;filter:none;
+}
+.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark{
+ filter:none;
+}
+.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]{
+ box-shadow:0 9px 24px #0005!important;
+}
 @media(prefers-reduced-motion:reduce){
- .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after,
+ .proposal-grid>.proposal-card[data-card-name="Taunt"]::after{transition:none;transform:none}
  .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark{animation:none}
- .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after{opacity:.35}
 }
 /* Taunt cost uses the existing top-right PP number convention, legible on its white card. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.pp-cost{position:absolute;top:8px;right:12px;z-index:5;display:grid;place-items:center;width:23px;height:23px;color:#000;font-size:20px;font-weight:900;line-height:1;-webkit-text-stroke:1.5px #fff;paint-order:stroke fill;pointer-events:none}
