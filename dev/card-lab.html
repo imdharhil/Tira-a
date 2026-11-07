@@ -644,6 +644,21 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   font-size:clamp(20px,3vw,31px);
   box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005;
 }
+
+/* DUPLICATE deselection: reverse the split into one centered cat before hiding
+   the second silhouette. Keep normal selection and reduced-motion behavior. */
+.proposal-grid>.proposal-card[data-copycat="duplicate"].duplicate-exiting .copycat:first-child{
+  transform:translateX(-50%) scale(.91);
+  transition:transform .42s cubic-bezier(.2,.72,.18,1);
+}
+.proposal-grid>.proposal-card[data-copycat="duplicate"].duplicate-exiting .copycat:last-child{
+  transform:translateX(-50%) scale(.91);
+  opacity:0;
+  transition:transform .42s cubic-bezier(.2,.72,.18,1),opacity .12s linear .30s;
+}
+@media(prefers-reduced-motion:reduce){
+ .proposal-grid>.proposal-card[data-copycat="duplicate"].duplicate-exiting .copycat{transition:none}
+}
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 
@@ -772,7 +787,7 @@ async function playBlindSelect(){
       finalCat.addEventListener('transitionend',onEnd);
       setTimeout(()=>{finalCat.removeEventListener('transitionend',onEnd);resolve()},650);
     });
-    cats.forEach((cat,i)=>{cat.classList.toggle('blind-picked',i===winner);cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';if(i!==winner)cat.style.opacity='0'});
+    cats.forEach((cat,i)=>{cat.classList.toggle('blind-picked',i===winner);cat.style.transition=i===winner?'transform 420ms linear,fill 0s':'transform 420ms linear,opacity 0s';cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';if(i!==winner)cat.style.opacity='0'});
     await finished;
     if(!active())return;
   }else{
@@ -851,6 +866,28 @@ cards.forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.id===selected)return;
   const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);
   previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());
+  const previousDuplicate=cards.find(card=>card.dataset.copycat==='duplicate'&&card.dataset.id===selected);
+  // Capture the split pose before render clears aria-pressed, then reverse it.
+  if(previousDuplicate){
+    previousDuplicate.classList.remove('duplicate-exiting');
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const figures=[...previousDuplicate.querySelectorAll('.copycat')];
+      figures.forEach((cat,i)=>{
+        cat.style.transition='none';
+        cat.style.transform=i===0?'translateX(-97%) scale(.78)':'translateX(-3%) scale(.78)';
+        cat.style.opacity='1';
+      });
+      void previousDuplicate.offsetWidth;
+      previousDuplicate.classList.add('duplicate-exiting');
+      figures.forEach(cat=>{cat.style.removeProperty('transition');cat.style.removeProperty('transform');cat.style.removeProperty('opacity')});
+      clearTimeout(previousDuplicate._exitTimer);
+      previousDuplicate._exitTimer=setTimeout(()=>previousDuplicate.classList.remove('duplicate-exiting'),470);
+    }
+  }
+  if(b.dataset.copycat==='duplicate'){
+    b.classList.remove('duplicate-exiting');
+    clearTimeout(b._exitTimer);
+  }
   resetBlindSelect();
   resetRandom();
   selected=b.dataset.id;
