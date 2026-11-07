@@ -774,27 +774,39 @@ async function playBlindSelect(){
   cats.forEach(cat=>{cat.style.removeProperty('transform');cat.style.removeProperty('opacity');cat.style.removeProperty('transition')});
   el('editorStatus').textContent='BLIND SELECT: one cat revealed. Preview only; no gameplay copying.';
 }
-/* RANDOM: original automatic collapse; neutral cats until the winning color reveals. */
+/* RANDOM: automatic collapse with a reliable 61%-to-100% winner reveal.
+   Do not add a selection scan; color changes at the completed zoom. */
 const randomCard=document.querySelector('.proposal-card[data-copycat="random"]');
 let randomRevealToken=0;
+let randomRevealTimer=null;
 function resetRandom(){
  randomRevealToken++;
+ if(randomRevealTimer!==null){clearTimeout(randomRevealTimer);randomRevealTimer=null}
  if(!randomCard)return;
  randomCard.classList.remove('random-revealed');
  randomCard.style.removeProperty('--random-reveal-color');
- randomCard.querySelectorAll('.copycat').forEach(cat=>cat.classList.remove('random-winner'));
+ randomCard.querySelectorAll('.copycat').forEach(cat=>{
+  cat.classList.remove('random-winner');
+  cat.style.removeProperty('fill');
+  cat.style.removeProperty('transform');
+  cat.style.removeProperty('transition');
+ });
 }
 function playRandom(){
  if(!randomCard)return;
  resetRandom();
  const cats=[...randomCard.querySelectorAll('.copycat')];
- if(!cats.length)return;
+ if(cats.length!==3)return;
  const winner=Math.floor(Math.random()*cats.length);
  const finalCat=cats[winner];
  const token=randomRevealToken;
+ const color=['#bb91ec','#70dce1','#f3be77'][winner];
+ const active=()=>token===randomRevealToken&&selected===randomCard.dataset.id;
  const reveal=()=>{
-  if(token!==randomRevealToken||selected!==randomCard.dataset.id)return;
-  randomCard.style.setProperty('--random-reveal-color',['#bb91ec','#70dce1','#f3be77'][winner]);
+  if(!active()||randomCard.classList.contains('random-revealed'))return;
+  if(randomRevealTimer!==null){clearTimeout(randomRevealTimer);randomRevealTimer=null}
+  randomCard.style.setProperty('--random-reveal-color',color);
+  finalCat.style.setProperty('fill',color);
   randomCard.classList.add('random-revealed');
   finalCat.style.removeProperty('transform');
   finalCat.style.removeProperty('transition');
@@ -803,22 +815,26 @@ function playRandom(){
  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   finalCat.classList.add('random-winner');
   reveal();
- }else{
-  // Keep the automatic random-copy collapse; the chosen cat zooms from 61% to 100%.
-  finalCat.style.transition='none';
-  finalCat.style.transform='translateX(-50%) scale(.61)';
-  finalCat.classList.add('random-winner');
-  void randomCard.offsetWidth;
-  finalCat.style.transition='transform 520ms cubic-bezier(.2,.72,.18,1),fill 0s';
-  const onEnd=e=>{
-   if(e.target!==finalCat||e.propertyName!=='transform')return;
-   finalCat.removeEventListener('transitionend',onEnd);
-   reveal();
-  };
-  finalCat.addEventListener('transitionend',onEnd);
-  finalCat.style.transform='translateX(-50%) scale(1)';
-  setTimeout(()=>{finalCat.removeEventListener('transitionend',onEnd);reveal()},600);
+  return;
  }
+ // Start the winner at 61% before advancing to 100%; no scan or extra reveal pause.
+ finalCat.style.transition='none';
+ finalCat.style.transform='translateX(-50%) scale(.61)';
+ finalCat.classList.add('random-winner');
+ void finalCat.getBoundingClientRect();
+ finalCat.style.transition='transform 520ms cubic-bezier(.2,.72,.18,1),fill 0s';
+ const onEnd=e=>{
+  if(e.target!==finalCat||e.propertyName!=='transform')return;
+  finalCat.removeEventListener('transitionend',onEnd);
+  reveal();
+ };
+ finalCat.addEventListener('transitionend',onEnd);
+ finalCat.style.transform='translateX(-50%) scale(1)';
+ // Fallback for mobile WebKit if transitionend is dropped; never leave a gray winner.
+ randomRevealTimer=setTimeout(()=>{
+  finalCat.removeEventListener('transitionend',onEnd);
+  reveal();
+ },560);
 }
 cards.forEach(b=>b.addEventListener('click',()=>{
   // An already-selected card is inert: never restart its visual animation.
