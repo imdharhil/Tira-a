@@ -373,11 +373,10 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(1){transform:translateX(-112%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(3){transform:translateX(12%) scale(.67)}
-.proposal-grid>.proposal-card[data-copycat="random"].random-final .copycat.random-winner{
-  transform:translateX(-50%) scale(1);opacity:1;z-index:3;fill:#bcb8c5;
-}
-.proposal-grid>.proposal-card[data-copycat="random"].random-final .copycat:not(.random-winner){
-  transform:translateX(-50%) scale(.66);opacity:0;
+.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat{transform:translateX(-50%) scale(.91)}
+.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat.random-winner{z-index:3;opacity:1}
+.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat:not(.random-winner){
+ opacity:0;transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease .44s;
 }
 .proposal-grid>.proposal-card[data-copycat="random"].random-revealed .copycat.random-winner{
   fill:var(--random-reveal-color,#bcb8c5);
@@ -541,45 +540,41 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   .proposal-grid>.proposal-card[data-copycat="duplicate"],
   .proposal-grid>.proposal-card[data-copycat="duplicate"]::after{transition:none;animation:none}
 }
-/* Taunt-only comic ink: black speed marks, halftone and red emphasis.
-   Preserve approved card size, red reference artwork, double frame and name. */
+/* TAUNT: holographic anime ink, three pulses then a rest; no outer glow. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]{isolation:isolate}
 .proposal-grid>.proposal-card[data-card-name="Taunt"]::after{
  content:"";position:absolute;inset:10px;z-index:0;pointer-events:none;
- background:
-  radial-gradient(circle,#111 1px,transparent 1.6px) 0 0/7px 7px,
-  repeating-conic-gradient(from 10deg at 50% 54%,transparent 0deg 12deg,#090909 12.4deg 13.4deg,transparent 13.8deg 25deg);
- -webkit-mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 40%,#0008 51%,#000 62%);
- mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 40%,#0008 51%,#000 62%);
- opacity:0;transform:scale(.97);transform-origin:50% 54%;transition:opacity .32s cubic-bezier(.2,.7,.2,1),transform .42s cubic-bezier(.2,.7,.2,1);
+ background:repeating-conic-gradient(from 10deg at 50% 54%,transparent 0deg 12deg,#111 12.4deg 13.4deg,transparent 13.8deg 25deg),
+ linear-gradient(115deg,transparent 12%,#64dce8 27%,#bd83f0 39%,#f7b9db 49%,#ffe59b 59%,transparent 74%);
+ background-size:100% 100%,240% 100%;
+ -webkit-mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 35%,#000a 52%,#000 68%);
+ mask-image:radial-gradient(ellipse at 50% 54%,transparent 0 35%,#000a 52%,#000 68%);
+ opacity:0;
 }
-/* Selected TAUNT: rhythmic anime-style impact pulse, without a glow or halo. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after{
- opacity:0;transform:none;animation:none;
+ opacity:.72;animation:tiraTauntHolo 3.2s linear infinite;
 }
 .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark{
- transform-origin:50% 54%;
- animation:tiraTauntHeartbeat 1.15s ease-in-out infinite;
+ transform-origin:50% 54%;animation:tiraTauntTriplePump 3.2s ease-in-out infinite;
 }
-@keyframes tiraTauntHeartbeat{
- 0%,100%{transform:scale(1)}
- 13%{transform:scale(1.13)}
- 25%{transform:scale(.97)}
- 38%{transform:scale(1.09)}
- 52%,82%{transform:scale(1)}
+@keyframes tiraTauntTriplePump{
+ 0%,12%,23%,35%,46%,58%,100%{transform:scale(1)}
+ 6%,29%,52%{transform:scale(1.14)}
+ 9%,32%,55%{transform:scale(.97)}
+}
+@keyframes tiraTauntHolo{
+ 0%{background-position:0 0,110% 0}
+ 60%{background-position:0 0,-45% 0}
+ 100%{background-position:0 0,-45% 0}
 }
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.taunt-art,
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.proposal-name{position:relative;z-index:1}
-.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark path{
- fill:#ce2027;stroke:#000;stroke-width:8;
-}
-.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]{
- box-shadow:0 9px 24px #0005!important;
-}
+.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark path{fill:#ce2027;stroke:#000;stroke-width:8}
+.proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]{box-shadow:0 9px 24px #0005!important}
 @media(prefers-reduced-motion:reduce){
- .proposal-grid>.proposal-card[data-card-name="Taunt"]::after{transition:none;transform:none}
- .proposal-grid>.proposal-card[data-card-name="Taunt"] .taunt-mark path{transition:none}
+ .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after,
  .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"] .taunt-mark{animation:none}
+ .proposal-grid>.proposal-card[data-card-name="Taunt"][aria-pressed="true"]::after{opacity:.35}
 }
 /* Taunt cost uses the existing top-right PP number convention, legible on its white card. */
 .proposal-grid>.proposal-card[data-card-name="Taunt"]>.pp-cost{position:absolute;top:8px;right:12px;z-index:5;display:grid;place-items:center;width:23px;height:23px;color:#000;font-size:20px;font-weight:900;line-height:1;-webkit-text-stroke:1.5px #fff;paint-order:stroke fill;pointer-events:none}
@@ -768,62 +763,32 @@ async function playBlindSelect(){
   blindCard.classList.add('blind-revealed');
   el('editorStatus').textContent='BLIND SELECT: one cat revealed. Preview only; no gameplay copying.';
 }
-/* Random preview: Blind Select's concealed layout and scan, without direct-choice emphasis. */
+/* RANDOM: original automatic collapse; neutral cats until the winning color reveals. */
 const randomCard=document.querySelector('.proposal-card[data-copycat="random"]');
-let randomRun=0;
+let randomRevealToken=0;
 function resetRandom(){
-  randomRun++;
-  if(!randomCard)return;
-  randomCard.classList.remove('random-final','random-revealed');
-  randomCard.style.removeProperty('--random-reveal-color');
-  randomCard.querySelectorAll('.copycat').forEach(cat=>{
-    cat.getAnimations().forEach(animation=>animation.cancel());
-    cat.style.removeProperty('transform');
-    cat.style.removeProperty('transition');
-    cat.style.removeProperty('opacity');
-    cat.classList.remove('random-winner');
-  });
+ randomRevealToken++;
+ if(!randomCard)return;
+ randomCard.classList.remove('random-revealed');
+ randomCard.style.removeProperty('--random-reveal-color');
+ randomCard.querySelectorAll('.copycat').forEach(cat=>cat.classList.remove('random-winner'));
 }
-async function playRandom(){
-  if(!randomCard)return;
-  resetRandom();
-  const run=randomRun;
-  const cats=[...randomCard.querySelectorAll('.copycat')];
-  if(cats.length!==3)return;
-  const winner=Math.floor(Math.random()*3);
-  const colors=['#bb91ec','#70dce1','#f3be77'];
-  const offsets=['-112%','-50%','12%'];
-  const base=i=>'translateX('+offsets[i]+') scale(.67)';
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const active=()=>run===randomRun&&selected===randomCard.dataset.id;
-  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-  if(!reduced){
-    cats.forEach((cat,i)=>{cat.style.transition='none';cat.style.transform=base(i)});
-    void randomCard.offsetWidth;
-    cats.forEach(cat=>cat.style.transition='transform 250ms cubic-bezier(.25,.7,.25,1),opacity 390ms ease,fill 240ms ease');
-    // Scan concealed candidates without Blind Select's 67→75 direct-choice pulse.
-    for(const index of [0,1,2,1,0,2]){
-      if(!active())return;
-      cats.forEach((cat,i)=>cat.style.transform=i===index?'translateX('+offsets[i]+') scale(.70)':base(i));
-      await wait(175);
-    }
-    if(!active())return;
-    cats.forEach((cat,i)=>{
-      cat.classList.toggle('random-winner',i===winner);
-      cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';
-      if(i!==winner)cat.style.opacity='0';
-    });
-    await wait(430);
-    if(!active())return;
-  }else{
-    cats[winner].classList.add('random-winner');
-  }
-  randomCard.classList.add('random-final');
-  cats.forEach(cat=>{cat.style.removeProperty('transform');cat.style.removeProperty('opacity');cat.style.removeProperty('transition')});
-  if(!reduced){await wait(180);if(!active())return}
-  randomCard.style.setProperty('--random-reveal-color',colors[winner]);
+function playRandom(){
+ if(!randomCard)return;
+ resetRandom();
+ const cats=[...randomCard.querySelectorAll('.copycat')];
+ if(!cats.length)return;
+ const winner=Math.floor(Math.random()*cats.length);
+ cats[winner].classList.add('random-winner');
+ const token=randomRevealToken;
+ const reveal=()=>{
+  if(token!==randomRevealToken||selected!==randomCard.dataset.id)return;
+  randomCard.style.setProperty('--random-reveal-color',['#bb91ec','#70dce1','#f3be77'][winner]);
   randomCard.classList.add('random-revealed');
-  el('editorStatus').textContent='RANDOM: one randomly selected cat revealed. Preview only.';
+  el('editorStatus').textContent='RANDOM: one randomly copied cat revealed. Preview only.';
+ };
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)reveal();
+ else setTimeout(reveal,650);
 }
 cards.forEach(b=>b.addEventListener('click',()=>{
   // An already-selected card is inert: never restart its visual animation.
