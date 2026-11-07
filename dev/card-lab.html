@@ -637,12 +637,10 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 
 /* Cell Card proportion refinement: scale the numbered orb down without changing the card frame or other special-card icons. */
 .card.cell .orb{
-  width:clamp(50px,8.5vw,78px);
-  font-size:clamp(20px,2.5vw,28px);
-  box-shadow:inset -5px -7px 12px #072850aa,0 0 11px #279efa44,0 4px 11px #07162c88;
-}
-@media(max-width:470px){
-  .card.cell .orb{width:clamp(43px,13vw,59px);font-size:clamp(18px,5vw,24px)}
+  /* Match the Skip Card proposal-orb sizing across viewport widths. */
+  width:clamp(44px,7vw,67px);
+  font-size:clamp(19px,3vw,27px);
+  box-shadow:inset -4px -6px 12px #062c4a99,0 4px 12px #0005;
 }
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
