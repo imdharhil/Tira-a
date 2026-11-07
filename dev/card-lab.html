@@ -337,76 +337,55 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 /* COPY: the smaller original demonstrates; the closer cat imitates after a beat. */
 .proposal-card[data-copycat="copy"] .proposal-orb{width:min(100%,112px);height:84px;flex:0 0 84px;overflow:hidden}
 .proposal-card[data-copycat="copy"] .copy-gesture{position:absolute;bottom:0;width:46%;height:82px;overflow:visible;transition:opacity .3s ease;filter:drop-shadow(0 2px 2px #0007)}
-.proposal-card[data-copycat="copy"] .copy-gesture.source{left:27%;fill:#bb91ec;opacity:1;transform:translateX(-50%) scale(.68);transform-origin:center bottom}
-.proposal-card[data-copycat="copy"] .copy-gesture.imitator{left:73%;fill:#e1dce5;opacity:.48;transform:translateX(-50%) scale(.91);transform-origin:center bottom}
+.proposal-card[data-copycat="copy"] .copy-gesture.source{left:31%;bottom:9px;z-index:1;fill:#bb91ec;opacity:1;transform:translateX(-50%) scale(.67);transform-origin:center bottom;filter:drop-shadow(0 1px 1px #0006)}
+.proposal-card[data-copycat="copy"] .copy-gesture.imitator{left:69%;bottom:0;z-index:2;fill:#e1dce5;opacity:.48;transform:translateX(-50%) scale(.91);transform-origin:center bottom;filter:drop-shadow(0 4px 3px #0009)}
 .proposal-card[data-copycat="copy"] .copy-gesture.imitator .copy-figure{transform:translate(100px,0) scale(-1,1)}
 .proposal-card[data-copycat="copy"][aria-pressed="true"] .source{opacity:.5}
 .proposal-card[data-copycat="copy"][aria-pressed="true"] .imitator{opacity:1}
 /* COPY animates complete original silhouette with no visible cut edges. */
 @media(prefers-reduced-motion:reduce){.proposal-card[data-copycat="copy"] .copy-gesture{transition:none}}
 
-/* RANDOM visual proposal: three distinct cats collapse into one randomly chosen color.
-   Scoped to Card Library preview; no gameplay RNG or other card changes. */
+/* RANDOM: match Blind Select's three-cat spacing and blind silhouettes.
+   Reveal only the final random winner; no gameplay RNG changes. */
 .proposal-grid>.proposal-card[data-copycat="random"]{
   isolation:isolate;overflow:hidden;
   background:radial-gradient(ellipse at 18% 14%,#74e3e923,transparent 52%),
     radial-gradient(ellipse at 86% 78%,#ecc07b20,transparent 54%),
     linear-gradient(145deg,#383047,#222b40 56%,#171923);
-  border-color:#a79ab8;
-  box-shadow:inset 0 1px 0 #e9daff44,0 9px 24px #0006;
+  border-color:#a79ab8;box-shadow:inset 0 1px 0 #e9daff44,0 9px 24px #0006;
 }
 .proposal-grid>.proposal-card[data-copycat="random"]::before{border-color:#d3c5e05e}
 .proposal-grid>.proposal-card[data-copycat="random"]::after{
   content:"";position:absolute;inset:6px;border-radius:9px;pointer-events:none;
   background:radial-gradient(ellipse at 26% 25%,#84e6ec28,transparent 55%),
-    radial-gradient(ellipse at 79% 73%,#f6bd8b2c,transparent 58%),
-    radial-gradient(ellipse at 51% 45%,#d19fff1a,transparent 62%);
+    radial-gradient(ellipse at 79% 73%,#f6bd8b2c,transparent 58%);
   background-size:145% 145%;opacity:.32;z-index:0;
-}
-.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"]::after{
-  opacity:.64;animation:tiraRandomPrism 3s ease-in-out infinite alternate;
-}
-@keyframes tiraRandomPrism{
-  from{background-position:0% 30%;opacity:.4}
-  to{background-position:100% 70%;opacity:.67}
 }
 .proposal-grid>.proposal-card[data-copycat="random"] .proposal-orb{
   position:relative;z-index:1;width:min(100%,108px);height:78px;max-width:100%;
   flex:0 0 78px;overflow:hidden;background:none;box-shadow:none;border-radius:0;
 }
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat{
-  width:46%;height:76px;bottom:0;left:50%;
-  transform-origin:center bottom;
-  filter:drop-shadow(0 2px 2px #0009);
-  transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease;
+  width:46%;height:76px;bottom:0;left:50%;transform-origin:center bottom;
+  fill:#bcb8c5;opacity:1;filter:none;
+  transition:transform .52s cubic-bezier(.2,.72,.18,1),opacity .19s ease .3s,fill .24s ease;
 }
-.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(1){
-  fill:#bb91ec;transform:translateX(-108%) scale(.70);
+.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(1){transform:translateX(-112%) scale(.67)}
+.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
+.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(3){transform:translateX(12%) scale(.67)}
+.proposal-grid>.proposal-card[data-copycat="random"].random-final .copycat.random-winner{
+  transform:translateX(-50%) scale(1);opacity:1;z-index:3;fill:#bcb8c5;
 }
-.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(2){
-  fill:#70dce1;transform:translateX(-50%) scale(.70);
+.proposal-grid>.proposal-card[data-copycat="random"].random-final .copycat:not(.random-winner){
+  transform:translateX(-50%) scale(.66);opacity:0;
 }
-.proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(3){
-  fill:#f3be77;transform:translateX(8%) scale(.70);
-}
-.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat{
-  transform:translateX(-50%) scale(.91);
-}
-.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat.random-winner{
-  z-index:3;opacity:1;
-}
-.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat:not(.random-winner){
-  opacity:0;
-  /* The losing colors meet in the center before fading; no disappearing jump. */
-  transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease .44s;
+.proposal-grid>.proposal-card[data-copycat="random"].random-revealed .copycat.random-winner{
+  fill:var(--random-reveal-color,#bcb8c5);
 }
 .proposal-grid>.proposal-card[data-copycat="random"] .proposal-name,
-.proposal-grid>.proposal-card[data-copycat="random"] .proposal-family{
-  position:relative;z-index:1;
-}
+.proposal-grid>.proposal-card[data-copycat="random"] .proposal-family{position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){
   .proposal-grid>.proposal-card[data-copycat="random"] .copycat{transition:none}
-  .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"]::after{animation:none}
 }
 /* BLIND SELECT: DUPLICATE-family foil with no emitted glow, bloom, or halos. */
 .proposal-grid>.proposal-card[data-copycat="select"]{
@@ -776,27 +755,80 @@ async function playBlindSelect(){
   blindCard.classList.add('blind-revealed');
   el('editorStatus').textContent='BLIND SELECT: one cat revealed. Preview only; no gameplay copying.';
 }
+/* Random preview: Blind Select's concealed layout and scan, without direct-choice emphasis. */
+const randomCard=document.querySelector('.proposal-card[data-copycat="random"]');
+let randomRun=0;
+function resetRandom(){
+  randomRun++;
+  if(!randomCard)return;
+  randomCard.classList.remove('random-final','random-revealed');
+  randomCard.style.removeProperty('--random-reveal-color');
+  randomCard.querySelectorAll('.copycat').forEach(cat=>{
+    cat.getAnimations().forEach(animation=>animation.cancel());
+    cat.style.removeProperty('transform');
+    cat.style.removeProperty('transition');
+    cat.style.removeProperty('opacity');
+    cat.classList.remove('random-winner');
+  });
+}
+async function playRandom(){
+  if(!randomCard)return;
+  resetRandom();
+  const run=randomRun;
+  const cats=[...randomCard.querySelectorAll('.copycat')];
+  if(cats.length!==3)return;
+  const winner=Math.floor(Math.random()*3);
+  const colors=['#bb91ec','#70dce1','#f3be77'];
+  const offsets=['-112%','-50%','12%'];
+  const base=i=>'translateX('+offsets[i]+') scale(.67)';
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const active=()=>run===randomRun&&selected===randomCard.dataset.id;
+  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  if(!reduced){
+    cats.forEach((cat,i)=>{cat.style.transition='none';cat.style.transform=base(i)});
+    void randomCard.offsetWidth;
+    cats.forEach(cat=>cat.style.transition='transform 250ms cubic-bezier(.25,.7,.25,1),opacity 390ms ease,fill 240ms ease');
+    // Scan concealed candidates without Blind Select's 67→75 direct-choice pulse.
+    for(const index of [0,1,2,1,0,2]){
+      if(!active())return;
+      cats.forEach((cat,i)=>cat.style.transform=i===index?'translateX('+offsets[i]+') scale(.70)':base(i));
+      await wait(175);
+    }
+    if(!active())return;
+    cats.forEach((cat,i)=>{
+      cat.classList.toggle('random-winner',i===winner);
+      cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';
+      if(i!==winner)cat.style.opacity='0';
+    });
+    await wait(430);
+    if(!active())return;
+  }else{
+    cats[winner].classList.add('random-winner');
+  }
+  randomCard.classList.add('random-final');
+  cats.forEach(cat=>{cat.style.removeProperty('transform');cat.style.removeProperty('opacity');cat.style.removeProperty('transition')});
+  if(!reduced){await wait(180);if(!active())return}
+  randomCard.style.setProperty('--random-reveal-color',colors[winner]);
+  randomCard.classList.add('random-revealed');
+  el('editorStatus').textContent='RANDOM: one randomly selected cat revealed. Preview only.';
+}
 cards.forEach(b=>b.addEventListener('click',()=>{
   // An already-selected card is inert: never restart its visual animation.
   if(b.dataset.id===selected)return;
   const previousCopy=cards.find(card=>card.dataset.copycat==='copy'&&card.dataset.id===selected);
   previousCopy?.querySelectorAll('.copy-outline-motion').forEach(m=>m.endElement?.());
   resetBlindSelect();
-  if(b.dataset.copycat==='random'){
-    const cats=[...b.querySelectorAll('.copycat')];
-    cats.forEach(cat=>cat.classList.remove('random-winner'));
-    const winner=Math.floor(Math.random()*cats.length);
-    cats[winner]?.classList.add('random-winner');
-  }
+  resetRandom();
   selected=b.dataset.id;
   render();
   if(b.dataset.copycat==='select')void playBlindSelect();
+  if(b.dataset.copycat==='random')void playRandom();
   if(b.dataset.copycat==='copy'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     const motions=b.querySelectorAll('.copy-outline-motion');
     motions[0]?.beginElement?.();
     motions[1]?.beginElementAt?.(.38);
   }
-  if(b.dataset.copycat!=='select')el('editorStatus').textContent='Viewing '+defs[selected].name;
+  if(b.dataset.copycat!=='select'&&b.dataset.copycat!=='random')el('editorStatus').textContent='Viewing '+defs[selected].name;
 }));
 el('save').addEventListener('click',()=>{drafts[selected]={name:el('editName').value.trim().slice(0,28)||defs[selected].name,description:el('editDescription').value.trim().slice(0,300)||defs[selected].description};try{localStorage.setItem(storageKey,JSON.stringify(drafts));el('editorStatus').textContent='Saved '+defs[selected].name+' draft locally.'}catch{el('editorStatus').textContent='Local storage unavailable; current draft may not persist.'}render()});
 el('reset').addEventListener('click',()=>{delete drafts[selected];try{localStorage.setItem(storageKey,JSON.stringify(drafts))}catch{}render();el('editorStatus').textContent='Reset '+defs[selected].name+' design draft.'});
