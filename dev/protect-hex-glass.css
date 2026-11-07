@@ -99,3 +99,26 @@
 @media(prefers-reduced-motion:reduce){
   .card.protect-card .orb.protect-hex::after{animation:none}
 }
+
+/* BLOCK visual candidate: solid teal titanium-alloy hexagon with beveled
+   metallic depth. Retain the existing activation hologram and charge layouts. */
+.card.protect-card .orb.protect-hex{
+  display:grid;place-items:center;
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:
+    linear-gradient(145deg,#d3fff4 0%,#5eddd2 13%,#188e96 42%,#073e51 83%,#032c3c 100%);
+  color:transparent;font-size:0;-webkit-text-stroke:0;text-shadow:none;
+  filter:drop-shadow(0 3px 3px #001b2b88);
+}
+.card.protect-card .protect-symbol{color:transparent;font-size:0;-webkit-text-stroke:0;text-shadow:none}
+.card.protect-card .orb.protect-hex::before{
+  content:"";position:absolute;inset:8%;z-index:0;pointer-events:none;
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  background:
+    linear-gradient(148deg,#effffb33 0%,transparent 31%,#b7f8f011 47%,#032b3a55 100%),
+    linear-gradient(145deg,#59d9d0 0%,#23b8b1 24%,#118c91 57%,#075365 100%);
+  box-shadow:inset 0 2px 3px #d8fff555,inset 0 -3px 5px #032a3d77;
+}
+.card.protect-card .orb.protect-hex::after{
+  clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+}
