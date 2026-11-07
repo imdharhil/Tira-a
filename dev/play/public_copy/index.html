@@ -468,7 +468,7 @@ function reserveCardMarkup(item,large){
  if(item.type==='cell')return wrap+'<span class="orb">+'+item.value+'</span><small>'+(large?'CELL CARD':'CELL')+'</small>'+end;
  if(item.type!=='special')return '';
  if(item.slot===3)return wrap+'<span class="orb reserve-gold-orb">+4</span><small>GOLD +4</small>'+end;
- if(item.slot===4)return wrap+'<span class="orb protect-hex reserve-protect-orb">⬡</span><small>PROTECT</small>'+end;
+ if(item.slot===4)return wrap+'<span class="orb reserve-protect-orb">⬡</span><small>PROTECT</small>'+end;
  if(item.slot===5)return wrap+'<span class="orb draw-glyph reserve-draw-orb"><span class="draw-card-symbol"></span></span><small>GOLD DRAW</small>'+end;
  return '';
 }
