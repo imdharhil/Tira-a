@@ -634,6 +634,16 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"]{border-color:#b58a36;background:linear-gradient(145deg,#302845,#191e36 72%,#111827)}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb{background:radial-gradient(circle at 30% 20%,#fff6d9,#e5b950 42%,#8c5a24 88%);color:#2b2130}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-family{color:#f1cf77;font-weight:800}
+
+/* Cell Card proportion refinement: scale the numbered orb down without changing the card frame or other special-card icons. */
+.card.cell .orb{
+  width:clamp(50px,8.5vw,78px);
+  font-size:clamp(20px,2.5vw,28px);
+  box-shadow:inset -5px -7px 12px #072850aa,0 0 11px #279efa44,0 4px 11px #07162c88;
+}
+@media(max-width:470px){
+  .card.cell .orb{width:clamp(43px,13vw,59px);font-size:clamp(18px,5vw,24px)}
+}
 </style>
 <link rel="stylesheet" href="./protect-hex-glass.css">
 
