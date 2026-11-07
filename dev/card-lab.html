@@ -368,13 +368,13 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat{
   width:46%;height:76px;bottom:0;left:50%;transform-origin:center bottom;
   fill:#bcb8c5;opacity:1;filter:none;
-  transition:transform .52s cubic-bezier(.2,.72,.18,1),opacity .19s ease .3s,fill .24s ease;
+  transition:transform .52s cubic-bezier(.2,.72,.18,1),opacity .19s ease .3s,fill 0s;
 }
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(1){transform:translateX(-112%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="random"] .copycat:nth-child(3){transform:translateX(12%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat{transform:translateX(-50%) scale(.91)}
-.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat.random-winner{z-index:3;opacity:1}
+.proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat.random-winner{z-index:3;opacity:1;transform:translateX(-50%) scale(1)}
 .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat:not(.random-winner){
  opacity:0;transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease .44s;
 }
@@ -424,7 +424,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat{
   width:46%;height:76px;bottom:0;left:50%;transform-origin:center bottom;
   fill:#bcb8c5;opacity:1;filter:none;
-  transition:transform .52s cubic-bezier(.2,.72,.18,1),opacity .19s ease .3s,fill .24s ease .29s;
+  transition:transform .52s cubic-bezier(.2,.72,.18,1),opacity .19s ease .3s,fill 0s;
 }
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(1){transform:translateX(-112%) scale(.67)}
 .proposal-grid>.proposal-card[data-copycat="select"] .copycat:nth-child(2){transform:translateX(-50%) scale(.67)}
@@ -755,20 +755,23 @@ async function playBlindSelect(){
     await wait(195);
     if(!active())return;
     // Only after the small anticipation do all three merge to one unknown cat.
+    // Reveal at the exact end of the 61% -> 100% transform, with no settling pause.
+    const finalCat=cats[winner];
+    const finished=new Promise(resolve=>{
+      const onEnd=e=>{if(e.target===finalCat&&e.propertyName==='transform'){finalCat.removeEventListener('transitionend',onEnd);resolve()}};
+      finalCat.addEventListener('transitionend',onEnd);
+      setTimeout(()=>{finalCat.removeEventListener('transitionend',onEnd);resolve()},650);
+    });
     cats.forEach((cat,i)=>{cat.classList.toggle('blind-picked',i===winner);cat.style.transform=i===winner?'translateX(-50%) scale(1)':'translateX(-50%) scale(.66)';if(i!==winner)cat.style.opacity='0'});
-    await wait(420);
+    await finished;
     if(!active())return;
   }else{
     cats.forEach((cat,i)=>cat.classList.toggle('blind-picked',i===winner));
   }
   blindCard.classList.add('blind-final');
-  cats.forEach(cat=>{cat.style.removeProperty('transform');cat.style.removeProperty('opacity');cat.style.removeProperty('transition')});
-  if(!reduced){
-    await wait(180);
-    if(!active())return;
-  }
   blindCard.style.setProperty('--blind-reveal-color',revealColor);
   blindCard.classList.add('blind-revealed');
+  cats.forEach(cat=>{cat.style.removeProperty('transform');cat.style.removeProperty('opacity');cat.style.removeProperty('transition')});
   el('editorStatus').textContent='BLIND SELECT: one cat revealed. Preview only; no gameplay copying.';
 }
 /* RANDOM: original automatic collapse; neutral cats until the winning color reveals. */
@@ -787,16 +790,35 @@ function playRandom(){
  const cats=[...randomCard.querySelectorAll('.copycat')];
  if(!cats.length)return;
  const winner=Math.floor(Math.random()*cats.length);
- cats[winner].classList.add('random-winner');
+ const finalCat=cats[winner];
  const token=randomRevealToken;
  const reveal=()=>{
   if(token!==randomRevealToken||selected!==randomCard.dataset.id)return;
   randomCard.style.setProperty('--random-reveal-color',['#bb91ec','#70dce1','#f3be77'][winner]);
   randomCard.classList.add('random-revealed');
+  finalCat.style.removeProperty('transform');
+  finalCat.style.removeProperty('transition');
   el('editorStatus').textContent='RANDOM: one randomly copied cat revealed. Preview only.';
  };
- if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)reveal();
- else setTimeout(reveal,650);
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  finalCat.classList.add('random-winner');
+  reveal();
+ }else{
+  // Keep the automatic random-copy collapse; the chosen cat zooms from 61% to 100%.
+  finalCat.style.transition='none';
+  finalCat.style.transform='translateX(-50%) scale(.61)';
+  finalCat.classList.add('random-winner');
+  void randomCard.offsetWidth;
+  finalCat.style.transition='transform 520ms cubic-bezier(.2,.72,.18,1),fill 0s';
+  const onEnd=e=>{
+   if(e.target!==finalCat||e.propertyName!=='transform')return;
+   finalCat.removeEventListener('transitionend',onEnd);
+   reveal();
+  };
+  finalCat.addEventListener('transitionend',onEnd);
+  finalCat.style.transform='translateX(-50%) scale(1)';
+  setTimeout(()=>{finalCat.removeEventListener('transitionend',onEnd);reveal()},600);
+ }
 }
 cards.forEach(b=>b.addEventListener('click',()=>{
   // An already-selected card is inert: never restart its visual animation.
