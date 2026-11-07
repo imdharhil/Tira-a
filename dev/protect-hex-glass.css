@@ -122,3 +122,29 @@
 .card.protect-card .orb.protect-hex::after{
   clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
 }
+
+/* BLOCK refinement: heavier machined titanium, less gel-like surface.
+   Cyan/sea-glass hologram replaces the lavender tint to complement solid teal. */
+.card.protect-card .orb.protect-hex{
+  background:linear-gradient(145deg,#a1eee1 0%,#367e88 12%,#0a4556 48%,#052b3c 85%,#021d2c 100%);
+  filter:drop-shadow(0 4px 2px #001520aa);
+}
+.card.protect-card .orb.protect-hex::before{
+  inset:10%;
+  background:
+    linear-gradient(148deg,#c2fff31c 0%,transparent 24%,#052e3a18 57%,#001e2c45 100%),
+    linear-gradient(148deg,#238f94 0%,#147d84 29%,#0b626e 62%,#074653 100%);
+  box-shadow:inset 0 1px 0 #d6fff344,inset 0 -2px 3px #001c2c99;
+}
+.card.protect-card .orb.protect-hex::after{
+  background:linear-gradient(110deg,transparent 15%,#89e8d638 36%,#c0fff17a 49%,#51b8ca48 59%,transparent 80%);
+  background-size:270% 100%;background-position:100% 50%;opacity:0;
+}
+.card.protect-card .protect-hex-glass-top{
+  background:linear-gradient(105deg,#1a87991a 0%,#9ce9d17a 43%,#c6fff39a 50%,#39a9bc40 61%,#1a87991a 100%);
+  background-size:270% 100%;background-position:100% 50%;
+}
+.card.protect-card{
+  background:radial-gradient(ellipse at 18% 12%,#76c9b61b 0%,transparent 53%),linear-gradient(145deg,#214e60 0%,#123747 56%,#0a2634 100%);
+  border-color:#598f98;
+}
