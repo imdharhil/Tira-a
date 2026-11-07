@@ -163,3 +163,14 @@
   box-shadow:none;
   filter:none;
 }
+
+/* BLOCK perimeter legibility: a narrow pale-metal catchlight separates the
+   silhouette from the dark card, without making the face glassy or glowing. */
+.card.protect-card .orb.protect-hex{
+  background:linear-gradient(155deg,#d5fff4 0%,#91e7df 10%,#319da3 22%,#0d6674 45%,#074355 72%,#337c85 89%,#91d8d0 100%);
+  filter:drop-shadow(0 1px 0 #c5fff28c) drop-shadow(0 4px 3px #001421b8);
+}
+.card.protect-card .orb.protect-hex::before{
+  inset:9%;
+  background:linear-gradient(151deg,#3dbab4 0%,#249d9f 34%,#16858f 67%,#0c5c6b 100%);
+}
