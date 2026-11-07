@@ -148,3 +148,18 @@
   background:radial-gradient(ellipse at 18% 12%,#76c9b61b 0%,transparent 53%),linear-gradient(145deg,#214e60 0%,#123747 56%,#0a2634 100%);
   border-color:#598f98;
 }
+
+/* BLOCK edge-separation repair: crisp lower-left bevel and bottom tip.
+   The inner face stays lighter than the dark continuous machined-metal rim. */
+.card.protect-card .orb.protect-hex{
+  background:linear-gradient(155deg,#b4f6e9 0%,#50c6c2 13%,#137681 35%,#063d50 65%,#011e30 100%);
+  filter:drop-shadow(0 4px 2px #00131fbb);
+}
+.card.protect-card .orb.protect-hex::before{
+  inset:8%;
+  background:
+    linear-gradient(148deg,#d5fff521 0%,transparent 30%,#03394908 60%,#002e3b12 100%),
+    linear-gradient(154deg,#37bcb6 0%,#24a5a5 31%,#168c93 65%,#0d6978 100%);
+  box-shadow:none;
+  filter:none;
+}
