@@ -376,7 +376,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat{transform:translateX(-50%) scale(.91)}
 .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat.random-winner{z-index:3;opacity:1;transform:translateX(-50%) scale(1)}
 .proposal-grid>.proposal-card[data-copycat="random"][aria-pressed="true"] .copycat:not(.random-winner){
- opacity:0;transition:transform .58s cubic-bezier(.2,.72,.18,1),opacity .14s ease .44s;
+ opacity:0;transition:none;
 }
 .proposal-grid>.proposal-card[data-copycat="random"].random-revealed .copycat.random-winner{
   fill:var(--random-reveal-color,#bcb8c5);
@@ -822,7 +822,7 @@ function playRandom(){
  finalCat.style.transform='translateX(-50%) scale(.61)';
  finalCat.classList.add('random-winner');
  void finalCat.getBoundingClientRect();
- finalCat.style.transition='transform 520ms cubic-bezier(.2,.72,.18,1),fill 0s';
+ finalCat.style.transition='transform 420ms linear,fill 0s';
  const onEnd=e=>{
   if(e.target!==finalCat||e.propertyName!=='transform')return;
   finalCat.removeEventListener('transitionend',onEnd);
@@ -834,7 +834,7 @@ function playRandom(){
  randomRevealTimer=setTimeout(()=>{
   finalCat.removeEventListener('transitionend',onEnd);
   reveal();
- },560);
+ },450);
 }
 cards.forEach(b=>b.addEventListener('click',()=>{
   // An already-selected card is inert: never restart its visual animation.
