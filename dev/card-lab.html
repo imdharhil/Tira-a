@@ -666,6 +666,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;
  transform:translate(-50%,-50%);pointer-events:none;border:2px solid #267d80;opacity:.8;box-shadow:0 0 3px #a2f4e633,inset 0 0 2px #a2f4e622
 }
+/* Idle preview is a clean, softly shaded shield. Reveal existing rings only when selected. */
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]:not([aria-pressed="true"]) .bounce-disk{opacity:0;visibility:hidden}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:88%;height:88%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:61%;height:61%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{width:36%;height:36%}
