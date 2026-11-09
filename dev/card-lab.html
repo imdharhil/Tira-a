@@ -699,24 +699,31 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;
  transform:translate(-50%,-50%);pointer-events:none;border:2px solid #267d80;opacity:.8;box-shadow:0 0 3px #a2f4e633,inset 0 0 2px #a2f4e622
 }
-/* On deselection, stop emitting new waves and let one final outward ripple resolve. */
+/* State-aware exit: carry the current illumination outward, never emit a new pulse. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk{
- visibility:visible
-}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.outer{
- animation:tiraRadarWave .72s ease-out 0s 1 both
-}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.middle,
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.inner,
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.core{
- opacity:0;visibility:hidden;animation:none
+ visibility:visible;animation:none!important
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .proposal-orb::before{
- animation:tiraBounceExitSurface .72s ease-out 1 both
+ animation:tiraBounceExitSurface .7s ease-out 1 both
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting::before{
+ animation:tiraBounceHoloExit .7s ease-out 1 both
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting::after{
+ animation:tiraBounceHoloExitHighlight .7s ease-out 1 both
+}
+@keyframes tiraBounceHoloExit{
+ from{transform:var(--bounce-exit-holo-transform,scale(1));opacity:var(--bounce-exit-holo-opacity,0)}
+ 65%{opacity:var(--bounce-exit-holo-opacity,0)}
+ to{transform:scale(1);opacity:0}
+}
+@keyframes tiraBounceHoloExitHighlight{
+ from{transform:var(--bounce-exit-glint-transform,scale(1));opacity:var(--bounce-exit-glint-opacity,0)}
+ to{transform:scale(1);opacity:0}
 }
 @keyframes tiraBounceExitSurface{
- 0%{filter:brightness(1.55) saturate(.88)}
- 60%{filter:brightness(1.5) saturate(.9)}
+ 0%{filter:brightness(1.45) saturate(.9)}
+ 65%{filter:brightness(1.35) saturate(.94)}
  100%{filter:brightness(1) saturate(1)}
 }
 /* Idle preview is a clean, softly shaded shield. Reveal existing rings only when selected. */
@@ -875,9 +882,14 @@ function description(id){return typeof draft(id).description==='string'&&draft(i
 let bounceHoloTimer=null;
 let bouncePreviousSelected=selected;
 let bounceExitTimer=null;
+let bounceExitAnimations=[];
 function finishBounceExit(card){
+ bounceExitAnimations.forEach(animation=>animation.cancel());
+ bounceExitAnimations=[];
  if(!card)return;
  card.classList.remove('bounce-exiting');
+ card.querySelectorAll('.bounce-disk').forEach(disk=>{disk.style.removeProperty('animation');disk.style.removeProperty('visibility')});
+ ['--bounce-exit-holo-transform','--bounce-exit-holo-opacity','--bounce-exit-glint-transform','--bounce-exit-glint-opacity'].forEach(key=>card.style.removeProperty(key));
 }
 function render(){
  if(bouncePreviousSelected!==selected){
@@ -886,16 +898,40 @@ function render(){
    if(bounceExitTimer!==null){clearTimeout(bounceExitTimer);bounceExitTimer=null}
    finishBounceExit(bounceCard);
    if(bounceHoloTimer!==null){clearTimeout(bounceHoloTimer);bounceHoloTimer=null}
-   bounceCard.classList.remove('bounce-holo-enter');
-   if(selected===bounceCard.dataset.id && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    void bounceCard.offsetWidth;
-    bounceCard.classList.add('bounce-holo-enter');
-    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},2350);
-   }
-   if(bouncePreviousSelected===bounceCard.dataset.id && selected!==bounceCard.dataset.id &&
-      !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+   const leaving=bouncePreviousSelected===bounceCard.dataset.id&&selected!==bounceCard.dataset.id;
+   const entering=selected===bounceCard.dataset.id;
+   const motionAllowed=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+   if(leaving&&motionAllowed){
+    // Capture the actual visible wave and hologram states BEFORE selection changes.
+    const waveStates=[...bounceCard.querySelectorAll('.bounce-disk')].map(disk=>{
+     const style=getComputedStyle(disk);
+     return {disk,transform:style.transform,opacity:Number(style.opacity),visibility:style.visibility};
+    });
+    [['::before','--bounce-exit-holo'],['::after','--bounce-exit-glint']].forEach(([pseudo,prefix])=>{
+     const style=getComputedStyle(bounceCard,pseudo);
+     bounceCard.style.setProperty(prefix+'-transform',style.transform==='none'?'scale(1)':style.transform);
+     bounceCard.style.setProperty(prefix+'-opacity',style.opacity);
+    });
+    bounceCard.classList.remove('bounce-holo-enter');
     bounceCard.classList.add('bounce-exiting');
-    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},780);
+    waveStates.forEach(({disk,transform,opacity,visibility})=>{
+     disk.style.animation='none';
+     if(visibility==='hidden'||opacity<=.01)return;
+     disk.style.visibility='visible';
+     const isCore=disk.classList.contains('core');
+     const frames=isCore?
+      [{transform,opacity},{transform:'translate(-50%, -50%) scale(1)',opacity:0}]:
+      [{transform,opacity},{transform:'translate(-50%, -50%) scale(1.2)',opacity:0}];
+     bounceExitAnimations.push(disk.animate(frames,{duration:700,easing:'ease-out',fill:'forwards'}));
+    });
+    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},740);
+   }else{
+    bounceCard.classList.remove('bounce-holo-enter');
+    if(entering&&motionAllowed){
+     void bounceCard.offsetWidth;
+     bounceCard.classList.add('bounce-holo-enter');
+     bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},2350);
+    }
    }
   }
   bouncePreviousSelected=selected;
