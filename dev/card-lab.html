@@ -648,35 +648,17 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .skip-composite .skip-single{z-index:3;opacity:0}
 .skip-composite .skip-ring{z-index:4}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"]{border-color:#ffe4a3;box-shadow:inset 0 1px 0 #fff3c07d,0 0 0 1px #d9b77266,0 0 17px #80e3ff38,0 12px 26px #0009}
-/* Skip Card: short, one-way time-scan and repeated forward arrow trails.
-   Keep the owner-provided PNG layers and the resting card geometry unchanged. */
+/* Holo-only speed correction. The Skip Card artwork and its individual icon-layer animations retain their original behavior. */
 .proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"]::after{opacity:.75;animation:tiraSkipHolo .72s linear infinite}
-.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-double{animation:tiraSkipDouble .72s cubic-bezier(.18,.67,.2,1) infinite}
-.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-single{animation:tiraSkipEcho .72s linear infinite}
-.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-ring{animation:tiraSkipRing .72s ease-out infinite}
-.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-bg{animation:tiraSkipCore .72s ease-out infinite}
-@keyframes tiraSkipHolo{
-  0%{background-position:100% 50%;opacity:.12}
-  18%{opacity:.78}
-  74%{opacity:.66}
-  100%{background-position:0% 50%;opacity:.12}
-}
-@keyframes tiraSkipDouble{
-  0%,100%{transform:translateX(-6px);filter:brightness(.9)}
-  14%{transform:translateX(-4px);filter:brightness(1)}
-  48%{transform:translateX(6px);filter:brightness(1.43)}
-  76%{transform:translateX(13px);filter:brightness(1.2)}
-  94%{transform:translateX(16px);filter:brightness(.95)}
-}
-@keyframes tiraSkipEcho{
-  0%{opacity:0;transform:translateX(-15px)}
-  16%{opacity:.55;transform:translateX(-10px)}
-  42%{opacity:.4;transform:translateX(0)}
-  72%{opacity:.2;transform:translateX(12px)}
-  100%{opacity:0;transform:translateX(24px)}
-}
-@keyframes tiraSkipRing{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}34%{filter:brightness(1.28) drop-shadow(0 0 5px #ffe3a088)}}
-@keyframes tiraSkipCore{0%,100%{filter:brightness(.95) saturate(1)}45%{filter:brightness(1.22) saturate(1.16)}}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-double{animation:tiraSkipDouble 1.35s cubic-bezier(.19,.75,.25,1) infinite}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-single{animation:tiraSkipEcho 1.35s ease-out infinite}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-ring{animation:tiraSkipRing 2.7s ease-in-out infinite}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-bg{animation:tiraSkipCore 2.2s ease-in-out infinite}
+@keyframes tiraSkipHolo{0%{background-position:100% 50%;opacity:.12}18%{opacity:.78}74%{opacity:.66}100%{background-position:0% 50%;opacity:.12}}
+@keyframes tiraSkipDouble{0%,8%,100%{transform:translateX(0);filter:brightness(1)}25%{transform:translateX(4px);filter:brightness(1.3)}43%{transform:translateX(0);filter:brightness(1.07)}62%{transform:translateX(4px);filter:brightness(1.35)}79%{transform:translateX(0);filter:brightness(1)}}
+@keyframes tiraSkipEcho{0%,12%,44%,100%{opacity:0;transform:translateX(-5px)}25%{opacity:.28;transform:translateX(1px)}60%{opacity:.2;transform:translateX(2px)}78%{opacity:0;transform:translateX(7px)}}
+@keyframes tiraSkipRing{0%,100%{filter:brightness(1) drop-shadow(0 0 0 transparent)}50%{filter:brightness(1.18) drop-shadow(0 0 3px #ffe3a088)}}
+@keyframes tiraSkipCore{0%,100%{filter:brightness(1) saturate(1)}50%{filter:brightness(1.14) saturate(1.12)}}
 @media(max-width:470px){.proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb{width:63px;height:63px}}
 @media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-card-name="Skip Card"]::after,.proposal-grid>.proposal-card[data-card-name="Skip Card"] .skip-composite img{animation:none!important;transition:none!important}}
 
