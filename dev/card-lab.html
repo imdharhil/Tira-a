@@ -635,6 +635,23 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb{background:radial-gradient(circle at 30% 20%,#fff6d9,#e5b950 42%,#8c5a24 88%);color:#2b2130}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-family{color:#f1cf77;font-weight:800}
 
+/* Legendary Skip: holographic foil and fast-forward on selection (visual-only).
+   Uses existing public art until the new layered PNGs are published in this repository. */
+.proposal-grid>.proposal-card[data-card-name="Skip Card"]{isolation:isolate;overflow:hidden;position:relative;transition:box-shadow .25s,border-color .25s,transform .25s}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"]::after{content:"";position:absolute;inset:-60% -100%;pointer-events:none;z-index:0;opacity:.25;transform:translateX(-75%) skewX(-22deg);background:repeating-linear-gradient(105deg,transparent 0 15px,#7beaff33 18px 20px,transparent 23px 39px),linear-gradient(90deg,transparent 25%,#70d7ff22 42%,#f9d67888 49%,#e5a5ff55 53%,transparent 70%);background-size:180% 100%;transition:opacity .25s}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb,
+.proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-name,
+.proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-family,
+.proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-tag{position:relative;z-index:1}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"]{border-color:#ffe28b;box-shadow:0 0 18px #68dfff65,0 0 28px #efbb5470,inset 0 1px 0 #fff8c07a}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"]::after{opacity:.95;animation:tiraSkipFoilRush 1.15s linear infinite}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-return-icon{animation:tiraSkipArrowRush .68s cubic-bezier(.2,.8,.3,1) infinite}
+.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .proposal-orb{animation:tiraSkipOrbPulse 1.1s ease-in-out infinite}
+@keyframes tiraSkipFoilRush{from{transform:translateX(-75%) skewX(-22deg);background-position:0% 0%}to{transform:translateX(75%) skewX(-22deg);background-position:180% 0%}}
+@keyframes tiraSkipArrowRush{0%,100%{transform:translateX(0);filter:brightness(1)}40%{transform:translateX(5px);filter:brightness(1.35)}60%{transform:translateX(-2px);filter:brightness(1.1)}}
+@keyframes tiraSkipOrbPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.22)}}
+@media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"]::after,.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .skip-return-icon,.proposal-grid>.proposal-card[data-card-name="Skip Card"][aria-pressed="true"] .proposal-orb{animation:none}}
+
 /* Cell Card proportion refinement: scale the numbered orb down without changing the card frame or other special-card icons. */
 .card.cell .orb{
   /* Match Skip Card's visible orb-to-card ratio, not its viewport pixel size. */
