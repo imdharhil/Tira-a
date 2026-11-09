@@ -703,18 +703,20 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  background:linear-gradient(135deg,transparent 15%,#d6fff322 46%,#a7fff02c 50%,transparent 76%);
  border:1px solid #b5fff555
 }
+/* Hologram grows from the Bounce emblem toward the card perimeter,
+   then lingers briefly at full-card reach. Sonar waves remain unchanged. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::before{
- animation:tiraBounceHoloExpand 2.1s cubic-bezier(.16,.65,.25,1) 1 both
+ animation:tiraBounceHoloExpand 2.7s cubic-bezier(.16,.65,.25,1) 1 both
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::after{
- animation:tiraBounceHoloExpand 2.1s cubic-bezier(.16,.65,.25,1) .18s 1 both
+ animation:tiraBounceHoloExpand 2.7s cubic-bezier(.16,.65,.25,1) .18s 1 both
 }
 @keyframes tiraBounceHoloExpand{
- 0%{transform:scale(.18);opacity:0}
- 15%{opacity:.8}
- 72%{transform:scale(.98);opacity:.72}
- 88%{transform:scale(1);opacity:.56}
- 100%{transform:scale(1);opacity:0}
+ 0%{transform:scale(.10);opacity:0}
+ 12%{opacity:.8}
+ 64%{transform:scale(1.02);opacity:.78}
+ 84%{transform:scale(1.08);opacity:.62}
+ 100%{transform:scale(1.08);opacity:0}
 }
 @media(prefers-reduced-motion:reduce){
  .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::before,
@@ -1038,7 +1040,7 @@ function render(){
    if(selected===bounceCard.dataset.id&&motionAllowed){
     void bounceCard.offsetWidth;
     bounceCard.classList.add('bounce-holo-enter');
-    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},2350);
+    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},3100);
    }else if(bouncePreviousSelected===bounceCard.dataset.id&&motionAllowed){
     bounceCard.classList.add('bounce-exiting');
     bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},690);
