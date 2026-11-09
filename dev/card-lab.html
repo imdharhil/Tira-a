@@ -650,6 +650,37 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-orb::before{
  content:"";position:absolute;inset:5px;border-radius:50%;background:radial-gradient(circle at 42% 36%,#a9e9e2 0%,#79c9c5 34%,#439ca5 73%,#2b7987 100%);pointer-events:none;transition:filter .2s;box-shadow:inset 0 0 10px #d4fff955
 }
+/* One-shot holographic shield expansion across the whole card on selection.
+   Independent of the approved continuous sonar waves and deselection exit. */
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::before,
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::after{
+ content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+ z-index:2;opacity:0;transform:scale(.18);transform-origin:50% 43%;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::before{
+ background:radial-gradient(ellipse at 50% 43%,#a8fff133 0%,#6ee5d322 32%,#3fd6ce14 57%,transparent 74%);
+ border:1px solid #9fffee77;box-shadow:inset 0 0 17px #b7fff744,0 0 14px #72f4df33
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::after{
+ background:linear-gradient(135deg,transparent 15%,#d6fff322 46%,#a7fff02c 50%,transparent 76%);
+ border:1px solid #b5fff555
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::before{
+ animation:tiraBounceHoloExpand 1.15s cubic-bezier(.16,.65,.25,1) 1 both
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::after{
+ animation:tiraBounceHoloExpand 1.15s cubic-bezier(.16,.65,.25,1) .1s 1 both
+}
+@keyframes tiraBounceHoloExpand{
+ 0%{transform:scale(.18);opacity:0}
+ 15%{opacity:.8}
+ 68%{transform:scale(.98);opacity:.72}
+ 100%{transform:scale(1);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+ .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::before,
+ .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]::after{animation:none!important}
+}
 /* The shield surface itself now visibly cycles dark-to-light while the approved rings move unchanged. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .proposal-orb::before{
  animation:tiraBounceSurfaceColor 1.9s ease-in-out infinite
@@ -838,6 +869,7 @@ const storageKey='tira-dev-special-card-lab-v1';let drafts={};try{const v=JSON.p
 const el=id=>document.getElementById(id);const cards=[...document.querySelectorAll('.card, .proposal-card')];let selected='cell1';
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();if(id==='proposal6'&&saved.toLowerCase()==='select')return 'Blind Select';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
+let bounceHoloTimer=null;
 let bouncePreviousSelected=selected;
 let bounceExitTimer=null;
 function finishBounceExit(card){
@@ -850,6 +882,13 @@ function render(){
   if(bounceCard){
    if(bounceExitTimer!==null){clearTimeout(bounceExitTimer);bounceExitTimer=null}
    finishBounceExit(bounceCard);
+   if(bounceHoloTimer!==null){clearTimeout(bounceHoloTimer);bounceHoloTimer=null}
+   bounceCard.classList.remove('bounce-holo-enter');
+   if(selected===bounceCard.dataset.id && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    void bounceCard.offsetWidth;
+    bounceCard.classList.add('bounce-holo-enter');
+    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},1350);
+   }
    if(bouncePreviousSelected===bounceCard.dataset.id && selected!==bounceCard.dataset.id &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     bounceCard.classList.add('bounce-exiting');
