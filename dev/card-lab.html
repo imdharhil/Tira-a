@@ -655,20 +655,20 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{
  position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;
- transform:translate(-50%,-50%);pointer-events:none;border:2px solid #8de2d7;opacity:.8
+ transform:translate(-50%,-50%);pointer-events:none;border:2px solid #267d80;opacity:.8;box-shadow:0 0 3px #a2f4e633,inset 0 0 2px #a2f4e622
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:88%;height:88%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:61%;height:61%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{width:36%;height:36%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.core{
- width:15%;height:15%;background:#0c5c6b;border:2px solid #a6eee5;opacity:1
+ width:15%;height:15%;background:radial-gradient(circle at 38% 35%,#348f95 0%,#176b77 70%,#0c5c6b 100%);border:2px solid #a6eee5;opacity:1;box-shadow:0 0 4px #86d9d455
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.outer{animation:tiraRadarWave 1.9s ease-out -1.2s infinite}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraRadarWave 1.9s ease-out -.6s infinite}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraRadarWave 1.9s ease-out 0s infinite}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.core{animation:tiraRadarCore 1.9s ease-in-out infinite}
-@keyframes tiraRadarWave{0%{transform:translate(-50%,-50%) scale(.65);opacity:.95}75%{opacity:.52}100%{transform:translate(-50%,-50%) scale(1.2);opacity:0}}
-@keyframes tiraRadarCore{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(.88)}}
+@keyframes tiraRadarWave{0%{transform:translate(-50%,-50%) scale(.65);opacity:.95;border-color:#267d80}45%{border-color:#55b5b1}75%{opacity:.52;border-color:#a1e9df}100%{transform:translate(-50%,-50%) scale(1.2);opacity:0;border-color:#d2fff5}}
+@keyframes tiraRadarCore{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(.9)}}
 @media(prefers-reduced-motion:reduce){
  .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important}
 }
