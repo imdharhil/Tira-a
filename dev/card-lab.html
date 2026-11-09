@@ -686,7 +686,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  animation:tiraBounceSurfaceColor 1.9s ease-in-out 1 both
 }
 @keyframes tiraBounceSurfaceColor{
- 0%,100%{filter:brightness(.55) saturate(1.25)}
+ 0%{filter:brightness(.55) saturate(1.25)}
+ 100%{filter:brightness(1) saturate(1)}
  45%{filter:brightness(1.45) saturate(.9)}
  75%{filter:brightness(1.95) saturate(.7)}
 }
@@ -737,7 +738,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  75%{opacity:.52;border-color:#d0fff5;box-shadow:0 0 6px #d0fff588}
  100%{transform:translate(-50%,-50%) scale(1.2);opacity:0;border-color:#e8fffb;box-shadow:0 0 6px #e8fffb55}
 }
-@keyframes tiraRadarCore{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(.9)}}
+@keyframes tiraRadarCore{0%{transform:translate(-50%,-50%) scale(1);opacity:0}12%{opacity:1}50%{transform:translate(-50%,-50%) scale(.9)}80%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 @media(prefers-reduced-motion:reduce){
  .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important}
  .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-orb::before{animation:none!important}
