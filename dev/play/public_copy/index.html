@@ -261,7 +261,7 @@ html[data-motion=off] .card.selected{transform:none}
 </style><style id="tira-reserve-select-card-art-v1">
 /* Only in Reserve selection, ring the existing blue Cell orb; do not create another orb. */
 .cards .card.reserve-target .card-main .reserve-select-orb{position:relative;isolation:isolate;overflow:visible;flex:none}
-.cards .card.reserve-target .card-main .reserve-select-orb::before{content:"";position:absolute;inset:-14%;z-index:1;background:url("./assets/reserve-select-ring-sharp.svg") center/contain no-repeat;pointer-events:none}
+.cards .card.reserve-target .card-main .reserve-select-orb::before{content:"";position:absolute;inset:-14%;z-index:1;background:url("./assets/reserve-no-plus-button.png?v=approved-20261109") center/contain no-repeat;pointer-events:none;image-rendering:auto;filter:contrast(1.1)}
 .cards .card.reserve-target .card-main .reserve-select-orb::after{content:none!important}
 .cards .card.reserve-target .card-main{cursor:pointer}
 </style><style id="tira-reserve-standalone-icon-v1">
@@ -276,9 +276,7 @@ html[data-motion=off] .card.selected{transform:none}
  display:block;width:clamp(43px,12vw,58px);height:clamp(43px,12vw,58px);
  max-height:none;object-fit:contain
 }
-.stage .reserve-strip .reserve-entry.reserve-empty-entry.reserve-mini-selected{
- outline:2px solid #a9e8ff;outline-offset:2px;box-shadow:none;border-radius:8px
-}
+ .stage .reserve-strip .reserve-entry.reserve-empty-entry.reserve-mini-selected{outline:0;box-shadow:none;border:0}
 .stage .reserve-strip .reserve-entry.reserve-occupied-entry{
  width:clamp(56px,15vw,74px);height:clamp(66px,20dvh,96px)
 }
@@ -511,7 +509,7 @@ function reserveUse(i){
  }
 }
 function reserveCardMarkup(item,large){
- if(!item)return large?'<img class="reserve-mini-logo" src="./assets/reserve-logo-white.svg" alt=""><small>SLOT EMPTY</small>':'<img class="reserve-mini-logo" src="./assets/reserve-icon-clean.svg" alt="">';
+ if(!item)return large?'<img class="reserve-mini-logo" src="./assets/reserve-logo-white.svg" alt=""><small>SLOT EMPTY</small>':'<img class="reserve-mini-logo" src="./assets/reserve-logo-white.svg?v=approved-20261109" alt="">';
  if(item.type!=='cell'&&item.type!=='special')return '';
  let visual='',label='',cost='';
  if(item.type==='cell'){visual='<span class="orb">+'+item.value+'</span>';label=large?'CELL CARD':'CELL'}
@@ -554,7 +552,7 @@ function reserveRender(){
   const entry=$(id),item=slots[i];
   entry.hidden=i>visibleUntil;
   entry.disabled=entry.hidden||phase!=='human'||g.ended;
-  entry.classList.toggle('reserve-mini-selected',reserveSelected===i||reservePicking===i);
+  entry.classList.toggle('reserve-mini-selected',!!item&&(reserveSelected===i||reservePicking===i));
   entry.classList.toggle('reserve-empty-entry',!item);
   entry.classList.toggle('reserve-occupied-entry',!!item);
   entry.classList.toggle('reserve-mini-gold',item?.type==='special'&&(item.slot===3||item.slot===5));
