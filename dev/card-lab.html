@@ -666,15 +666,16 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  border:1px solid #b5fff555
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::before{
- animation:tiraBounceHoloExpand 1.15s cubic-bezier(.16,.65,.25,1) 1 both
+ animation:tiraBounceHoloExpand 2.1s cubic-bezier(.16,.65,.25,1) 1 both
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-holo-enter::after{
- animation:tiraBounceHoloExpand 1.15s cubic-bezier(.16,.65,.25,1) .1s 1 both
+ animation:tiraBounceHoloExpand 2.1s cubic-bezier(.16,.65,.25,1) .18s 1 both
 }
 @keyframes tiraBounceHoloExpand{
  0%{transform:scale(.18);opacity:0}
  15%{opacity:.8}
- 68%{transform:scale(.98);opacity:.72}
+ 72%{transform:scale(.98);opacity:.72}
+ 88%{transform:scale(1);opacity:.56}
  100%{transform:scale(1);opacity:0}
 }
 @media(prefers-reduced-motion:reduce){
@@ -683,7 +684,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 }
 /* The shield surface itself now visibly cycles dark-to-light while the approved rings move unchanged. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .proposal-orb::before{
- animation:tiraBounceSurfaceColor 1.9s ease-in-out 1 both
+ animation:tiraBounceSurfaceColor 1.2s ease-in-out 1 both
 }
 @keyframes tiraBounceSurfaceColor{
  0%{filter:brightness(.55) saturate(1.25)}
@@ -703,7 +704,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  visibility:visible
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.outer{
- animation:tiraRadarWave 1.9s ease-out 0s 1 both
+ animation:tiraRadarWave .72s ease-out 0s 1 both
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.middle,
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.inner,
@@ -711,10 +712,11 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  opacity:0;visibility:hidden;animation:none
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .proposal-orb::before{
- animation:tiraBounceExitSurface 1.9s ease-out 1 both
+ animation:tiraBounceExitSurface .72s ease-out 1 both
 }
 @keyframes tiraBounceExitSurface{
- 0%{filter:brightness(1.45) saturate(.9)}
+ 0%{filter:brightness(1.55) saturate(.88)}
+ 60%{filter:brightness(1.5) saturate(.9)}
  100%{filter:brightness(1) saturate(1)}
 }
 /* Idle preview is a clean, softly shaded shield. Reveal existing rings only when selected. */
@@ -726,9 +728,9 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  width:15%;height:15%;background:radial-gradient(circle at 38% 35%,#7ccbc7 0%,#479ba3 75%,#2b7987 100%);border:1px solid #a6eee588;opacity:1;box-shadow:0 0 6px #86d9d477
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.outer{animation:tiraRadarWave 1.9s ease-out 0s 1 both}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraRadarWave 1.9s ease-out .63s 1 both}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraRadarWave 1.9s ease-out 1.26s 1 both}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.core{animation:tiraRadarCore 1.9s ease-in-out 1 both}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraRadarWave .72s ease-out .24s 1 both}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraRadarWave .72s ease-out .48s 1 both}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.core{animation:tiraRadarCore 1.2s ease-in-out 1 both}
 /* Color follows each moving ring: dark at emission, visibly brighter as it travels. Preserve approved scale, fade and stagger. */
 @keyframes tiraRadarWave{
  0%{transform:translate(-50%,-50%) scale(.06);opacity:0;border-color:#12565e;box-shadow:0 0 2px #12565e44}
@@ -888,12 +890,12 @@ function render(){
    if(selected===bounceCard.dataset.id && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     void bounceCard.offsetWidth;
     bounceCard.classList.add('bounce-holo-enter');
-    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},1350);
+    bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},2350);
    }
    if(bouncePreviousSelected===bounceCard.dataset.id && selected!==bounceCard.dataset.id &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     bounceCard.classList.add('bounce-exiting');
-    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},1950);
+    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},780);
    }
   }
   bouncePreviousSelected=selected;
