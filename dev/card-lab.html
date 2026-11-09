@@ -666,8 +666,27 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;
  transform:translate(-50%,-50%);pointer-events:none;border:2px solid #267d80;opacity:.8;box-shadow:0 0 3px #a2f4e633,inset 0 0 2px #a2f4e622
 }
+/* On deselection, stop emitting new waves and let one final outward ripple resolve. */
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk{
+ visibility:visible
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.outer{
+ animation:tiraRadarWave 1.9s ease-out 0s 1 both
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.middle,
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.inner,
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.core{
+ opacity:0;visibility:hidden;animation:none
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .proposal-orb::before{
+ animation:tiraBounceExitSurface 1.9s ease-out 1 both
+}
+@keyframes tiraBounceExitSurface{
+ 0%{filter:brightness(1.45) saturate(.9)}
+ 100%{filter:brightness(1) saturate(1)}
+}
 /* Idle preview is a clean, softly shaded shield. Reveal existing rings only when selected. */
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]:not([aria-pressed="true"]) .bounce-disk{opacity:0;visibility:hidden}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]:not([aria-pressed="true"]):not(.bounce-exiting) .bounce-disk{opacity:0;visibility:hidden}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:88%;height:88%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:88%;height:88%}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{width:88%;height:88%}
@@ -819,7 +838,27 @@ const storageKey='tira-dev-special-card-lab-v1';let drafts={};try{const v=JSON.p
 const el=id=>document.getElementById(id);const cards=[...document.querySelectorAll('.card, .proposal-card')];let selected='cell1';
 function draft(id){return drafts[id]||{}}function label(id){const saved=typeof draft(id).name==='string'?draft(id).name.trim().slice(0,28):'';const legacy=/^(?:red)?cell([1-4])$/.exec(id);if(saved&&legacy&&saved==='CELL '+legacy[1])return 'CELL';if(id==='gold'&&saved==='CELL +4')return 'CELL';if(id==='proposal22')return (saved||defs[id].name).toUpperCase();if(id==='proposal6'&&saved.toLowerCase()==='select')return 'Blind Select';return saved||defs[id].name}
 function description(id){return typeof draft(id).description==='string'&&draft(id).description.trim()?draft(id).description.slice(0,300):defs[id].description}
-function render(){cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
+let bouncePreviousSelected=selected;
+let bounceExitTimer=null;
+function finishBounceExit(card){
+ if(!card)return;
+ card.classList.remove('bounce-exiting');
+}
+function render(){
+ if(bouncePreviousSelected!==selected){
+  const bounceCard=document.querySelector('.proposal-card[data-card-name="Bounce Protect"]');
+  if(bounceCard){
+   if(bounceExitTimer!==null){clearTimeout(bounceExitTimer);bounceExitTimer=null}
+   finishBounceExit(bounceCard);
+   if(bouncePreviousSelected===bounceCard.dataset.id && selected!==bounceCard.dataset.id &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    bounceCard.classList.add('bounce-exiting');
+    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},1950);
+   }
+  }
+  bouncePreviousSelected=selected;
+ }
+ cards.forEach(b=>{const id=b.dataset.id;b.setAttribute('aria-pressed',String(id===selected));(b.querySelector('.card-name')||b.querySelector('.proposal-name')).textContent=label(id)});const d=defs[selected];el('detailTitle').textContent=label(selected);el('detailDescription').textContent=description(selected);el('effect').textContent=d.effect;el('cost').textContent=d.cost;el('turn').textContent=d.turn;el('cooldown').textContent=d.cooldown;el('cardStatus').textContent=d.status;el('note').textContent=d.note;el('editName').value=label(selected);el('editDescription').value=description(selected)}
 /* Visual-only BLIND SELECT: three sequential 67→75 handoffs, final centered 67→100 reveal. */
 const blindCard=document.querySelector('.proposal-card[data-copycat="select"]');
 const blindPatterns=[[0,1,2],[2,1,0],[1,2,1],[1,0,1]];
