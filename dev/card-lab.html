@@ -635,23 +635,23 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb{background:radial-gradient(circle at 30% 20%,#fff6d9,#e5b950 42%,#8c5a24 88%);color:#2b2130}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-family{color:#f1cf77;font-weight:800}
 
-/* Bounce Protect — GIF-matched breathing target: three soft concentric disks,
-   synchronous inward/outward pulse, fixed center, no outward traveling waves. */
+/* Bounce Protect: reference GIF's teal ring pulse, over the round metal icon.
+   Transparent centers; a bright small core, a contracting ring and a fading outer echo. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{isolation:isolate}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-orb{position:relative;isolation:isolate;overflow:visible;background:none;box-shadow:none;border:0;clip-path:none;border-radius:50%;width:65px;height:65px;display:grid;place-items:center}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target{position:absolute;inset:0;display:block;pointer-events:none;z-index:4;mix-blend-mode:screen}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);will-change:transform;background:#c9e2ef;pointer-events:none}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:100%;height:100%;opacity:.13}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:59%;height:59%;background:#a5c3d4;opacity:.35}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{width:30%;height:30%;background:#7193aa;opacity:.66}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target{position:absolute;inset:0;display:block;pointer-events:none;z-index:4}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;pointer-events:none;transform:translate(-50%,-50%) scale(1)}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:90%;height:90%;border:6px solid #8ce3d8;opacity:0;transform:translate(-50%,-50%) scale(.6)}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:78%;height:78%;border:6px solid #6bd3c8;opacity:.82}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{width:12%;height:12%;border:0;background:#20b6a7;opacity:.95;box-shadow:0 0 4px #a2fff4}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-symbol{position:relative;z-index:2;font-size:18px;line-height:1;filter:drop-shadow(0 1px 2px #0007)}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-target{animation:tiraBounceBreath 1.65s ease-in-out infinite}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraBounceMiddle 1.65s ease-in-out infinite}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraBounceInner 1.65s ease-in-out infinite}
-@keyframes tiraBounceBreath{0%,100%{transform:scale(.84);opacity:.75}50%{transform:scale(1.09);opacity:1}}
-@keyframes tiraBounceMiddle{0%,100%{transform:translate(-50%,-50%) scale(.93)}50%{transform:translate(-50%,-50%) scale(1.06)}}
-@keyframes tiraBounceInner{0%,100%{transform:translate(-50%,-50%) scale(.94)}50%{transform:translate(-50%,-50%) scale(1.04)}}
-@media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target,.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important;transform:none}.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{transform:translate(-50%,-50%)}}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraBounceRing 2s ease-in-out infinite}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.outer{animation:tiraBounceEcho 2s ease-out infinite}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraBounceCore 2s ease-in-out infinite}
+@keyframes tiraBounceRing{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.85}52%{transform:translate(-50%,-50%) scale(.5);opacity:1}72%{transform:translate(-50%,-50%) scale(.66);opacity:.9}}
+@keyframes tiraBounceEcho{0%,18%{transform:translate(-50%,-50%) scale(.65);opacity:0}40%{opacity:.3}78%,100%{transform:translate(-50%,-50%) scale(1.55);opacity:0}}
+@keyframes tiraBounceCore{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}52%{transform:translate(-50%,-50%) scale(.72);opacity:.92}}
+@media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important}}
 
 /* Bounce Protect shares BLOCK's teal card material and machined round shield artwork.
    The concentric pulse overlays the shield as translucent energy. */
@@ -659,9 +659,6 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
   background:radial-gradient(ellipse at 18% 12%,#a1f5ed24 0%,transparent 53%),radial-gradient(ellipse at 87% 80%,#bca9f21e 0%,transparent 58%),linear-gradient(145deg,#23576c 0%,#153b52 56%,#102939 100%);
   border-color:#699eaf;box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005;
 }
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{background:#8de2d7;opacity:.12}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{background:#70c8c4;opacity:.25}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.inner{background:#328d98;opacity:.32}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-symbol{
   display:grid;place-items:center;width:56px;height:56px;font-size:0;color:transparent;
   clip-path:none;border-radius:50%;
