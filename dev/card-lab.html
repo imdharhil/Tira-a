@@ -635,6 +635,44 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-orb{background:radial-gradient(circle at 30% 20%,#fff6d9,#e5b950 42%,#8c5a24 88%);color:#2b2130}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .proposal-family{color:#f1cf77;font-weight:800}
 
+/* Static Protect-family polish only: preserve BLOCK's original card background
+   and all existing selection, hologram, sonar and exit effects. */
+.card.protect-card{
+ border-color:#6294a9;
+}
+.card.protect-card .card-name{
+ color:#e1f5f5;
+ font-weight:800;
+ letter-spacing:.085em;
+ text-shadow:0 1px 2px #061c2a88;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{
+ border:1px solid #6294a9;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-name{
+ position:relative;z-index:3;
+ color:#e4f6f3;
+ font-weight:850;
+ letter-spacing:.035em;
+ line-height:1.35;
+ text-shadow:0 1px 3px #071e2b99;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-family{
+ position:relative;z-index:3;
+ color:#b8d9d8;
+ font-weight:750;
+ letter-spacing:.095em;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-tag{
+ z-index:3;
+ color:#d7eeeb;
+ font-weight:750;
+ text-shadow:0 1px 2px #061b2b99;
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"]{
+ border:2px solid #79d7ff;
+}
+
 /* Bounce Protect: retain BLOCK's original teal metallic material and round
    shield. Apply only the reference's sonar-wave behavior as an overlay. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{
