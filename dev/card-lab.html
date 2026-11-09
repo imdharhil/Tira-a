@@ -639,7 +639,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
    synchronous inward/outward pulse, fixed center, no outward traveling waves. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{isolation:isolate}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .proposal-orb{position:relative;isolation:isolate;overflow:visible;background:none;box-shadow:none;border:0;clip-path:none;border-radius:50%;width:65px;height:65px;display:grid;place-items:center}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target{position:absolute;inset:0;display:block;pointer-events:none}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target{position:absolute;inset:0;display:block;pointer-events:none;z-index:4;mix-blend-mode:screen}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);will-change:transform;background:#c9e2ef;pointer-events:none}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.outer{width:100%;height:100%;opacity:.13}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{width:59%;height:59%;background:#a5c3d4;opacity:.35}
@@ -654,7 +654,7 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 @media(prefers-reduced-motion:reduce){.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-target,.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important;transform:none}.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{transform:translate(-50%,-50%)}}
 
 /* Bounce Protect shares BLOCK's teal card material and machined round shield artwork.
-   The concentric pulse remains behind the shield, not a replacement for it. */
+   The concentric pulse overlays the shield as translucent energy. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{
   background:radial-gradient(ellipse at 18% 12%,#a1f5ed24 0%,transparent 53%),radial-gradient(ellipse at 87% 80%,#bca9f21e 0%,transparent 58%),linear-gradient(145deg,#23576c 0%,#153b52 56%,#102939 100%);
   border-color:#699eaf;box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005;
