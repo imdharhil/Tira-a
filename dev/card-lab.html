@@ -846,26 +846,26 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Skip Card"] .skip-return-icon{
   display:block;width:90%;height:90%;object-fit:contain;
 }
-/* Bounce Protect: match BLOCK's 2px outer border and actual 1px inset frame.
-   The frame is a dedicated noninteractive child, not a box-shadow: a transparent
-   shadow did not mask the colored 7px shadow and caused the thick teal band. */
+/* Bounce edge uses BLOCK's exact frame geometry: 2px outer stroke,
+   3px dark inner rim, and a 1px line at 6px. The teal palette remains. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]{
   width:100%;min-height:0;aspect-ratio:.68;
-  border-radius:17px;border:2px solid #699eaf;
-  box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005;
+  border:2px solid #699eaf;border-radius:17px;
+  box-shadow:inset 0 0 0 3px #102939,0 8px 22px #0008;
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-static-frame{
   position:absolute;inset:6px;border:1px solid #a1d9dd75;
   border-radius:11px;z-index:5;pointer-events:none;
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"]{
-  border:2px solid #79d7ff;
-  box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005;
+  border-color:#9cf0ff;
+  box-shadow:0 0 0 2px #54d1f987,0 0 29px #3eaed751,
+             inset 0 0 0 3px #102939;
 }
-/* Exit animates only the outer glow; static borders remain untouched. */
+/* Exit fades only the temporary light; BLOCK-style edge remains intact. */
 @keyframes tiraBounceQuietExit{
-  0%{box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005,0 0 16px #7de4d544}
-  100%{box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005,0 0 0 transparent}
+  0%{box-shadow:inset 0 0 0 3px #102939,0 8px 22px #0008,0 0 16px #7de4d544}
+  100%{box-shadow:inset 0 0 0 3px #102939,0 8px 22px #0008,0 0 0 transparent}
 }
 /* Skip arrows: continuous rightward travel with seamless left-side wrap. */
 .skip-composite .skip-arrow-viewport{position:absolute;inset:0;z-index:2;display:block;overflow:hidden;border-radius:50%;pointer-events:none}
