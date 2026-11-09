@@ -667,7 +667,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraRadarWave 1.9s ease-out -.6s infinite}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraRadarWave 1.9s ease-out 0s infinite}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.core{animation:tiraRadarCore 1.9s ease-in-out infinite}
-@keyframes tiraRadarWave{0%{transform:translate(-50%,-50%) scale(.65);opacity:.95;border-color:#267d80}45%{border-color:#55b5b1}75%{opacity:.52;border-color:#a1e9df}100%{transform:translate(-50%,-50%) scale(1.2);opacity:0;border-color:#d2fff5}}
+/* Color follows each moving ring: dark at emission, visibly brighter as it travels. Preserve approved scale, fade and stagger. */
+@keyframes tiraRadarWave{0%{transform:translate(-50%,-50%) scale(.65);opacity:.95;border-color:#12565e;box-shadow:0 0 2px #12565e44}25%{border-color:#338f94;box-shadow:0 0 3px #338f9455}50%{border-color:#85dcd3;box-shadow:0 0 5px #85dcd377}75%{opacity:.52;border-color:#d0fff5;box-shadow:0 0 6px #d0fff588}100%{transform:translate(-50%,-50%) scale(1.2);opacity:0;border-color:#e8fffb;box-shadow:0 0 6px #e8fffb55}}
 @keyframes tiraRadarCore{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(.9)}}
 @media(prefers-reduced-motion:reduce){
  .proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk{animation:none!important}
