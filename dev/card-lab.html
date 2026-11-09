@@ -764,7 +764,8 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  width:15%;height:15%;background:radial-gradient(circle at 38% 35%,#7ccbc7 0%,#479ba3 75%,#2b7987 100%);border:1px solid #a6eee588;opacity:1;box-shadow:0 0 6px #86d9d477
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.outer{animation:tiraRadarWave 1.9s ease-out 0s 1 both}
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.middle{animation:tiraRadarWave .72s ease-out .24s 1 both}
+/* Middle sonar wave intentionally omitted to avoid three overlapping pulses. */
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"] .bounce-disk.middle{display:none}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.inner{animation:tiraRadarWave .72s ease-out .48s 1 both}
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"][aria-pressed="true"] .bounce-disk.core{animation:tiraRadarCore 1.2s ease-in-out 1 both}
 /* Color follows each moving ring: dark at emission, visibly brighter as it travels. Preserve approved scale, fade and stagger. */
