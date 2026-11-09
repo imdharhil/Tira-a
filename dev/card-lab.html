@@ -699,23 +699,25 @@ footer{font-size:12px;color:#9bbbc9;margin-top:20px;line-height:1.7}
  position:absolute;left:50%;top:50%;box-sizing:border-box;border-radius:50%;background:transparent;
  transform:translate(-50%,-50%);pointer-events:none;border:2px solid #267d80;opacity:.8;box-shadow:0 0 3px #a2f4e633,inset 0 0 2px #a2f4e622
 }
-/* Exit is a quiet release of residual card light: no fresh wave or flash. */
+/* On deselection, stop emitting new waves and let one final outward ripple resolve. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk{
- opacity:0!important;visibility:hidden!important;animation:none!important
+ visibility:visible
 }
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting::before,
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting::after{
- animation:none!important;opacity:0!important
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.outer{
+ animation:tiraRadarWave .72s ease-out 0s 1 both
+}
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.middle,
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.inner,
+.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .bounce-disk.core{
+ opacity:0;visibility:hidden;animation:none
 }
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting .proposal-orb::before{
- animation:none!important
+ animation:tiraBounceExitSurface .72s ease-out 1 both
 }
-.proposal-grid>.proposal-card[data-card-name="Bounce Protect"].bounce-exiting{
- animation:tiraBounceQuietExit .65s ease-out 1 both
-}
-@keyframes tiraBounceQuietExit{
- 0%{box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005,0 0 16px #7de4d544}
- 100%{box-shadow:inset 0 1px 0 #e4ffff2d,0 7px 20px #0005,0 0 0 transparent}
+@keyframes tiraBounceExitSurface{
+ 0%{filter:brightness(1.55) saturate(.88)}
+ 60%{filter:brightness(1.5) saturate(.9)}
+ 100%{filter:brightness(1) saturate(1)}
 }
 /* Idle preview is a clean, softly shaded shield. Reveal existing rings only when selected. */
 .proposal-grid>.proposal-card[data-card-name="Bounce Protect"]:not([aria-pressed="true"]):not(.bounce-exiting) .bounce-disk{opacity:0;visibility:hidden}
@@ -874,7 +876,8 @@ let bounceHoloTimer=null;
 let bouncePreviousSelected=selected;
 let bounceExitTimer=null;
 function finishBounceExit(card){
- if(card)card.classList.remove('bounce-exiting');
+ if(!card)return;
+ card.classList.remove('bounce-exiting');
 }
 function render(){
  if(bouncePreviousSelected!==selected){
@@ -884,14 +887,15 @@ function render(){
    finishBounceExit(bounceCard);
    if(bounceHoloTimer!==null){clearTimeout(bounceHoloTimer);bounceHoloTimer=null}
    bounceCard.classList.remove('bounce-holo-enter');
-   const motionAllowed=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-   if(selected===bounceCard.dataset.id&&motionAllowed){
+   if(selected===bounceCard.dataset.id && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     void bounceCard.offsetWidth;
     bounceCard.classList.add('bounce-holo-enter');
     bounceHoloTimer=setTimeout(()=>{bounceCard.classList.remove('bounce-holo-enter');bounceHoloTimer=null},2350);
-   }else if(bouncePreviousSelected===bounceCard.dataset.id&&motionAllowed){
+   }
+   if(bouncePreviousSelected===bounceCard.dataset.id && selected!==bounceCard.dataset.id &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     bounceCard.classList.add('bounce-exiting');
-    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},690);
+    bounceExitTimer=setTimeout(()=>{finishBounceExit(bounceCard);bounceExitTimer=null},780);
    }
   }
   bouncePreviousSelected=selected;
