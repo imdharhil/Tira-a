@@ -55,7 +55,7 @@ body.retro-neon .viewport{background:#080f25}
 </div>
 <script>
 (()=>{'use strict';
-const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)'];
+const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Unused','Dark Soul — Custom Wisp','Pure Soul — Custom Wisp'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
 const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Universe uses slow living galaxy motion rather than decorative lines.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.'};
 const $=id=>document.getElementById(id);
@@ -330,6 +330,111 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
  }
  c.restore();
 }
+
+/* Owner-authored Dark Soul wisp geometry, retained from the uploaded editable design.
+   Draft Gallery entry 20; source Dark Soul 18 remains unchanged. */
+const CUSTOM_DARK_WISPS=[[86,490.43747704645295,495.70349736799324,360.9704408485839,-80,529.4830911378738,-79.70555240031376,100,"#b00ab2",0,26,14,32,20,0,[[0.275,580.8588991529012,286.0902006666814],[0.5,404.1261195812069,138.1278735834024],[0.725,494.54754168765504,47.7064514769541]]],[87,518.437477046453,513.7034973679932,388.9704408485839,-62,471.9421861610431,12.770902026735541,100,"#b00ab2",0,26,14,32,20,0,[[0.275,521.2629618554694,310.75058851389457],[0.5,371.2456024515893,158.67819678941333],[0.725,486.3274124052507,66.20174236236403]]],[88,437.0066367108244,526.5289821770097,416.9704408485839,-44,499.9421861610431,30.77090202673554,100,"#b00ab2",0,26,14,32,20,0,[[0.275,550.0334143438848,343.63110564351206],[0.5,350.6952792455784,185.39361695722766],[0.725,439.0616690314256,99.08225949198163]]],[89,465.0066367108244,544.5289821770097,445.22676599322875,35.376257553347614,498.6576063288573,148.40303518640792,100,"#b25bb3",0,26,34,32,20,0,[[0.275,550.0334143438848,349.79620260531544],[0.5,395.90599029880246,226.4942633692496],[0.725,467.0616690314256,117.08225949198163]]],[90,437.0066367108244,493.64846504739216,461.66702455803755,0.4407081031289408,535.648188099677,185.39361695722766,100,"#b25bb3",0,26,34,32,20,0,[[0.275,568.5287052292946,362.12639652892193],[0.5,408.2361842224091,236.769424972255],[0.725,441.11670135202655,134.0178089422002]]],[91,447.28179831382994,495.70349736799324,445.22676599322875,-1.6143242174721877,496.60257400825634,183.33858463662648,100,"#b25bb3",0,26,34,32,20,0,[[0.275,572.6387698704968,360.071364208321],[0.5,371.2456024515893,242.9345219340584],[0.725,434.95160439022334,138.1278735834024]]],[92,428.7865074284202,547.0793053830207,402.07108726060585,-28.329744385286403,447.28179831382994,175.11845535422225,100,"#b25bb3",0,26,34,32,20,0,[[0.275,500.7126386494584,306.6405238726924],[0.5,321.92482675716303,244.98955425465945],[0.725,447.28179831382994,88.8070978889761]]],[93,463.7220568786386,524.4739498564087,387.6858610163981,-59.155229194302876,593.1890930765078,134.0178089422002,100,"#b25bb3",0,26,34,32,20,0,[[0.275,445.22676599322875,271.7049744224738],[0.5,389.7408933369993,201.83387552203644],[0.725,463.7220568786386,78.53193628597063]]],[94,424.6764427872179,468.98807720017896,350.6952792455784,-80,572.6387698704968,193.613746239632,100,"#b00ab2",0,26,14,32,20,0,[[0.1625,354.8053438867805,429.94246310875803],[0.275,326.0348913983653,360.071364208321],[0.5,451.39186295503214,197.72381088083424],[0.725,227.39334000951257,111.41245341558817]]],[95,445.22676599322875,464.8780125589767,340.4201176425729,-42.714970629494076,638.3998041297319,220.3291664074463,100,"#b00ab2",0,26,14,32,20,0,[[0.1625,391.79592565760026,438.1625923911625],[0.275,340.4201176425729,360.071364208321],[0.5,479.39186295503214,215.72381088083424],[0.725,258.21882481852913,111.41245341558817]]],[96,473.22676599322875,482.8780125589767,367.1355378103871,-80,665.1152242975463,222.38419872804738,100,"#b00ab2",0,26,14,32,20,0,[[0.1625,402.07108726060585,450.4927863147691],[0.275,348.64024692497725,355.9612995671187],[0.5,529.4830911378738,226.4942633692496],[0.725,268.4939864215345,103.19232413318377]]],[98,377.4106994133926,520.3638852152066,332.19998836016856,-57.10019687370175,42.440431155413876,37.43128987394874,100,"#b25bb3",0,26,34,32,20,0,[[0.275,208.8980491241027,436.1075600705615],[0.5,367.1355378103871,164.84329375121672],[0.725,200.67791984169835,129.907744300998]]],[99,405.4106994133926,538.3638852152066,309.5946328335565,8.660837385533341,60.93572204082369,129.907744300998,100,"#b25bb3",0,26,34,32,20,0,[[0.275,245.88863089492241,415.5572368645504],[0.5,379.4657317339938,195.66877856023316],[0.725,208.8980491241027,148.40303518640792]]],[100,330.1449560395674,575.8497578714359,330.1449560395674,-7.7794211792754595,88.93572204082369,147.907744300998,100,"#b25bb3",0,26,34,32,20,0,[[0.275,273.8886308949224,433.5572368645504],[0.5,393.8509579782014,201.83387552203644],[0.725,200.67791984169835,125.79767965979579]]],[101,385.63082869579705,579.9598225126382,360.19998836016856,-39.10019687370175,46.550495796616076,253.2096835370639,100,"#b25bb3",0,26,34,32,20,0,[[0.5,400.0160549400047,216.21910176624408]]],[102,566.4736729086934,440.2176247117637,85.59610988803684,107.30238877438597,303.42953587175316,117.5775503773915,100,"#b25bb3",1,26,34,32,20,0,[[0.275,418.51134582541454,228.54929568985077],[0.5,233.55843697131584,318.9707177962989]]],[103,547.9783820232835,434.0525277499603,95.87127149104236,136.07284126280132,313.7046974747586,140.18290590400346,100,"#6d0c6f",1,26,34,32,20,0,[[0.275,418.51134582541454,234.71439265165395],[0.5,241.7785662537202,290.2002653078835]]],[104,560.3085759468902,360.071364208321,102.0363684528457,76.4769039653695,274.6590833833378,113.46748573618925,100,"#6d0c6f",1,20,34,85,20,0,[[0.275,400.0160549400047,224.43923104864854],[0.5,239.72353393311914,290.2002653078835]]],[105,301.3745035511521,267.59490978127155,880,166.8983260718178,562.3636082674911,18.935998988538813,91,"#6d086d",1,100,100,85,60,1,[[0.275,262.3288894597312,370.3465258113264],[0.5,607.5743193207156,413.50220454394946],[0.725,566.4736729086934,72.36683932416736]]],[106,422.6214104666168,318.9707177962989,-35.650797027427814,-67.37535847670722,-72.64137879824756,337.4660086817088,34,"#c918c3",0,40,94,85,20,1,[[0.5,165.74237039147968,134.0178089422002]]],[107,420.5663781460157,341.576073322911,21.890107949402875,-1.6143242174721877,-15.10047382141687,257.319748178266,34,"#c918c3",0,68,94,85,20,1,[[0.5,190.40275823869285,134.0178089422002]]],[108,346.5852146043762,327.19084707870337,-45.925958630433286,-1.6143242174721877,12.89952617858313,275.319748178266,22,"#f5146e",0,100,94,53,20,1,[[0.5,188.34772591809167,156.6231644688123]]],[109,556.198511305688,425.83239846755595,400.0160549400047,-15.999550461679803,46.550495796616076,189.50368159842986,22,"#ae19a9",0,100,94,33,20,1,[[0.5,404.1261195812069,185.39361695722766]]],[110,204.78798448290058,592.2900164362449,282.8792126657422,2.4957404237300125,85.59610988803684,273.7600067430748,22,"#ae19a9",0,42,94,33,20,1,[[0.5,280.8241803451411,249.09961889586168]]],[111,455.5019275962344,518.3088528946054,426.7314751078189,-55.045164553100676,658.950127335743,216.21910176624408,22,"#ae19a9",0,42,94,33,20,1,[[0.5,449.336830634431,222.38419872804738]]],[112,483.5019275962344,536.3088528946054,412.34624886361127,-77.65052007971275,550.0334143438848,216.21910176624408,22,"#ae19a9",0,33,94,85,20,1,[[0.5,422.6214104666168,187.4486492778287]]],[113,410.2912165430101,577.9047901920371,278.76914802454,234.71439265165395,93.81623917044124,530.6390468182119,34,"#3e0f70",0,85,94,32,20,1,[]],[114,363.025473169185,168.95335839241886,338.36508532197183,-80,319.86979443656185,45.65141915635314,5,"#3e0f70",1,85,94,32,20,1,[[0.5,367.1355378103871,41.541354515150886]]],[115,547.9783820232835,405.282075261545,513.042832573065,-75.59548775911168,478.10728312284647,2.4957404237300125,16,"#3e0f70",0,43,79,32,20,1,[[0.5,603.4642546795134,60.03664540056076]]],[116,383.5757963751959,123.74264733919478,366.36508532197183,-62,365.08050548978616,66.20174236236403,5,"#3e0f70",1,67,94,32,20,1,[[0.5,408.2361842224091,33.321225232746485]]],[117,356.8603762073817,259.3747804988671,110.25649773525004,-79.70555240031376,30.110237231807275,70.31180700356629,16,"#3e0f70",0,43,79,32,20,1,[[0.5,180.12759663568733,76.4769039653695]]],[118,412.34624886361127,561.4645316272283,262.3288894597312,230.60432801045172,145.19204718546868,522.4189175358075,34,"#3e0f70",0,85,94,32,20,1,[]],[119,329.3745035511521,285.59490978127155,908,184.8983260718178,590.3636082674911,36.93599898853881,42,"#c82dc8",1,14,100,85,60,1,[[0.275,270.54901874213556,421.7223338263538],[0.5,640.454836450333,399.11697829974173],[0.725,582.9139314735023,72.36683932416736]]],[120,482.21734776404867,569.6846609096328,306.76914802454,252.71439265165395,147.24707950606984,530.6390468182119,34,"#3e0f70",0,85,94,32,20,1,[]],[121,169.85243503268183,335.4109763611077,17.78004330820073,171.00839071302002,89.70617452923909,197.72381088083424,16,"#3e0f70",0,43,79,32,20,1,[[0.5,83.54107756743576,265.53987746067037]]],[122,171.90746735328298,286.0902006666814,85.59610988803684,160.7332291100145,147.24707950606984,177.1734876748233,16,"#3e0f70",0,43,79,32,20,1,[[0.5,124.64172397945777,218.27413408684524]]],[123,535.648188099677,306.6405238726924,517.1528972142671,12.770902026735541,494.54754168765504,51.81651611815636,16,"#3e0f70",0,43,79,32,20,1,[[0.5,566.4736729086934,125.79767965979579]]],[124,439.0616690314256,294.31032994908577,169.85243503268183,136.07284126280132,406.1811519018079,321.0257501169001,22,"#f5146e",0,100,94,53,20,1,[[0.5,233.55843697131584,415.5572368645504]]],[125,453.4468952756332,526.5289821770097,389.7408933369993,-67.37535847670722,529.4830911378738,199.7788432014354,22,"#f5146e",0,100,94,53,20,1,[[0.5,330.1449560395674,210.0540048044408]]],[126,481.4468952756332,544.5289821770097,315.75972979535976,-67.37535847670722,81.48604524683469,362.12639652892193,22,"#f5146e",0,100,94,53,20,1,[[0.5,393.8509579782014,236.769424972255]]],[128,404.1261195812069,462.82298023837575,745.2614848009889,-80,630.1796748473276,226.4942633692496,22,"#f5146e",0,41,94,53,20,1,[[0.5,554.143478985087,162.78826143061556]]],[129,389.7408933369993,481.3182711237856,611.6843839619178,-42.714970629494076,673.3353535799506,134.0178089422002,22,"#f5146e",0,34,94,53,20,1,[[0.5,554.143478985087,185.39361695722766]]]];
+function darkWispPoint(w,u,t){
+ const dx=Math.sin(t*3.7*.94+w[0]*1.2)*74*.20;
+ const qx=w[5]+dx,qy=w[6],x=w[1],y=w[2],tx=w[3],ty=w[4],a=.88;
+ const p1x=x+(qx-x)*a,p1y=y+(qy-y)*a,p2x=tx+(qx-tx)*a,p2y=ty+(qy-ty)*a;
+ const v=1-u;
+ let px=v*v*v*x+3*v*v*u*p1x+3*v*u*u*p2x+u*u*u*tx;
+ let py=v*v*v*y+3*v*v*u*p1y+3*v*u*u*p2y+u*u*u*ty;
+ for(const b of w[15]){
+  const bu=b[0],bx=b[1],by=b[2],iv=1-bu;
+  const baseX=iv*iv*iv*x+3*iv*iv*bu*(x+(w[5]-x)*a)+3*iv*bu*bu*(tx+(w[5]-tx)*a)+bu*bu*bu*tx;
+  const baseY=iv*iv*iv*y+3*iv*iv*bu*(y+(w[6]-y)*a)+3*iv*bu*bu*(ty+(w[6]-ty)*a)+bu*bu*bu*ty;
+  const d=Math.abs(u-bu)/.42;
+  const k=d<1?Math.pow(.5+.5*Math.cos(Math.PI*d),1.45):0;
+  px+=(bx-baseX)*k;py+=(by-baseY)*k;
+ }
+ return {x:px,y:py};
+}
+function darkWispColor(w,t,pure=false){
+ const hex=w[8],r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+ const theta=.5*t*.7+w[0]*.618,shift=Math.sin(theta)*.35;
+ const f=1+.11*shift;
+ if(pure){
+  // Retain each strand's light/dark variation, changing only its palette.
+  // Cached palette constants are derived from the owner's nine smoke shades.
+  const light=(Math.max(r,g,b)+Math.min(r,g,b))/510;
+  const bright=.28+.72*light;
+  return [
+   Math.min(255,Math.round((32+113*bright)*(1+.05*shift))),
+   Math.min(255,Math.round((137+115*bright)*(1+.06*shift))),
+   Math.min(255,Math.round((190+65*bright)*(1-.04*shift)))
+  ];
+ }
+ return [Math.min(255,Math.round(r*f)),Math.min(255,Math.round(g*(1+.22*shift))),Math.min(255,Math.round(b*(1-.06*shift)))];
+}
+function drawCustomDarkSoul(c,x,y,r,t,pure=false){
+ const scale=Math.max(.001,r/173),cx=x,cy=y;
+ c.save();
+ // Fit the full authored 800×800 composition in a Gallery preview.
+ // The independent Gallery card uses short landscape viewports.
+ const canvasHeight=c.canvas.height/(Math.min(devicePixelRatio||1,2));
+ const fit=Math.min(scale*.79,canvasHeight/800*.88);
+ c.translate(cx,cy);c.scale(fit,fit);c.translate(-400,-335);
+ for(const front of [0,1]){
+  if(front===1){
+   const base=c.createRadialGradient(381,367,8,400,405,183);
+   if(pure){
+    base.addColorStop(0,'#ffffff');base.addColorStop(.42,'#c5faff');
+    base.addColorStop(.83,'#45b7e8');base.addColorStop(1,'#2372bb');
+   }else{
+    base.addColorStop(0,'#b856ff');base.addColorStop(.42,'#8522d2');
+    base.addColorStop(.83,'#5c1199');base.addColorStop(1,'#df1cd9');
+   }
+   c.shadowColor=pure?'rgba(83,221,252,.56)':'rgba(213,45,239,.48)';c.shadowBlur=27;
+   c.fillStyle=base;c.beginPath();c.arc(400,405,173,0,Math.PI*2);c.fill();c.shadowBlur=0;
+   for(const sign of [-1,1]){
+    const ey=392,ex=400+sign*67;
+    c.fillStyle='rgba(213,251,255,.99)';c.shadowColor='#65efff';c.shadowBlur=13;
+    c.beginPath();c.ellipse(ex,ey,16,21,0,0,Math.PI*2);c.fill();c.shadowBlur=0;
+   }
+  }
+  for(const w of CUSTOM_DARK_WISPS){
+   if(w[9]!==front)continue;
+   const col=darkWispColor(w,t,pure),colStr=col.join(',');
+   const n=28,pts=[];
+   for(let i=0;i<=n;i++){
+    const u=i/n,pt=darkWispPoint(w,u,t),a=darkWispPoint(w,Math.max(0,u-.004),t),b=darkWispPoint(w,Math.min(1,u+.004),t);
+    const dx=b.x-a.x,dy=b.y-a.y,len=Math.max(.0001,Math.hypot(dx,dy));
+    let width;
+    if(w[14])width=w[7]*(.06+.94*Math.pow(Math.max(0,Math.sin(Math.PI*u)),.62+.020*w[11]));
+    else width=w[7]*(.25+.75*Math.pow(1-u,.50+.025*w[11]))*(1-.99*Math.pow(u,1.7)*(w[11]/100));
+    pts.push({pt,nx:-dy/len,ny:dx/len,width});
+   }
+   const fade=Math.max(.015,w[12]/100),opacity=w[10]/100;
+   const alpha=u=>{
+     const q=Math.min(1,Math.max(0,u/fade)),root=q*q*(3-2*q);
+     const tip=w[14]?Math.pow(Math.max(0,Math.sin(Math.PI*u)),.9):u<.58?1:1-.96*Math.pow((u-.58)/.42,1.5);
+     return root*Math.max(0,tip)*opacity;
+   };
+   c.save();c.globalCompositeOperation='screen';
+   const intervals=9;
+   for(let k=0;k<intervals;k++){
+    const ia=Math.floor(k*n/intervals),ib=Math.floor((k+1)*n/intervals);
+    if(ia>=ib)continue;
+    c.beginPath();
+    for(let j=ia;j<=ib;j++){const z=pts[j];const xx=z.pt.x+z.nx*z.width*.5,yy=z.pt.y+z.ny*z.width*.5;if(j===ia)c.moveTo(xx,yy);else c.lineTo(xx,yy);}
+    for(let j=ib;j>=ia;j--){const z=pts[j];c.lineTo(z.pt.x-z.nx*z.width*.5,z.pt.y-z.ny*z.width*.5);}
+    c.closePath();
+    const a=pts[ia].pt,b=pts[ib].pt;
+    const g=c.createLinearGradient(a.x,a.y,b.x+1e-5,b.y+1e-5);
+    g.addColorStop(0,'rgba('+colStr+','+(alpha(ia/n)*.6+alpha(ib/n)*.4)+')');
+    g.addColorStop(1,'rgba('+colStr+','+alpha(ib/n)+')');
+    const strength=Math.max(alpha(ia/n),alpha(ib/n));
+    c.shadowColor='rgba('+colStr+','+(strength*.16)+')';
+    c.shadowBlur=strength>.03?Math.min(w[13],16):0;
+    c.fillStyle=g;c.fill();
+   }
+   c.restore();
+  }
+ }
+ c.restore();
+}
 function drawAppearance(ctx,n,x,y,r,t,value,opts={}){const {power,stress}=stressFor(value);switch(n){
 case 1:{softSphere(ctx,x,y,r,['#f9ffff','#b6ecff','#2f73ca','#07101f']);break;}
 case 2:{glow(ctx,x,y,r*1.32,[[0,'rgba(182,248,255,.82)'],[.52,'rgba(91,169,255,.25)'],[1,'rgba(37,79,190,0)']]);softSphere(ctx,x,y,r*.96,['#ffffff','#c9f3ff','#3a7dd6','#08111f']);break;}
@@ -465,9 +570,11 @@ case 13:{
 case 14:{filmNew(ctx,x,y,r,t,stress);break;}
 case 15:{spriteNew(ctx,x,y,r,t,stress,opts.arcadeControls);break;}
 case 17:case 18:{drawSoulWisp(ctx,x,y,r,t,value,n===18,opts.soulControls);break;}
+case 20:{drawCustomDarkSoul(ctx,x,y,r,t,false);break;}
+case 21:{drawCustomDarkSoul(ctx,x,y,r,t,true);break;}
 }}
 function drawIdentityDeath(ctx,n,x,y,r,elapsed,value){const q=clamp(elapsed/1.5,0,1),u=easeOut(q);if(q>=1)return;if(n===15){shatterNew(ctx,x,y,r,q,{inst:+$('inst').value/100,move:+$('move').value/100,urgency:+$('urgency').value/100,value});return;}const draw=(id,scale=1,alpha=1)=>{ctx.save();ctx.globalAlpha*=alpha;ctx.translate(x,y);ctx.scale(scale,scale);drawAppearance(ctx,id,0,0,r,elapsed*2+1,value);ctx.restore()};ctx.save();switch(n){
-case 17:case 18:{
+case 17:case 18:case 20:case 21:{
  if(q<.72)draw(n,1+.1*q,1-q);
  for(let j=0;j<16;j++){
   const a=j*2.39996,dist=r*(.12+u*.9)*(.5+.5*rand(j+47));
@@ -1041,7 +1148,7 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(!state.mode&&galleryDisplayNumber!==null?galleryDisplayNumber:number,cx,cy+3);ctx.restore()}}
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible&&n!==20&&n!==21){ctx.save();ctx.translate(sx*identityShake*(+$('follow').value/100),sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(88,190,255,.94)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';ctx.fillText(!state.mode&&galleryDisplayNumber!==null?galleryDisplayNumber:number,cx,cy+3);ctx.restore()}}
 
 // Gallery-only Black Hole cosmetics: button presses immediately start a visual
 // transition. Gameplay controls collision, timing, and progression separately.
@@ -1112,7 +1219,7 @@ if(isEffectEmbed){
  try{
   const raw=embedParams.get('preset');if(!raw||raw.length>1600)throw Error('Missing preview settings');
   const p=JSON.parse(raw);const mode=Number(p.mode),effect=Number(p.effect);
-  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:18))throw Error('Invalid effect');
+  if(![0,1].includes(mode)||!Number.isInteger(effect)||effect<1||effect>(mode?14:21))throw Error('Invalid effect');
   state.mode=mode;state.A=effect;state.B=effect;for(const k of ['value','speed','urgency','inst','move','follow']){const input=$(k);const n=Number(p.settings?.[k]);if(!Number.isFinite(n))throw Error('Invalid settings');input.value=Math.min(Number(input.max),Math.max(Number(input.min),n));input.dispatchEvent(new Event('input'));}
   if(p.displayNumber!==undefined){const display=Number(p.displayNumber);const minStage=effect===13?1:0;if(!Number.isInteger(display)||display<minStage||display>6)throw Error('Invalid display number');galleryDisplayNumber=display;}
   rebuild();
