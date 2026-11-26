@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CELL//CORE — Effects Lab v10.72</title>
+<title>CELL//CORE — Effects Lab v10.73</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%);min-height:100vh}.wrap{max-width:1330px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}h1{font-size:25px;letter-spacing:.09em;margin:0}h1 em{font-style:normal;color:#7d9dff}.tag{font-size:11px;letter-spacing:.13em;color:#9ab3eb}button,select,input{font:inherit}button{color:#dfe8ff;border:1px solid #304268;background:#131f38;border-radius:10px;padding:10px 13px;cursor:pointer}button:hover{background:#243960}button.active{border-color:#7cb9ff;background:#1c4163;color:white}.panel{border:1px solid #293653;border-radius:18px;background:linear-gradient(160deg,#121c31,#0d1424);padding:17px}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;margin-top:20px}.left{display:flex;flex-direction:column;gap:15px}.controls{display:flex;flex-wrap:wrap;gap:8px}.field{display:grid;gap:6px;margin:13px 0}.field label{display:flex;justify-content:space-between;color:#adbee2;font-size:13px}input[type=range]{width:100%;accent-color:#77b6ff}select{background:#10192b;color:#e9f1ff;border:1px solid #334665;padding:9px;border-radius:9px;width:100%}.gridbuttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.gridbuttons button{text-align:left;font-size:12px;padding:9px}.gridbuttons strong{color:#8bd4ff}.stagegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.viewport{position:relative;aspect-ratio:1.23;min-height:280px;overflow:hidden;border-radius:15px;background:radial-gradient(circle at center,#162944,#080f1f 60%,#070b13 100%);border:1px solid #253856}.viewport canvas{width:100%;height:100%;display:block}.viewport .top{position:absolute;top:12px;left:14px;font-size:11px;letter-spacing:.12em;color:#bbcaf1;pointer-events:none}.viewport .bottom{position:absolute;bottom:12px;left:14px;font-size:11px;color:#8c9dbd;pointer-events:none}.titlebar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}h2{font-size:16px;margin:0}.muted{color:#91a5c8;font-size:12px}footer{margin-top:16px;color:#8b9ab7;font-size:12px;line-height:1.65}.checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.check{border:1px solid #344360;border-radius:9px;padding:8px 12px;font-size:12px;color:#afd1ed}@media(max-width:900px){main{grid-template-columns:1fr}.stagegrid{grid-template-columns:1fr}.viewport{aspect-ratio:1.25}}@media(min-width:900px){.left{max-height:calc(100vh - 130px);overflow:auto;padding-right:3px}}
@@ -20,7 +20,7 @@ body.retro-neon .viewport{background:#080f25}
 </head>
 <body>
 <div class="wrap">
-<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.72 • Effects Library is a separate page</div></header>
+<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.73 • Effects Library is a separate page</div></header>
 <main>
 <aside class="left">
 <section class="panel">
@@ -449,27 +449,41 @@ function furAct(stage,age,look){
  }
  if(stage===3){
   const scan=furSearch(age);
-  return {x:scan*.094,y:-.025*Math.abs(scan),turn:scan*.112,zoom:1};
+  return {x:scan.x*.062,y:scan.y*.055,turn:scan.x*.085+scan.y*.021,zoom:1};
  }
  if(stage===4){
-  const huff=furPulse(age,.10,.33,.88);
-  return {x:-.025*huff,y:.046*huff,turn:-.055*huff,zoom:1+.028*huff};
+  const huff=furPulse(age%3.05,.13,.42,1.10);
+  return {x:-.043*huff,y:.044*huff,turn:-.045-.052*huff,zoom:1+.026*huff};
  }
  if(stage===5){
-  const lean=furEase((age-.13)/1.08);
-  const inspect=Math.sin(age*1.85)*.022*lean;
-  return {x:(gx*.075+inspect)*lean,y:-.054*lean+gy*.038*lean,turn:(gx*.11-.07)*lean,zoom:1+.25*lean};
+  const inspect=furInspect(age),lean=inspect.depth;
+  return {x:inspect.x*.097+gx*.025*lean,y:inspect.y*.060-.038*lean+gy*.019*lean,turn:inspect.x*.117+gx*.035*lean,zoom:1+.255*lean};
  }
  const wind=furPulse(age,.04,1.25,1.48);
  const dash=furPulse(age,1.25,1.63,2.29);
  const shake=Math.sin(age*(15+age*9))*wind;
  return {x:.102*shake,y:-.102*dash+.027*wind,turn:.135*shake,zoom:1-.083*wind+.58*dash};
 }
-function furSearch(age){
- // Look left and right with pauses instead of sweeping through the viewer at rest.
- const p=((age+.18)%3.05)/3.05;
- return -1+2*furEase((p-.24)/.18)-2*furEase((p-.72)/.18);
+// Uneven fixations and pauses make these reads intentional instead of a metronome.
+const FUR_SEARCH_POINTS=[
+ [0,-.78,.24],[.30,-.78,.24],[.52,-.48,-.83],[.98,-.48,-.83],
+ [1.16,.66,-.54],[1.50,.66,-.54],[1.70,.86,.43],[2.28,.86,.43],
+ [2.56,-.20,.80],[2.85,-.20,.80],[3.08,-.90,-.03],[3.50,-.90,-.03],[3.78,-.78,.24]
+];
+const FUR_INSPECT_POINTS=[
+ [0,0,.02,0],[.31,0,.02,0],[1.03,-.46,-.12,1],[1.37,-.46,-.12,1],
+ [1.77,.62,.09,.91],[2.12,.62,.09,.91],[2.70,0,0,0],[3.12,0,0,0],
+ [3.78,.34,-.39,.81],[4.20,.34,-.39,.81],[4.56,-.63,.18,.96],
+ [4.91,-.63,.18,.96],[5.49,0,.02,0],[5.82,0,.02,0]
+];
+function furTrack(keys,age){
+ const t=Math.max(0,age)%keys[keys.length-1][0];
+ let i=1;while(i<keys.length-1&&t>keys[i][0])i++;
+ const a=keys[i-1],b=keys[i],f=furEase((t-a[0])/(b[0]-a[0]));
+ return {x:mix(a[1],b[1],f),y:mix(a[2],b[2],f),depth:mix(a[3]||0,b[3]||0,f)};
 }
+function furSearch(age){return furTrack(FUR_SEARCH_POINTS,age);}
+function furInspect(age){return furTrack(FUR_INSPECT_POINTS,age);}
 
 function furryPose(view,t,r,hit){
  if(!view.fur)view.fur={x:0,y:0,lagX:0,lagY:0,vx:0,vy:0};
@@ -546,11 +560,13 @@ function drawFurReaction(ctx,x,y,r,t,stage,pose){
  const motion=!furryReducedMotion?.matches;
  const blink=motion?Math.max(0,1-Math.abs((t+1.4)%5.7-5.4)*10):0;
  const age=pose?.actAge||0,look=pose?.look;
- const glance=motion?furSearch(age)*.058:-.052;
+ const search=motion?furSearch(age):{x:-.65,y:-.25};
+ const inspect=motion?furInspect(age):{x:0,y:0,depth:0};
+ const huff=motion?furPulse(age%3.05,.13,.42,1.10):0;
  const thinking=motion?(-.043+.088*furEase((age-.52)/.24)-.058*furEase((age-1.37)/.28)+.012*Math.sin(age*1.85)):-.036;
  const pointer=motion?(look?.x||0):0;
- const aim=[pointer*.028,thinking+pointer*.013,0,glance,.032,pointer*.035,0][stage];
- const lookY=[(look?.y||0)*.020,-.022-.024*furPulse(age,.22,.66,1.22),.012,0,.009,(look?.y||0)*.019,0][stage];
+ const aim=[pointer*.028,thinking+pointer*.013,0,search.x*.11,-.039-huff*.035,inspect.x*.071+pointer*.026,0][stage];
+ const lookY=[(look?.y||0)*.020,-.022-.024*furPulse(age,.22,.66,1.22),.012,search.y*.090,.006,inspect.y*.073,0][stage];
  const ink='#512a29',light='#fff1df';
  const stroke=(x0,y0,x1,y1,x2,y2,w=.031)=>{
   ctx.strokeStyle=ink;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();
@@ -558,28 +574,18 @@ function drawFurReaction(ctx,x,y,r,t,stage,pose){
  };
  for(const k of [-1,1]){
   const ex=.225*k,ey=-.050;
-  ellipse(ctx,k*.335,.126,.082,.034,'rgba(255,140,122,'+(stage===6?.43:.25)+')',k*.10);
+  ellipse(ctx,k*.335,.126,.082,.034,'rgba(255,140,122,.25)',k*.10);
   if(stage===2){
    stroke(ex+k*.071,ey-.061,ex+k*.023,ey-.021,ex-k*.037,ey+.002);
    stroke(ex-k*.037,ey+.002,ex+k*.024,ey+.019,ex+k*.067,ey+.055);
   }else{
-   const h=[.094,.112,0,.069,.091,.070,.055][stage]*(1-.91*blink);
-   const w=stage>=3&&stage!==4?.101:.083;
-   if(blink>.86)stroke(ex-w,ey,ex,ey+.027,ex+w,ey,.023);
+   // One Calm-eye design. Shift where it looks, not its width, height, color, or shape.
+   const h=(stage===1?.112:.094)*(1-.91*blink),w=.083;
+   const gx=ex+aim*.59,gy=ey+lookY*.60;
+   if(blink>.86)stroke(gx-w,gy,gx,gy+.027,gx+w,gy,.023);
    else{
-    ctx.save();ctx.translate(ex,ey);if(stage===6)ctx.rotate(-k*.25);else if(stage===5)ctx.rotate(k*.08);
-    if(stage>=3&&stage!==4){
-     ellipse(ctx,0,0,w,h,'#f8dfcd');
-     ctx.beginPath();ctx.ellipse(0,0,w,h,0,0,TAU);ctx.clip();
-     ellipse(ctx,aim,lookY,.052,Math.max(.015,h*.91),ink);
-     circle(ctx,aim-.014,lookY-h*.28,.012,light);
-    }else{
-     ellipse(ctx,aim*.59,lookY*.36,w,h,ink);
-     circle(ctx,aim*.89-.020,-h*.29+lookY*.78,.015,light);
-    }
-    ctx.restore();
-    if(stage===3||stage===5)stroke(ex-w,ey-h*.86,ex,ey-h*1.19,ex+w,ey-h*.94,.019);
-    if(stage===6)stroke(ex-k*w,ey-.004,ex,ey-.055,ex+k*w,ey-.083,.026);
+    ellipse(ctx,gx,gy,w,h,ink);
+    circle(ctx,gx-.020+aim*.20,gy-h*.29+lookY*.18,.015,light);
    }
   }
   if(stage===1){
@@ -588,31 +594,44 @@ function drawFurReaction(ctx,x,y,r,t,stage,pose){
   }
   if(stage===2)stroke(ex-k*.048,-.176,ex,-.200,ex+k*.055,-.226,.027);
   if(stage===3){
-   const lift=motion?glance*k*.34:0;
-   stroke(ex-k*.067,-.167-lift,ex,-.217-lift,ex+k*.071,-.197-lift,.027);
+   const lift=-search.y*.027+search.x*k*.021,shift=aim*.45;
+   stroke(ex-k*.062+shift,-.192+lift,ex+shift,-.242+lift,ex+k*.066+shift,-.209+lift,.027);
   }
   if(stage===4){
-   const huff=motion?furPulse(age,.10,.33,.88):0;
-   stroke(ex-k*.056,-.225+huff*.023,ex,-.239+huff*.021,ex+k*.071,-.194+huff*.024,.026);
+   const l=huff*.028;
+   stroke(ex-k*.073,-.159+l,ex,-.179+l,ex+k*.075,-.225+l,.034);
   }
   if(stage===5){
-   const lift=motion&&k<0?furEase((age-.23)/.70)*.036:0;
-   stroke(ex-k*.067,-.164-lift,ex,-.207-lift,ex+k*.075,-.225-lift,.028);
+   const lift=(.023+inspect.depth*.026)*(k*inspect.x<0?1:.25);
+   if(k<0)stroke(ex-.068,-.188-lift,ex,-.259-lift,ex+.066,-.195-lift,.029);
+   else stroke(ex-.068,-.178-lift,ex,-.192-lift,ex+.066,-.194-lift,.028);
   }
-  if(stage===6)stroke(ex-k*.080,-.135,ex,-.190,ex+k*.078,-.239,.039);
+  if(stage===6){
+   const j=motion?Math.sin(age*23)*.007*furPulse(age,.04,1.20,1.46):0;
+   stroke(ex-k*.072,-.141+j,ex,-.183+j,ex+k*.077,-.238+j,.037);
+  }
  }
  if(stage===0)stroke(-.061,.134,0,.201,.061,.134,.025);
  if(stage===1){ellipse(ctx,0,.156,.034,.047,ink);ellipse(ctx,0,.175,.018,.016,'#e59e91');}
  if(stage===2){ellipse(ctx,0,.161,.071,.055,ink);ellipse(ctx,0,.181,.042,.020,'#df8984');}
- if(stage===3)stroke(-.067,.175,-.011,.117,.064,.160,.028);
- if(stage===4){
-  // Quarter-turn a rounded three into a centered little pout.
-  ctx.save();ctx.translate(0,.168);ctx.rotate(Math.PI/2);
-  ctx.strokeStyle=ink;ctx.lineWidth=.029;ctx.lineCap='round';ctx.beginPath();
-  ctx.moveTo(-.017,-.072);ctx.bezierCurveTo(.054,-.073,.051,-.022,.012,0);
-  ctx.bezierCurveTo(.051,.022,.054,.073,-.017,.072);ctx.stroke();ctx.restore();
+ if(stage===3){
+  const mx=search.x*.040;
+  const shape=search.y*.048;
+  const gap=motion?furPulse(age%3.78,1.49,1.84,2.28):.22;
+  if(gap>.32)ellipse(ctx,mx,.160,.040+gap*.027,.016+gap*.019,ink,search.x*.25);
+  else stroke(mx-.068,.164+shape,mx+.002,.138+shape*.52,mx+.066,.165-shape*.55,.027);
  }
- if(stage===5)stroke(-.066,.176,-.004,.167,.063,.190,.030);
+ if(stage===4){
+  // An off-center, tight sideways three underneath the annoyed brows.
+  ctx.save();ctx.translate(-.031-huff*.037,.172+huff*.012);ctx.rotate(Math.PI*.5-.14-huff*.17);
+  ctx.strokeStyle=ink;ctx.lineWidth=.034;ctx.lineCap='round';ctx.beginPath();
+  ctx.moveTo(-.019,-.066);ctx.bezierCurveTo(.046,-.076,.044,-.021,.007,-.009);
+  ctx.bezierCurveTo(.039,.015,.034,.064,-.024,.072);ctx.stroke();ctx.restore();
+ }
+ if(stage===5){
+  const m=inspect.x*.043,y=.165-inspect.y*.030;
+  stroke(m-.055,y+.017,m-.007,y-.021,m+.062,y+.021+inspect.x*.024,.030);
+ }
  if(stage===6){
   stroke(-.079,.194,0,.090,.079,.194,.035);
   stroke(-.032,.217,0,.222,.029,.213,.016);
