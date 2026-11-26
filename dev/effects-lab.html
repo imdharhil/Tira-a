@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CELL//CORE — Effects Lab v10.68</title>
+<title>CELL//CORE — Effects Lab v10.69</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%);min-height:100vh}.wrap{max-width:1330px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}h1{font-size:25px;letter-spacing:.09em;margin:0}h1 em{font-style:normal;color:#7d9dff}.tag{font-size:11px;letter-spacing:.13em;color:#9ab3eb}button,select,input{font:inherit}button{color:#dfe8ff;border:1px solid #304268;background:#131f38;border-radius:10px;padding:10px 13px;cursor:pointer}button:hover{background:#243960}button.active{border-color:#7cb9ff;background:#1c4163;color:white}.panel{border:1px solid #293653;border-radius:18px;background:linear-gradient(160deg,#121c31,#0d1424);padding:17px}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;margin-top:20px}.left{display:flex;flex-direction:column;gap:15px}.controls{display:flex;flex-wrap:wrap;gap:8px}.field{display:grid;gap:6px;margin:13px 0}.field label{display:flex;justify-content:space-between;color:#adbee2;font-size:13px}input[type=range]{width:100%;accent-color:#77b6ff}select{background:#10192b;color:#e9f1ff;border:1px solid #334665;padding:9px;border-radius:9px;width:100%}.gridbuttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.gridbuttons button{text-align:left;font-size:12px;padding:9px}.gridbuttons strong{color:#8bd4ff}.stagegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.viewport{position:relative;aspect-ratio:1.23;min-height:280px;overflow:hidden;border-radius:15px;background:radial-gradient(circle at center,#162944,#080f1f 60%,#070b13 100%);border:1px solid #253856}.viewport canvas{width:100%;height:100%;display:block}.viewport .top{position:absolute;top:12px;left:14px;font-size:11px;letter-spacing:.12em;color:#bbcaf1;pointer-events:none}.viewport .bottom{position:absolute;bottom:12px;left:14px;font-size:11px;color:#8c9dbd;pointer-events:none}.titlebar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}h2{font-size:16px;margin:0}.muted{color:#91a5c8;font-size:12px}footer{margin-top:16px;color:#8b9ab7;font-size:12px;line-height:1.65}.checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.check{border:1px solid #344360;border-radius:9px;padding:8px 12px;font-size:12px;color:#afd1ed}@media(max-width:900px){main{grid-template-columns:1fr}.stagegrid{grid-template-columns:1fr}.viewport{aspect-ratio:1.25}}@media(min-width:900px){.left{max-height:calc(100vh - 130px);overflow:auto;padding-right:3px}}
@@ -20,7 +20,7 @@ body.retro-neon .viewport{background:#080f25}
 </head>
 <body>
 <div class="wrap">
-<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.68 • Effects Library is a separate page</div></header>
+<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.69 • Effects Library is a separate page</div></header>
 <main>
 <aside class="left">
 <section class="panel">
@@ -50,7 +50,7 @@ body.retro-neon .viewport{background:#080f25}
 <section class="panel"><div class="titlebar"><h2>Numbered experiments</h2><span class="muted">A/B selection</span></div><div id="effects" class="gridbuttons"></div></section>
 <section class="panel"><h2>Comparison</h2><div class="field"><label>Left</label><select id="choiceA"></select></div><div class="field"><label>Right</label><select id="choiceB"></select></div><button id="swap">Swap A ↔ B</button><div class="muted" style="margin-top:14px">Black Hole: Instability controls spin speed (very slow to very fast). Movement controls resistance and star stretching (0% = clean infall). Core value and urgency retain the behavior of this uploaded version.</div></section>
 </aside>
-<section class="panel" id="core-preview"><div class="titlebar"><h2>Live side-by-side preview</h2><span class="muted" id="modeLabel">Core appearance</span></div><div id="furMotionControls" class="controls" hidden style="margin-bottom:12px"><button id="furToss" type="button">Toss a bead</button><span id="furMotionHint" class="muted" style="align-self:center">Or tap the fur to make it ripple.</span></div><div class="stagegrid"><div class="viewport"><canvas id="canvasA"></canvas><div class="top">A / <span id="aName"></span></div><div class="bottom">Identity behavior + identity destruction</div></div><div class="viewport"><canvas id="canvasB"></canvas><div class="top">B / <span id="bName"></span></div><div class="bottom">Same value · independent appearance</div></div></div><div class="checks"><span class="check">✓ offline</span><span class="check">✓ comparison retained</span><span class="check">✓ value-driven urgency</span><span class="check">✓ identity destruction</span></div><footer id="note">Select an effect for design notes.</footer></section>
+<section class="panel" id="core-preview"><div class="titlebar"><h2>Live side-by-side preview</h2><span class="muted" id="modeLabel">Core appearance</span></div><div id="furMotionControls" class="controls" hidden style="margin-bottom:12px"><button id="furToss" type="button">Toss a bead</button><button id="furPress" type="button">Squeeze fur</button><span id="furMotionHint" class="muted" style="align-self:center">Or tap the fur to make it ripple.</span></div><div class="stagegrid"><div class="viewport"><canvas id="canvasA"></canvas><div class="top">A / <span id="aName"></span></div><div class="bottom">Identity behavior + identity destruction</div></div><div class="viewport"><canvas id="canvasB"></canvas><div class="top">B / <span id="bName"></span></div><div class="bottom">Same value · independent appearance</div></div></div><div class="checks"><span class="check">✓ offline</span><span class="check">✓ comparison retained</span><span class="check">✓ value-driven urgency</span><span class="check">✓ identity destruction</span></div><footer id="note">Select an effect for design notes.</footer></section>
 </main>
 <footer>This revision focuses on the requested rebuild areas: #05 Liquid Surface, #08 Solar Eclipse, #10 Cracking, #11 Planet Spin, #13 Black Hole, #14 Bubble, and more distinct destruction identities. Classic gameplay is not modified.</footer>
 </div>
@@ -58,7 +58,7 @@ body.retro-neon .viewport{background:#080f25}
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Furry Core'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.',19:'Furry Core: deep, shaggy coral fur with soft locks and flyaway strands. Toss a bead or tap the fur to see the coat ripple. Cosmetic preview only.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.',19:'Furry Core: long, fine coral strands over a regular-sized Core. Toss a bead to see the coat ripple, or use Squeeze fur to press just the pile. Cosmetic preview only.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const showFurry=['furry-core','furry-softball'].includes(embedParams.get('appearance'));
@@ -195,7 +195,7 @@ $('death').onclick=()=>{state.mode=0;state.deathStart=state.t;$('appearance').cl
 $('restore').onclick=()=>{state.deathStart=null};
 function updateFurMotionPreference(){
  const reduced=!!furryReducedMotion?.matches;
- $('furToss').disabled=reduced;
+ $('furToss').disabled=reduced;$('furPress').disabled=reduced;
  $('furMotionHint').textContent=reduced?'Motion is reduced in your device settings.':'Or tap the fur to make it ripple.';
  if(reduced)furryHits.A=furryHits.B=null;
 }
@@ -206,7 +206,12 @@ function resumeFurPreview(){
 $('furToss').onclick=()=>{
  if(furryReducedMotion?.matches||state.mode)return;
  resumeFurPreview();
- for(const side of ['A','B'])if(state[side]===19)furryHits[side]={at:state.t+.86,x:-1.11,y:-.31,dx:1,dy:.18,toss:true};
+ for(const side of ['A','B'])if(state[side]===19)furryHits[side]={at:state.t+.86,x:-.95,y:-.31,dx:1,dy:.18,toss:true};
+};
+$('furPress').onclick=()=>{
+ if(furryReducedMotion?.matches||state.mode)return;
+ resumeFurPreview();
+ for(const side of ['A','B'])if(state[side]===19)furryHits[side]={at:state.t,x:0,y:0,dx:0,dy:0,press:true};
 };
 for(const side of ['A','B']){
  const canvas=$('canvas'+side);
@@ -216,7 +221,7 @@ for(const side of ['A','B']){
   if(!r)return;
   const f=state.view[side].fur;
   const x=(e.clientX-rect.left-rect.width/2)/r-(f?.x||0),y=(e.clientY-rect.top-rect.height/2)/r-(f?.y||0);
-  if(x*x+y*y>1.52)return;
+  if(x*x+y*y>1.12)return;
   resumeFurPreview();
   furryHits[side]={at:state.t,x,y,dx:-x*.68,dy:-y*.68,toss:false};
  });
@@ -363,43 +368,40 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
 // Draw the coat in depth layers. Roots remain on the sphere; only the shafts and tips flex.
 const furryReducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const furryCoatCache=new Map();
-const furryInk=['rgba(74,17,30,.30)','rgba(145,37,49,.35)','rgba(201,66,68,.40)','rgba(245,107,101,.43)','rgba(255,153,133,.51)','rgba(255,189,160,.55)','rgba(255,217,189,.60)'];
 const furryHits={A:null,B:null};
 updateFurMotionPreference();furryReducedMotion?.addEventListener?.('change',updateFurMotionPreference);
+const fineRootColors=['#65202f','#842232','#9d2b38','#b8343d','#cd4146','#df5150','#eb625b','#f67369','#fb887c','#ffa493','#ffbaa7','#ffd0ba'];
+const fineTipColors=['#8d3545','#a73d48','#bf474c','#d75151','#e65d57','#ed6a60','#f77c70','#fa8b7d','#fda18e','#ffb5a0','#ffc9b3','#ffdcca'];
 function furryCoat(count){
  if(furryCoatCache.has(count))return furryCoatCache.get(count);
- const tuftInk=['#853047','#a33e50','#bd4856','#ce5961','#e16a6a','#ec7c76','#f68d80','#f99b87','#ffad96'];
- const layers=[[],[]].map(()=>({tufts:tuftInk.map(()=>[]),fibers:furryInk.map(()=>[])}));
- const rimCount=83,faceCount=187;
- for(let j=0;j<rimCount+faceCount;j++){
-  const i=j*19,edge=j<rimCount,a=edge?j*TAU/rimCount:((j-rimCount)*2.399963+.27*rand(i+4));
-  const swell=.50+.23*Math.sin(a*5+.8)+.16*Math.sin(a*9-1.7)+.10*Math.cos(a*13);
-  const d=edge?.79+.10*rand(i+24)+.035*Math.sin(a*5):.88*Math.sqrt((j-rimCount+.7)/faceCount);
-  const x=d*Math.cos(a),y=d*Math.sin(a),z=Math.sqrt(1-d*d);
-  const brush=Math.atan2(y+.065,x-.29)+.53+.26*Math.sin(x*5+y*4);
-  const angle=edge?a+.62+.34*Math.sin(3*a+.6)+.17*(rand(i+13)-.5):brush;
-  const length=edge?.23+.23*swell+.084*rand(i+37):.15+.205*rand(i+37)+.057*z;
-  const bend=(.045+.078*rand(i+39))*(Math.sin(a*5+1)>-.17?1:-1);
-  const ux=Math.cos(angle),uy=Math.sin(angle);
-  const light=clamp(.53-.29*x-.37*y+.11*z+(rand(i+41)-.5)*.32,0,.999);
-  const layer=layers[edge?0:1],phase=2.3*x+3.5*y+.48*Math.sin(j*.32);
-  const tuft={x,y,dx:ux*length,dy:uy*length,bx:-uy*bend,by:ux*bend,
-    nx:-uy,ny:ux,width:(edge?.048:.036)+.027*rand(i+43),ease:1.03,phase};
-  layer.tufts[Math.floor(light*tuftInk.length)].push(tuft);
-  const copies=Math.ceil(count/(rimCount+faceCount));
-  for(let k=0;k<copies;k++){
-   const n=i*29+k*101;
-   const side=(rand(n+11)-.5)*tuft.width*2.6,lead=(rand(n+17)-.5)*.145;
-   const f=lenFactor(rand(n+23)),curl=.76+.55*rand(n+29),splay=(rand(n+31)-.5)*.074;
-   const tint=clamp(light+(rand(n+53)-.50)*.52,0,.999);
-   const g=rand(n+59)<.10?0:Math.floor(tint*furryInk.length);
-   layer.fibers[g].push({x:x-uy*side+ux*lead,y:y+ux*side+uy*lead,
-     dx:tuft.dx*f-uy*splay,dy:tuft.dy*f+ux*splay,bx:tuft.bx*curl,by:tuft.by*curl,
-     ease:.68+.59*rand(n+47),phase:phase+(rand(n+61)-.5)*.44});
-  }
+ const hair=Array.from({length:5},()=>fineRootColors.map(()=>[]));
+ for(let j=0;j<count;j++){
+  const i=j*23,a=rand(i+7)*TAU,edge=j<count*.31;
+  const d=edge?.73+.187*rand(i+11):.908*Math.sqrt(rand(i+11));
+  const x=d*Math.cos(a),y=d*Math.sin(a),z=Math.sqrt(Math.max(0,1-(d/.935)**2));
+  // A side whorl combs the coat in one flow. Variation is fine-grained, not organized in tufts.
+  const radialX=Math.cos(a),radialY=Math.sin(a);
+  const whorlX=x-.29,whorlY=y+.08,whorl=Math.hypot(whorlX,whorlY);
+  const theta=Math.atan2(whorlY,whorlX)+.14+.27*Math.exp(-whorl*3);
+  const blend=clamp((d-.49)/.44,0,1)*.77;
+  const dx0=mix(Math.cos(theta),radialX,blend),dy0=mix(Math.sin(theta),radialY,blend);
+  const q=Math.atan2(dy0,dx0)+(rand(i+19)-.5)*.36+.09*Math.sin(x*11+y*8);
+  const ux=Math.cos(q),uy=Math.sin(q),length=(.155+.193*rand(i+29))*(.89+.12*z);
+  const bend=(.023+.042*rand(i+31))*Math.sin(2.1*a+.7);
+  let dx=ux*length,dy=uy*length;
+  const lim=.955+.088*rand(i+37);
+  const end=Math.hypot(x+dx,y+dy);
+  if(end>lim){const over=end-lim;dx-=over*(x+dx)/end;dy-=over*(y+dy)/end;}
+  const rim=Math.max(0,(d-.76)/.17);
+  const rimLight=rim*(.035+.19*Math.max(0,-radialY)+.15*Math.abs(radialX));
+  const value=clamp(.42+.28*x-.26*y+.09*z+rimLight-.24*Math.exp(-whorl*whorl*19)+(rand(i+53)-.5)*.54,0,.999);
+  const layer=Math.min(4,Math.floor((1-d/.94)*4.5));
+  hair[layer][Math.floor(value*fineRootColors.length)].push({
+   x,y,dx,dy,bx:-uy*bend,by:ux*bend,nx:radialX,ny:radialY,edge:clamp((d-.52)/.40,0,1),
+   phase:2.7*x+4.0*y+(rand(i+61)-.5)*.35,ease:.70+.55*rand(i+67)
+  });
  }
- function lenFactor(v){return .52+.65*v;}
- const coat={layers,tuftInk};furryCoatCache.set(count,coat);return coat;
+ furryCoatCache.set(count,hair);return hair;
 }
 
 function furBreeze(t){return [.082*Math.sin(t*.86)+.025*Math.sin(t*1.43),.072*Math.sin(t*1.06+.5)];}
@@ -421,12 +423,16 @@ function furryPose(view,t,r,hit){
   f.lagX+=f.vx*dt;f.lagY+=f.vy*dt;
  }
  f.x=x;f.y=y;
- return {x:x*r,y:y*r,lagX:reduced?0:f.lagX,lagY:reduced?0:f.lagY,flutter:reduced?0:1,impact:!reduced&&age>=0&&age<1.65?{x:hit.x,y:hit.y,age}:null};
+ return {x:x*r,y:y*r,lagX:reduced?0:f.lagX,lagY:reduced?0:f.lagY,flutter:reduced?0:1,impact:!reduced&&age>=0&&age<1.65?{x:hit.x,y:hit.y,age,press:hit.press}:null};
 }
 function furryDeflection(h,t,flutter,lagX,lagY,impact){
  const wave=flutter*(.018*Math.sin(t*1.75+h.phase)+.008*Math.sin(t*2.4-h.phase*.63));
  let tx=(lagX+wave)*h.ease,ty=(lagY-wave*.65)*h.ease;
- if(impact){
+ if(impact?.press){
+  const pressIn=clamp(impact.age/.20,0,1),release=Math.exp(-Math.max(0,impact.age-.24)*4.8);
+  const pinch=pressIn*pressIn*(3-2*pressIn)*release*.155*(h.edge||0)*Math.pow(Math.abs(h.nx||0),4);
+  tx-=pinch*(h.nx||0);ty-=pinch*(h.ny||0)*.24;
+ }else if(impact){
   const dx=h.x-impact.x,dy=h.y-impact.y,d=Math.hypot(dx,dy);
   // The first bend starts at contact and travels outward across nearby strands.
   const age=impact.age-d*.30;
@@ -442,63 +448,56 @@ function drawFurBead(ctx,x,y,r,t,hit){
  const age=t-hit.at;if(age<-.86||age>.64)return;
  const [bx,by]=furBreeze(hit.at),incoming=age<0;
  const p=incoming?clamp(-age/.86,0,1):age/.64;
- const off=incoming?.47*p:.55*p,fade=incoming?Math.min(1,(1-p)*7):1-p*p;
+ const off=incoming?.64*p:.61*p,fade=incoming?Math.min(1,(1-p)*7):1-p*p;
  const px=x+r*(hit.x+bx-.085-off),py=y+r*(hit.y+by+(incoming?-.19*p-.12*Math.sin(p*Math.PI):-.6*p+.22*p*p));
  ctx.save();ctx.globalAlpha*=fade;
  const rr=r*.078;glow(ctx,px,py,rr*2.1,[[0,'rgba(255,222,160,.42)'],[1,'rgba(255,195,112,0)']]);
  softSphere(ctx,px,py,rr,['#fff3d7','#fad5a0','#bd874d','#7a4a2e']);ctx.restore();
 }
+let fineUndercoatImage;
+function fineUndercoat(){
+ if(fineUndercoatImage)return fineUndercoatImage;
+ const c=document.createElement('canvas');c.width=c.height=256;
+ const ctx=c.getContext('2d'),img=ctx.createImageData(256,256);
+ for(let yy=0;yy<256;yy++)for(let xx=0;xx<256;xx++){
+  const x=((xx+.5)/128-1)*1.06,y=((yy+.5)/128-1)*1.06,d=Math.hypot(x,y);
+  if(d>=.993)continue;
+  const z=Math.sqrt(Math.max(0,1-(d/.966)**2));
+  const light=clamp(.24+.70*(.39*x-.52*y+.76*z),.08,1);
+  const rim=clamp((d-.82)/.17,0,1)*(.06+.22*Math.max(0,-x+y*.10)+.18*Math.max(0,x-y*.44));
+  const whorl=Math.exp(-((x-.29)**2+(y+.08)**2)*25)*.23;
+  const shade=clamp(light+rim-whorl,0,1);
+  const k=(yy*256+xx)*4;
+  img.data[k]=mix(111,252,shade);img.data[k+1]=mix(25,118,shade);img.data[k+2]=mix(43,108,shade);
+  img.data[k+3]=Math.round(255*clamp((.993-d)/.072,0,1));
+ }
+ ctx.putImageData(img,0,0);fineUndercoatImage=c;return c;
+}
 function drawFurrySoftball(ctx,x,y,r,t,pose={}){
  ctx.save();ctx.translate(x,y);ctx.scale(r,r);ctx.lineCap='round';
- const lagX=pose.lagX||0,lagY=pose.lagY||0,flutter=pose.flutter||0,impact=pose.impact;
- const {layers,tuftInk}=furryCoat(r<100?4700:6300);
+ const flutter=pose.flutter||0,impact=pose.impact,lagX=pose.lagX||0,lagY=pose.lagY||0;
+ const layers=furryCoat(r<92?6900:9300),alpha=ctx.globalAlpha;
+ ctx.drawImage(fineUndercoat(),-1.06,-1.06,2.12,2.12);
+ // The shaft adds depth; the narrow tip fades into the coat or the air.
  for(let i=0;i<layers.length;i++){
-  if(i===1){
-   // Recess the undercoat so the border is made entirely by overlapping fur.
-   const base=ctx.createRadialGradient(-.32,-.42,0,.01,.02,.98);
-   for(const [at,color] of [[0,'#fca78e'],[.30,'#f48377'],[.67,'#c8545c'],[1,'#96384d']])base.addColorStop(at,color);
-   ctx.fillStyle=base;ctx.beginPath();
-   for(let n=0;n<=72;n++){
-    const a=n*TAU/72,d=.907+.019*Math.sin(a*5+.8)+.013*Math.cos(a*11);
-    if(n===0)ctx.moveTo(d*Math.cos(a),d*Math.sin(a));else ctx.lineTo(d*Math.cos(a),d*Math.sin(a));
-   }
-   ctx.closePath();ctx.fill();
-  }
-  const {tufts,fibers}=layers[i];
-  const layerAlpha=ctx.globalAlpha;
-  ctx.globalAlpha=layerAlpha*(i===0?.85:.58);
-  for(let g=0;g<tufts.length;g++){
-   ctx.fillStyle=tuftInk[g];ctx.beginPath();
-   for(const h of tufts[g]){
-    furryDeflection(h,t,flutter,lagX,lagY,impact);
-    const tx=h.tx,ty=h.ty,nx=h.nx*h.width,ny=h.ny*h.width;
-    const ex=h.x+h.dx+tx,ey=h.y+h.dy+ty;
-    const mx=h.x+h.dx*.58+h.bx+tx*.24,my=h.y+h.dy*.58+h.by+ty*.24;
-    ctx.moveTo(h.x+nx*.55,h.y+ny*.55);
-    ctx.bezierCurveTo(mx+nx,my+ny,ex+nx*.54,ey+ny*.54,ex,ey);
-    ctx.bezierCurveTo(ex-nx*.60,ey-ny*.60,mx-nx*.87,my-ny*.87,h.x-nx*.55,h.y-ny*.55);
-    ctx.closePath();
-   }
-   ctx.fill();
-  }
-  ctx.globalAlpha=layerAlpha;
-  for(let g=0;g<fibers.length;g++){
-   const hairs=fibers[g];
-   ctx.strokeStyle=furryInk[g];ctx.lineWidth=i===0?.0044:.0051;ctx.beginPath();
+  for(let g=0;g<fineRootColors.length;g++){
+   const hairs=layers[i][g];if(!hairs.length)continue;
+   ctx.globalAlpha=alpha*(i===0?.34:.37);ctx.strokeStyle=fineRootColors[g];ctx.lineWidth=.0046;
+   ctx.beginPath();
    for(const h of hairs){
     furryDeflection(h,t,flutter,lagX,lagY,impact);
     const {tx,ty}=h;ctx.moveTo(h.x,h.y);
-    ctx.quadraticCurveTo(h.x+.60*h.dx+h.bx+tx*.14,h.y+.60*h.dy+h.by+ty*.14,h.x+h.dx*.81+tx*.62,h.y+h.dy*.81+ty*.62);
+    ctx.quadraticCurveTo(h.x+h.dx*.38+h.bx+tx*.13,h.y+h.dy*.38+h.by+ty*.13,h.x+h.dx*.68+tx*.48,h.y+h.dy*.68+ty*.48);
    }
    ctx.stroke();
-   // Each lock breaks up into fine, tapered flyaway ends.
-   ctx.globalAlpha*=.70;ctx.lineWidth=i===0?.0029:.0031;ctx.beginPath();
+   ctx.globalAlpha=alpha*(i===0?.45:.40);ctx.strokeStyle=fineTipColors[g];ctx.lineWidth=i===0?.0029:.0035;
+   ctx.beginPath();
    for(const h of hairs){
     const {tx,ty}=h;
-    ctx.moveTo(h.x+h.dx*.80+tx*.60,h.y+h.dy*.80+ty*.60);
-    ctx.quadraticCurveTo(h.x+h.dx*.94-h.bx*.38+tx*.80,h.y+h.dy*.94-h.by*.38+ty*.80,h.x+h.dx-h.bx*.67+tx,h.y+h.dy-h.by*.67+ty);
+    ctx.moveTo(h.x+h.dx*.56+h.bx*.26+tx*.38,h.y+h.dy*.56+h.by*.26+ty*.38);
+    ctx.quadraticCurveTo(h.x+h.dx*.92-h.bx*.22+tx*.77,h.y+h.dy*.92-h.by*.22+ty*.77,h.x+h.dx-h.bx*.51+tx,h.y+h.dy-h.by*.51+ty);
    }
-   ctx.stroke();ctx.globalAlpha/=.70;
+   ctx.stroke();
   }
  }
  ctx.restore();
