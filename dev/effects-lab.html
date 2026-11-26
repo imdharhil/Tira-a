@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CELL//CORE — Effects Lab v10.69</title>
+<title>CELL//CORE — Effects Lab v10.70</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080b15;color:#eaf0ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#172447,#070a12 75%);min-height:100vh}.wrap{max-width:1330px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}h1{font-size:25px;letter-spacing:.09em;margin:0}h1 em{font-style:normal;color:#7d9dff}.tag{font-size:11px;letter-spacing:.13em;color:#9ab3eb}button,select,input{font:inherit}button{color:#dfe8ff;border:1px solid #304268;background:#131f38;border-radius:10px;padding:10px 13px;cursor:pointer}button:hover{background:#243960}button.active{border-color:#7cb9ff;background:#1c4163;color:white}.panel{border:1px solid #293653;border-radius:18px;background:linear-gradient(160deg,#121c31,#0d1424);padding:17px}main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;margin-top:20px}.left{display:flex;flex-direction:column;gap:15px}.controls{display:flex;flex-wrap:wrap;gap:8px}.field{display:grid;gap:6px;margin:13px 0}.field label{display:flex;justify-content:space-between;color:#adbee2;font-size:13px}input[type=range]{width:100%;accent-color:#77b6ff}select{background:#10192b;color:#e9f1ff;border:1px solid #334665;padding:9px;border-radius:9px;width:100%}.gridbuttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.gridbuttons button{text-align:left;font-size:12px;padding:9px}.gridbuttons strong{color:#8bd4ff}.stagegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.viewport{position:relative;aspect-ratio:1.23;min-height:280px;overflow:hidden;border-radius:15px;background:radial-gradient(circle at center,#162944,#080f1f 60%,#070b13 100%);border:1px solid #253856}.viewport canvas{width:100%;height:100%;display:block}.viewport .top{position:absolute;top:12px;left:14px;font-size:11px;letter-spacing:.12em;color:#bbcaf1;pointer-events:none}.viewport .bottom{position:absolute;bottom:12px;left:14px;font-size:11px;color:#8c9dbd;pointer-events:none}.titlebar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}h2{font-size:16px;margin:0}.muted{color:#91a5c8;font-size:12px}footer{margin-top:16px;color:#8b9ab7;font-size:12px;line-height:1.65}.checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.check{border:1px solid #344360;border-radius:9px;padding:8px 12px;font-size:12px;color:#afd1ed}@media(max-width:900px){main{grid-template-columns:1fr}.stagegrid{grid-template-columns:1fr}.viewport{aspect-ratio:1.25}}@media(min-width:900px){.left{max-height:calc(100vh - 130px);overflow:auto;padding-right:3px}}
@@ -20,7 +20,7 @@ body.retro-neon .viewport{background:#080f25}
 </head>
 <body>
 <div class="wrap">
-<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.69 • Effects Library is a separate page</div></header>
+<header><div><div class="tag">COSMETIC EXPERIMENT / NO GAMEPLAY CHANGES</div><h1>CELL<em>//</em>CORE <span style="font-weight:300">EFFECTS LAB</span></h1></div><div class="tag">v10.70 • Effects Library is a separate page</div></header>
 <main>
 <aside class="left">
 <section class="panel">
@@ -50,7 +50,7 @@ body.retro-neon .viewport{background:#080f25}
 <section class="panel"><div class="titlebar"><h2>Numbered experiments</h2><span class="muted">A/B selection</span></div><div id="effects" class="gridbuttons"></div></section>
 <section class="panel"><h2>Comparison</h2><div class="field"><label>Left</label><select id="choiceA"></select></div><div class="field"><label>Right</label><select id="choiceB"></select></div><button id="swap">Swap A ↔ B</button><div class="muted" style="margin-top:14px">Black Hole: Instability controls spin speed (very slow to very fast). Movement controls resistance and star stretching (0% = clean infall). Core value and urgency retain the behavior of this uploaded version.</div></section>
 </aside>
-<section class="panel" id="core-preview"><div class="titlebar"><h2>Live side-by-side preview</h2><span class="muted" id="modeLabel">Core appearance</span></div><div id="furMotionControls" class="controls" hidden style="margin-bottom:12px"><button id="furToss" type="button">Toss a bead</button><button id="furPress" type="button">Squeeze fur</button><span id="furMotionHint" class="muted" style="align-self:center">Or tap the fur to make it ripple.</span></div><div class="stagegrid"><div class="viewport"><canvas id="canvasA"></canvas><div class="top">A / <span id="aName"></span></div><div class="bottom">Identity behavior + identity destruction</div></div><div class="viewport"><canvas id="canvasB"></canvas><div class="top">B / <span id="bName"></span></div><div class="bottom">Same value · independent appearance</div></div></div><div class="checks"><span class="check">✓ offline</span><span class="check">✓ comparison retained</span><span class="check">✓ value-driven urgency</span><span class="check">✓ identity destruction</span></div><footer id="note">Select an effect for design notes.</footer></section>
+<section class="panel" id="core-preview"><div class="titlebar"><h2>Live side-by-side preview</h2><span class="muted" id="modeLabel">Core appearance</span></div><div id="furMotionControls" class="controls" hidden style="margin-bottom:12px"><button id="furToss" type="button">Toss Cell Card</button><label class="muted" style="display:flex;gap:6px;align-items:center">Card speed <input id="furCardSpeed" aria-label="Cell Card speed" type="range" min="50" max="200" step="5" value="100" style="width:84px"><output id="furCardSpeedLabel">1.00×</output></label><span id="furMotionHint" class="muted" style="align-self:center">Fur motion: 0.70×</span></div><div class="stagegrid"><div class="viewport"><canvas id="canvasA"></canvas><div class="top">A / <span id="aName"></span></div><div class="bottom">Identity behavior + identity destruction</div></div><div class="viewport"><canvas id="canvasB"></canvas><div class="top">B / <span id="bName"></span></div><div class="bottom">Same value · independent appearance</div></div></div><div class="checks"><span class="check">✓ offline</span><span class="check">✓ comparison retained</span><span class="check">✓ value-driven urgency</span><span class="check">✓ identity destruction</span></div><footer id="note">Select an effect for design notes.</footer></section>
 </main>
 <footer>This revision focuses on the requested rebuild areas: #05 Liquid Surface, #08 Solar Eclipse, #10 Cracking, #11 Planet Spin, #13 Black Hole, #14 Bubble, and more distinct destruction identities. Classic gameplay is not modified.</footer>
 </div>
@@ -58,7 +58,7 @@ body.retro-neon .viewport{background:#080f25}
 (()=>{'use strict';
 const appearance=['Pure Core','Inner Glow','Atomic Nucleus','Universe','Liquid Surface','Corona','Inner Pulse','Solar Eclipse','Cell Breathing','Cracking','Planet Spin','Overcharge','Black Hole','Bubble','Arcade Pixel Core','Lunar Eclipse','Pure Soul (Wisp)','Dark Soul (Wisp)','Furry Core'];
 const explosions=['Radial Burst','Shell Split','Flash Detonation','Cell Disassembly','Shockwave','Ember Implosion','Fracture Bloom','Core Disintegration','Energy Discharge','Shatter','Vacuum Burst','Chain Reaction','Singularity Collapse','Pixel Shatter'];
-const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.',19:'Furry Core: long, fine coral strands over a regular-sized Core. Toss a bead to see the coat ripple, or use Squeeze fur to press just the pile. Cosmetic preview only.'};
+const notes={1:'Pure Core keeps the default tremor identity.',3:'Atomic Nucleus: Core Value changes nucleon count; Speed changes animation speed; Urgency excites electrons; Instability spins orbitals; Movement stretches orbitals; Number Follow tracks the nucleus.',4:'Living Cosmos candidate: Core Value reveals clusters and distant stars; Speed drives cosmic drift; Urgency strengthens energy; Instability bends the cosmic web; Movement changes parallax and expansion; Number Follow adds subtle number drift.',5:'Liquid Surface uses a smooth neon arcade backdrop. Instability loosens water cohesion; Movement changes vibration; Speed drives refraction. Pixel filtering is disabled for this Core only.',6:'Corona: Core Value sets pulse frequency; Speed drives the animation clock; Urgency sets energy; Instability controls corona intensity; Movement controls expansion; Number Follow boosts number brightness with Core Value.',8:'Solar Eclipse: the Moon crosses the Sun; Core Value controls coverage.',16:'Lunar Eclipse (08B): the Earth\'s shadow moves across the Moon; Core Value increases eclipse coverage, turning the Moon copper-red near totality.',9:'Cell Breathing uses a fixed 3× animation clock. Only Core Value and Urgency Boost progress its breathing strain; destruction expands suddenly, then slowly shrinks away.',10:'Cracking starts as a whole sphere and only separates at high stress.',11:'Planet Spin uses tapered moving cloud/land masses instead of flat-cut line strips.',12:'Overcharge: Core Value sets electrical filament density; Speed drives animation clock; Urgency sets surge rate; Instability makes arcs branch and jitter; Movement extends electrical reach; Number Follow adds value-scaled light to the number.',13:'Based on the uploaded v10.45: Instability independently sets edge-spin speed; Movement controls resistance and stretching, from effortless infall at 0% to elastic pull at higher values. The void stays solid black.',14:'Bubble keeps the glossy look but with softer highlights and visible thinness near rupture.',15:'Arcade Pixel Core: Core Value raises energized square density; Speed drives time; Urgency pulses light; Instability glitches squares; Movement floats and spreads the sprite; Number Follow tracks its pixel-step movement.',17:'Pure Soul (Wisp): cyan and warm-gold flame ribbons rise from a glowing soul. Speed sets flow, Urgency sets brightness, Instability curls the wisps, Movement stretches the ribbons.',18:'Dark Soul (Wisp): a smoky violet soul with translucent lavender flames. The same controls tune its movement and brightness.',19:'Furry Core: a calm expression and an easy-to-read background charge. Even-length fur flows at 0.70×; Cell Card speed only changes the throw. Cosmetic preview only.'};
 const $=id=>document.getElementById(id);
 const embedParams=new URLSearchParams(location.search);const isEffectEmbed=embedParams.get('galleryPreview')==='1';const isGalleryDeath=isEffectEmbed&&embedParams.get('galleryDeath')==='1';if(isEffectEmbed)document.body.classList.add('effect-embed');
 const showFurry=['furry-core','furry-softball'].includes(embedParams.get('appearance'));
@@ -184,34 +184,36 @@ const easeOut=x=>1-Math.pow(1-x,3);
 function rand(n){const x=Math.sin(n*127.13+78.23)*43758.5453123;return x-Math.floor(x)}
 function names(){return state.mode?explosions:appearance}
 function appearanceLabel(n){return n===8?'08A':n===16?'08B':String(n).padStart(2,'0')}
-function rebuild(){const arr=names();$('furMotionControls').hidden=!!state.mode||(state.A!==19&&state.B!==19);for(const side of ['A','B'])if(!arr[state[side]-1])state[side]=1;const order=state.mode?arr.map((_,i)=>i+1):[1,2,3,4,5,6,7,8,16,9,10,11,12,13,14,15,17,18,19];$('effects').replaceChildren();for(const side of ['A','B']){const sel=$('choice'+side);sel.replaceChildren();order.forEach(n=>{const op=document.createElement('option');op.value=n;op.textContent=(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+' · '+arr[n-1];sel.append(op)});sel.value=state[side]}order.forEach(n=>{const b=document.createElement('button');b.innerHTML='<strong>'+(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+'</strong> '+arr[n-1];b.className=state.A===n?'active':'';b.onclick=()=>{state.A=n;$('choiceA').value=n;state.burstStart=state.t;rebuild()};$('effects').append(b)});$('modeLabel').textContent=state.mode?'Explosion experiments':'Core appearance';$('aName').textContent=(state.mode?String(state.A).padStart(2,'0'):appearanceLabel(state.A))+' '+arr[state.A-1];$('bName').textContent=(state.mode?String(state.B).padStart(2,'0'):appearanceLabel(state.B))+' '+arr[state.B-1];$('note').textContent=state.mode?'Explosion mode remains experimental. Identity destruction preview is the primary review path.':(notes[state.A]||'This slot remains a supporting cosmetic variant.');}
+function labelFurryCharge(){for(const side of ['A','B'])$('canvas'+side).ariaLabel=!state.mode&&state[side]===19?'Furry Core. Charge '+$('value').value+'. Calm expression.':null;}
+function rebuild(){labelFurryCharge();const arr=names();$('furMotionControls').hidden=!!state.mode||(state.A!==19&&state.B!==19);for(const side of ['A','B'])if(!arr[state[side]-1])state[side]=1;const order=state.mode?arr.map((_,i)=>i+1):[1,2,3,4,5,6,7,8,16,9,10,11,12,13,14,15,17,18,19];$('effects').replaceChildren();for(const side of ['A','B']){const sel=$('choice'+side);sel.replaceChildren();order.forEach(n=>{const op=document.createElement('option');op.value=n;op.textContent=(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+' · '+arr[n-1];sel.append(op)});sel.value=state[side]}order.forEach(n=>{const b=document.createElement('button');b.innerHTML='<strong>'+(state.mode?String(n).padStart(2,'0'):appearanceLabel(n))+'</strong> '+arr[n-1];b.className=state.A===n?'active':'';b.onclick=()=>{state.A=n;$('choiceA').value=n;state.burstStart=state.t;rebuild()};$('effects').append(b)});$('modeLabel').textContent=state.mode?'Explosion experiments':'Core appearance';$('aName').textContent=(state.mode?String(state.A).padStart(2,'0'):appearanceLabel(state.A))+' '+arr[state.A-1];$('bName').textContent=(state.mode?String(state.B).padStart(2,'0'):appearanceLabel(state.B))+' '+arr[state.B-1];$('note').textContent=state.mode?'Explosion mode remains experimental. Identity destruction preview is the primary review path.':(notes[state.A]||'This slot remains a supporting cosmetic variant.');}
 $('appearance').onclick=()=>{state.mode=0;state.deathStart=null;$('appearance').classList.add('active');$('explosion').classList.remove('active');rebuild()};
 $('explosion').onclick=()=>{state.mode=1;state.deathStart=null;state.burstStart=state.t;$('explosion').classList.add('active');$('appearance').classList.remove('active');rebuild()};
 for(const side of ['A','B']) $('choice'+side).onchange=e=>{state[side]=+e.target.value;state.deathStart=null;state.burstStart=state.t;rebuild()};
 $('swap').onclick=()=>{[state.A,state.B]=[state.B,state.A];rebuild()};
 $('pause').onclick=()=>{state.playing=!state.playing;$('pause').textContent=state.playing?'Pause':'Play'};
-$('restart').onclick=()=>{bhSpinTime=0;bhPullTime=0;state.t=0;state.view.A.identityTime=0;state.view.B.identityTime=0;state.view.A.fur=null;state.view.B.fur=null;furryHits.A=furryHits.B=null;state.burstStart=0;state.deathStart=null;state.playing=true;$('pause').textContent='Pause'};
+$('restart').onclick=()=>{bhSpinTime=0;bhPullTime=0;state.t=0;furTime=0;state.view.A.identityTime=0;state.view.B.identityTime=0;state.view.A.fur=null;state.view.B.fur=null;furryHits.A=furryHits.B=null;state.burstStart=0;state.deathStart=null;state.playing=true;$('pause').textContent='Pause'};
 $('death').onclick=()=>{state.mode=0;state.deathStart=state.t;$('appearance').classList.add('active');$('explosion').classList.remove('active');rebuild()};
 $('restore').onclick=()=>{state.deathStart=null};
 function updateFurMotionPreference(){
  const reduced=!!furryReducedMotion?.matches;
- $('furToss').disabled=reduced;$('furPress').disabled=reduced;
- $('furMotionHint').textContent=reduced?'Motion is reduced in your device settings.':'Or tap the fur to make it ripple.';
+ $('furToss').disabled=reduced;$('furCardSpeed').disabled=reduced;
+ $('furMotionHint').textContent=reduced?'Motion is reduced in your device settings.':'Fur motion: 0.70× · Tap the fur to see it react.';
  if(reduced)furryHits.A=furryHits.B=null;
 }
 function resumeFurPreview(){
  state.deathStart=null;state.playing=true;$('pause').textContent='Pause';
- if(+$('speed').value===0){$('speed').value='100';$('speed').dispatchEvent(new Event('input'));}
 }
+$('furCardSpeed').oninput=()=>{$('furCardSpeedLabel').textContent=(+$('furCardSpeed').value/100).toFixed(2)+'×';};
 $('furToss').onclick=()=>{
  if(furryReducedMotion?.matches||state.mode)return;
  resumeFurPreview();
- for(const side of ['A','B'])if(state[side]===19)furryHits[side]={at:state.t+.86,x:-.95,y:-.31,dx:1,dy:.18,toss:true};
-};
-$('furPress').onclick=()=>{
- if(furryReducedMotion?.matches||state.mode)return;
- resumeFurPreview();
- for(const side of ['A','B'])if(state[side]===19)furryHits[side]={at:state.t,x:0,y:0,dx:0,dy:0,press:true};
+ const start=furTime,at=start+.56/(+$('furCardSpeed').value/100);
+ const [bx,by]=furBreeze(at*FUR_MOTION_RATE);
+ for(const side of ['A','B'])if(state[side]===19){
+  const previous=furryHits[side];
+  if(previous?.toss&&furTime<previous.at)continue;
+  furryHits[side]={start,at,x:-.96,y:-.28,dx:1,dy:.12,bx,by,toss:true};
+ }
 };
 for(const side of ['A','B']){
  const canvas=$('canvas'+side);
@@ -223,10 +225,11 @@ for(const side of ['A','B']){
   const x=(e.clientX-rect.left-rect.width/2)/r-(f?.x||0),y=(e.clientY-rect.top-rect.height/2)/r-(f?.y||0);
   if(x*x+y*y>1.12)return;
   resumeFurPreview();
-  furryHits[side]={at:state.t,x,y,dx:-x*.68,dy:-y*.68,toss:false};
+  if(furryHits[side]?.toss&&furTime<furryHits[side].at)return;
+  furryHits[side]={at:furTime,x,y,dx:-x*.68,dy:-y*.68,toss:false};
  });
 }
-for(const [id,l,format] of [['value','valueLabel',x=>x],['speed','speedLabel',x=>(x/100).toFixed(2)+'×'],['urgency','urgencyLabel',x=>x+'%'],['inst','instLabel',x=>x+'%'],['move','moveLabel',x=>x+'%'],['follow','followLabel',x=>x+'%']]) $(id).oninput=e=>{$(l).textContent=format(+e.target.value)};
+for(const [id,l,format] of [['value','valueLabel',x=>x],['speed','speedLabel',x=>(x/100).toFixed(2)+'×'],['urgency','urgencyLabel',x=>x+'%'],['inst','instLabel',x=>x+'%'],['move','moveLabel',x=>x+'%'],['follow','followLabel',x=>x+'%']]) $(id).oninput=e=>{$(l).textContent=format(+e.target.value);if(id==='value')labelFurryCharge();};
 function circle(ctx,x,y,r,fill){ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=fill;ctx.fill()}
 function ellipse(ctx,x,y,rx,ry,fill,rot=0){ctx.beginPath();ctx.ellipse(x,y,rx,ry,rot,0,TAU);ctx.fillStyle=fill;ctx.fill()}
 function radial(ctx,x,y,ix,iy,radius,stops){const g=ctx.createRadialGradient(ix,iy,radius*.02,x,y,radius);for(const [at,color] of stops)g.addColorStop(at,color);return g}
@@ -369,6 +372,8 @@ function drawSoulWisp(c,x,y,r,t,value,dark,ctrl={}){
 const furryReducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const furryCoatCache=new Map();
 const furryHits={A:null,B:null};
+const FUR_MOTION_RATE=.70;
+let furTime=0;
 updateFurMotionPreference();furryReducedMotion?.addEventListener?.('change',updateFurMotionPreference);
 const fineRootColors=['#65202f','#842232','#9d2b38','#b8343d','#cd4146','#df5150','#eb625b','#f67369','#fb887c','#ffa493','#ffbaa7','#ffd0ba'];
 const fineTipColors=['#8d3545','#a73d48','#bf474c','#d75151','#e65d57','#ed6a60','#f77c70','#fa8b7d','#fda18e','#ffb5a0','#ffc9b3','#ffdcca'];
@@ -386,10 +391,10 @@ function furryCoat(count){
   const blend=clamp((d-.49)/.44,0,1)*.77;
   const dx0=mix(Math.cos(theta),radialX,blend),dy0=mix(Math.sin(theta),radialY,blend);
   const q=Math.atan2(dy0,dx0)+(rand(i+19)-.5)*.36+.09*Math.sin(x*11+y*8);
-  const ux=Math.cos(q),uy=Math.sin(q),length=(.155+.193*rand(i+29))*(.89+.12*z);
+  const ux=Math.cos(q),uy=Math.sin(q),length=.29*(.88+.12*z);
   const bend=(.023+.042*rand(i+31))*Math.sin(2.1*a+.7);
   let dx=ux*length,dy=uy*length;
-  const lim=.955+.088*rand(i+37);
+  const lim=.998+.036*z+.016*(.5+.5*Math.cos(a*13+.42));
   const end=Math.hypot(x+dx,y+dy);
   if(end>lim){const over=end-lim;dx-=over*(x+dx)/end;dy-=over*(y+dy)/end;}
   const rim=Math.max(0,(d-.76)/.17);
@@ -407,53 +412,84 @@ function furryCoat(count){
 function furBreeze(t){return [.082*Math.sin(t*.86)+.025*Math.sin(t*1.43),.072*Math.sin(t*1.06+.5)];}
 function furryPose(view,t,r,hit){
  if(!view.fur)view.fur={x:0,y:0,lagX:0,lagY:0,vx:0,vy:0};
- const f=view.fur,age=hit?t-hit.at:-Infinity;
+ const f=view.fur,age=hit?(furTime-hit.at)*FUR_MOTION_RATE:-Infinity;
  const k=age>=0&&age<2.7?Math.sin(age*6.3)*Math.exp(-age*2.15):0;
  const reduced=furryReducedMotion?.matches;
  const [bx,by]=furBreeze(t);
  const x=reduced?0:bx+.46*k*(hit?.dx||0);
  const y=reduced?0:by+.46*k*(hit?.dy||0);
  const dt=Math.min(state.dt,.033);
- if(state.playing&&+$('speed').value>0&&dt>0){
+ if(state.playing&&dt>0){
   const targetX=clamp(-.056*(x-f.x)/dt,-.11,.11);
   const targetY=clamp(-.056*(y-f.y)/dt,-.11,.11);
   // A damped spring gives the tips inertia and a brief, softer return after each nudge.
-  f.vx+=(108*(targetX-f.lagX)-14*f.vx)*dt;
-  f.vy+=(108*(targetY-f.lagY)-14*f.vy)*dt;
+  f.vx+=(86*(targetX-f.lagX)-10*f.vx)*dt;
+  f.vy+=(86*(targetY-f.lagY)-10*f.vy)*dt;
   f.lagX+=f.vx*dt;f.lagY+=f.vy*dt;
  }
  f.x=x;f.y=y;
- return {x:x*r,y:y*r,lagX:reduced?0:f.lagX,lagY:reduced?0:f.lagY,flutter:reduced?0:1,impact:!reduced&&age>=0&&age<1.65?{x:hit.x,y:hit.y,age,press:hit.press}:null};
+ return {x:x*r,y:y*r,lagX:reduced?0:f.lagX,lagY:reduced?0:f.lagY,flutter:reduced?0:1,impact:!reduced&&age>=0&&age<1.65?{x:hit.x,y:hit.y,age}:null};
 }
 function furryDeflection(h,t,flutter,lagX,lagY,impact){
- const wave=flutter*(.018*Math.sin(t*1.75+h.phase)+.008*Math.sin(t*2.4-h.phase*.63));
+ const wave=flutter*(.019*Math.sin(t*1.62+h.phase)+.008*Math.sin(t*2.12-h.phase*.63));
  let tx=(lagX+wave)*h.ease,ty=(lagY-wave*.65)*h.ease;
- if(impact?.press){
-  const pressIn=clamp(impact.age/.20,0,1),release=Math.exp(-Math.max(0,impact.age-.24)*4.8);
-  const pinch=pressIn*pressIn*(3-2*pressIn)*release*.155*(h.edge||0)*Math.pow(Math.abs(h.nx||0),4);
-  tx-=pinch*(h.nx||0);ty-=pinch*(h.ny||0)*.24;
- }else if(impact){
+ if(impact){
   const dx=h.x-impact.x,dy=h.y-impact.y,d=Math.hypot(dx,dy);
   // The first bend starts at contact and travels outward across nearby strands.
   const age=impact.age-d*.30;
   if(age>0&&age<1.2){
-   const bend=.145*Math.sin(age*16)*Math.exp(-age*4-d*.95)*h.ease;
+   const bend=.125*Math.sin(age*13.5)*Math.exp(-age*3.5-d*.95)*h.ease;
    tx+=bend*dx/(d+.13);ty+=bend*dy/(d+.13);
   }
  }
  h.tx=tx;h.ty=ty;
 }
-function drawFurBead(ctx,x,y,r,t,hit){
- if(!hit?.toss||furryReducedMotion?.matches)return;
- const age=t-hit.at;if(age<-.86||age>.64)return;
- const [bx,by]=furBreeze(hit.at),incoming=age<0;
- const p=incoming?clamp(-age/.86,0,1):age/.64;
- const off=incoming?.64*p:.61*p,fade=incoming?Math.min(1,(1-p)*7):1-p*p;
- const px=x+r*(hit.x+bx-.085-off),py=y+r*(hit.y+by+(incoming?-.19*p-.12*Math.sin(p*Math.PI):-.6*p+.22*p*p));
- ctx.save();ctx.globalAlpha*=fade;
- const rr=r*.078;glow(ctx,px,py,rr*2.1,[[0,'rgba(255,222,160,.42)'],[1,'rgba(255,195,112,0)']]);
- softSphere(ctx,px,py,rr,['#fff3d7','#fad5a0','#bd874d','#7a4a2e']);ctx.restore();
+function drawChillBackdrop(ctx,w,h,cx,cy,r,value){
+ const wash=ctx.createLinearGradient(0,0,w,h);
+ wash.addColorStop(0,'#252646');wash.addColorStop(.52,'#34334f');wash.addColorStop(1,'#4b373f');
+ ctx.fillStyle=wash;ctx.fillRect(0,0,w,h);
+ const aura=ctx.createRadialGradient(cx,cy,0,cx,cy,r*1.65);
+ aura.addColorStop(0,'rgba(255,174,153,.21)');aura.addColorStop(1,'rgba(255,174,153,0)');
+ ctx.fillStyle=aura;ctx.fillRect(0,0,w,h);
+ // The number is in the scene, outside the fur, and never relies on the face for legibility.
+ ctx.save();
+ ctx.textAlign='right';ctx.textBaseline='top';
+ const xx=w-r*.15,yy=r*.35;
+ ctx.font='700 '+Math.round(r*.55)+'px system-ui';ctx.fillStyle='rgba(255,225,219,.83)';
+ ctx.fillText(String(value),xx,yy);
+ ctx.font='600 '+Math.max(8,Math.round(r*.09))+'px system-ui';ctx.fillStyle='rgba(255,225,219,.74)';
+ ctx.fillText('C H A R G E',xx,yy+r*.62);
+ for(const [a,b,d] of [[-.98,-1.08,.019],[.88,.85,.014],[-1.22,.62,.013],[.86,-.78,.014],[-.64,1.25,.010]]){
+  circle(ctx,cx+a*r,cy+b*r,d*r,'rgba(255,225,221,.42)');
+ }
+ ctx.restore();
 }
+function drawChillFace(ctx,x,y,r,t,pose){
+ ctx.save();ctx.translate(x,y);ctx.scale(r,r);
+ const blink=furryReducedMotion?.matches?0:Math.max(0,1-Math.abs((t+1)%5.4-4.95)*12);
+ const small=pose?.impact?Math.min(.07,pose.impact.age*.2):0,eyeHeight=(.10+small)*(1-.94*blink);
+ for(const side of [-1,1]){
+  const ex=side*.203;
+  ellipse(ctx,side*.34,.145,.096,.039,'rgba(255,166,140,.35)',side*.06);
+  ellipse(ctx,ex,-.031,.071,eyeHeight,'#3e252f',side*.13);
+  if(eyeHeight>.044)circle(ctx,ex-.020,-.031-eyeHeight*.28,.017,'rgba(255,238,222,.88)');
+ }
+ ctx.strokeStyle='#492935';ctx.lineWidth=.026;ctx.lineCap='round';ctx.beginPath();
+ ctx.moveTo(-.061,.177);ctx.quadraticCurveTo(0,.236,.061,.177);ctx.stroke();
+ ctx.restore();
+}
+function drawFurCellCard(ctx,x,y,r,time,hit){
+ if(!hit?.toss||furryReducedMotion?.matches||time>=hit.at)return;
+ const p=clamp((time-hit.start)/(hit.at-hit.start),0,1);
+ const px=x+r*mix(-1.66,hit.x-.14+hit.bx,p),py=y+r*mix(-.59,hit.y+hit.by,p);
+ ctx.save();ctx.translate(px,py);ctx.rotate(.30);
+ const ww=r*.21,hh=r*.27,cr=r*.028;
+ ctx.beginPath();ctx.roundRect(-ww/2,-hh/2,ww,hh,cr);
+ ctx.fillStyle='#e3d9ff';ctx.shadowColor='rgba(227,217,255,.45)';ctx.shadowBlur=7;ctx.fill();ctx.shadowBlur=0;
+ ctx.strokeStyle='#7b6aa6';ctx.lineWidth=Math.max(1,r*.013);ctx.stroke();
+ circle(ctx,0,0,r*.036,'#8776ad');ctx.restore();
+}
+
 let fineUndercoatImage;
 function fineUndercoat(){
  if(fineUndercoatImage)return fineUndercoatImage;
@@ -476,7 +512,7 @@ function fineUndercoat(){
 function drawFurrySoftball(ctx,x,y,r,t,pose={}){
  ctx.save();ctx.translate(x,y);ctx.scale(r,r);ctx.lineCap='round';
  const flutter=pose.flutter||0,impact=pose.impact,lagX=pose.lagX||0,lagY=pose.lagY||0;
- const layers=furryCoat(r<92?6900:9300),alpha=ctx.globalAlpha;
+ const layers=furryCoat(r<92?8400:10900),alpha=ctx.globalAlpha;
  ctx.drawImage(fineUndercoat(),-1.06,-1.06,2.12,2.12);
  // The shaft adds depth; the narrow tip fades into the coat or the air.
  for(let i=0;i<layers.length;i++){
@@ -490,7 +526,7 @@ function drawFurrySoftball(ctx,x,y,r,t,pose={}){
     ctx.quadraticCurveTo(h.x+h.dx*.38+h.bx+tx*.13,h.y+h.dy*.38+h.by+ty*.13,h.x+h.dx*.68+tx*.48,h.y+h.dy*.68+ty*.48);
    }
    ctx.stroke();
-   ctx.globalAlpha=alpha*(i===0?.45:.40);ctx.strokeStyle=fineTipColors[g];ctx.lineWidth=i===0?.0029:.0035;
+   ctx.globalAlpha=alpha*.40;ctx.strokeStyle=fineTipColors[g];ctx.lineWidth=i===0?.0029:.0035;
    ctx.beginPath();
    for(const h of hairs){
     const {tx,ty}=h;
@@ -1279,7 +1315,7 @@ function drawBlackHoleStars(ctx,w,h,cx,cy,horizon,r,t,urgency,spinTime,spinStren
   }
   ctx.restore();
 }
-function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);if(!state.mode&&(n===8||n===16))drawEclipseSky(ctx,w,h,view.eclipseCover,t,n===8);else if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && n===9){view.identityTime+=state.dt*3;}const cosmeticT=n===13?bhSpinTime:n===9?view.identityTime:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const furryBody=!state.mode&&n===19&&state.deathStart===null?furryPose(view,cosmeticT,r,furryHits[viewKey]):null;const identityShake=state.mode?0:(n===1?1:0);ctx.save();ctx.translate(furryBody?.x??sx*identityShake,furryBody?.y??sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
+function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect();if(!bounds.width)return;const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(1,Math.round(bounds.width*dpr)),H=Math.max(1,Math.round(bounds.height*dpr));if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}const ctx=canvas.getContext('2d');ctx.setTransform(W/bounds.width,0,0,H/bounds.height,0,0);ctx.imageSmoothingEnabled=true;const w=bounds.width,h=bounds.height;ctx.clearRect(0,0,w,h);const r=Math.min(w,h)*.29,cx=w/2,cy=h/2;const number=+$('value').value;const inst=+$('inst').value/100,move=+$('move').value/100;const {stress}=stressFor(number);const viewKey=id==='canvasA'?'A':'B';const view=state.view[viewKey];const speedMul=Math.max(.15,+$('speed').value/100);view.eclipseCover += (stress-view.eclipseCover)*Math.min(1,state.dt*speedMul*3.2);if(!state.mode&&(n===8||n===16))drawEclipseSky(ctx,w,h,view.eclipseCover,t,n===8);else if(retroStyle==='neon')drawNeonGlowBackground(ctx,w,h,t);else if(retroStyle==='arcade')drawRetroGrid(ctx,w,h);if(n===13&&!state.mode&&state.deathStart===null){const value=+$('value').value;const power=clamp((value-1)/29,0,1);const rr=Math.min(w,h)*.29;drawBlackHoleStars(ctx,w,h,w/2,h/2,rr*mix(.9,.36,power),rr,bhPullTime,+$('urgency').value/100,bhSpinTime,+$('inst').value/100,+$('move').value/100,+$('follow').value/100);}const speedNorm=clamp((+$('speed').value/300),0,1);if(state.playing && !state.mode && state.deathStart===null && n===9){view.identityTime+=state.dt*3;}const cosmeticT=n===13?bhSpinTime:n===9?view.identityTime:!state.mode&&n===19?furTime*FUR_MOTION_RATE:t;const coronaTarget=clamp(((number-1)/29)*.5+(+$('urgency').value/100)*.5,0,1);view.coronaLevel += (coronaTarget-view.coronaLevel)*Math.min(1,state.dt*(1.8+speedMul*2.6));const tremor=t*17;const sx=(Math.sin(tremor)*.7+Math.sin(tremor*1.67)*.3)*inst*move*2.8,sy=(Math.sin(tremor*1.23)*.6+Math.cos(tremor*.89)*.4)*inst*move*2.8;const furryAppearance=!state.mode&&n===19;if(furryAppearance)drawChillBackdrop(ctx,w,h,cx,cy,r,number);const furryBody=furryAppearance&&state.deathStart===null?furryPose(view,cosmeticT,r,furryHits[viewKey]):null;const identityShake=state.mode?0:(n===1?1:0);ctx.save();ctx.translate(furryBody?.x??sx*identityShake,furryBody?.y??sy*identityShake);if(state.mode)burst(ctx,n,cx,cy,r,t,number);else if(state.deathStart!==null)drawIdentityDeath(ctx,n,cx,cy,r,t-state.deathStart,number);else{ctx.save();if(n===9){
     const b=breathCycle(cosmeticT,number);
     // Shape changes emphasize chest-like expansion and a more urgent heave under pressure.
     const sxB=1+.036*b.air+.012*b.strain;
@@ -1291,8 +1327,8 @@ function render(id,n,t){const canvas=$(id),bounds=canvas.getBoundingClientRect()
     ctx.scale(sxB,syB);
     ctx.translate(-cx,-cy);
   }
-if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{furPose:furryBody||undefined,eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,cosmosControls:n===4?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();if(furryBody)drawFurBead(ctx,cx,cy,r,cosmeticT,furryHits[viewKey]);const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible){ctx.save();ctx.translate(furryBody?.x??sx*identityShake*(+$('follow').value/100),furryBody?.y??sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===4){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*.31)*r*.011*move*follow,Math.cos(cosmeticT*.23)*r*.009*move*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(68,14,0,.96)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';if(!state.mode&&n===19){ctx.lineWidth=Math.max(2,r*.039);ctx.strokeStyle='#5d2034';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);}if(!state.mode&&n===12){ctx.save();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,r*.055);ctx.strokeStyle='rgba(72,20,4,.90)';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);ctx.restore();}ctx.fillText(number,cx,cy+3);ctx.restore()}}
-function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
+if(n===14){ctx.translate(cx,cy+Math.sin(t*.9)*r*.036*(1-stress*.4));ctx.scale(1+.014*Math.sin(t*1.4+stress),1-.01*Math.sin(t*1.4+stress));ctx.translate(-cx,-cy)}drawAppearance(ctx,n,cx,cy,r,cosmeticT,number,{furPose:furryBody||undefined,eclipseCover:view.eclipseCover,coronaLevel:view.coronaLevel,waterControls:n===5?{move,inst,urgency:+$('urgency').value/100}:undefined,atomControls:n===3?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,cosmosControls:n===4?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,coronaControls:n===6?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,overchargeControls:n===12?{move,inst,value:number,urgency:+$('urgency').value/100,follow:+$('follow').value/100}:undefined,arcadeControls:n===15?{move,inst,value:number,urgency:+$('urgency').value/100}:undefined,soulControls:(n===17||n===18)?{move,inst,urgency:+$('urgency').value/100}:undefined});ctx.restore()}ctx.restore();if(furryBody){drawChillFace(ctx,cx+furryBody.x,cy+furryBody.y,r,cosmeticT,furryBody);drawFurCellCard(ctx,cx,cy,r,furTime,furryHits[viewKey]);}const visible=!(state.mode&&t-state.burstStart>=1.1)&&!(state.deathStart!==null&&!state.mode&&(t-state.deathStart>=(n===15?.46:1.45)));if(visible&&!furryAppearance){ctx.save();ctx.translate(furryBody?.x??sx*identityShake*(+$('follow').value/100),furryBody?.y??sy*identityShake*(+$('follow').value/100));if(!state.mode&&n===3){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*(.47+inst*.53))*r*.032*inst*follow,Math.cos(cosmeticT*(.55+inst*.48))*r*.027*inst*follow)}if(!state.mode&&n===15){const follow=+$('follow').value/100,u=Math.max(2,Math.round(r/17));const buoy=Math.sin(cosmeticT*(.55+.65*move))*r*.065*move;const sway=Math.cos(cosmeticT*(.45+.7*move))*r*.025*move;ctx.translate(Math.round(sway/u)*u*follow,Math.round(buoy/u)*u*follow)}if(!state.mode&&n===12){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*3.7)*r*.015*inst*follow,Math.cos(cosmeticT*4.3)*r*.012*inst*follow)}if(!state.mode&&n===4){const follow=+$('follow').value/100;ctx.translate(Math.sin(cosmeticT*.31)*r*.011*move*follow,Math.cos(cosmeticT*.23)*r*.009*move*follow)}if(!state.mode&&n===5){const follow=+$('follow').value/100,rate=5+move*16;ctx.translate(Math.sin(cosmeticT*rate)*r*.030*move*follow,Math.sin(cosmeticT*rate*1.31+.7)*r*.023*move*follow)}ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=(!state.mode&&n===12)?'rgba(68,14,0,.96)':(!state.mode&&n===6)?'rgba(255,214,129,.88)':'rgba(0,0,0,.9)';ctx.shadowBlur=(!state.mode&&n===12)?12+33*(+$('follow').value/100)*(.2+.8*(number-1)/29):(!state.mode&&n===6)?13+26*(+$('follow').value/100)*((number-1)/29):13;ctx.font=`800 ${Math.round(r*.62)}px system-ui`;ctx.fillStyle=state.mode?`rgba(255,255,255,${clamp(1-(t-state.burstStart)*1.15,0,1)})`:n===6?`rgb(255,${Math.round(242+13*(+$('follow').value/100)*((number-1)/29))},${Math.round(219+36*(+$('follow').value/100)*((number-1)/29))})`:'#f4faff';if(!state.mode&&n===19){ctx.lineWidth=Math.max(2,r*.039);ctx.strokeStyle='#5d2034';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);}if(!state.mode&&n===12){ctx.save();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,r*.055);ctx.strokeStyle='rgba(72,20,4,.90)';ctx.lineJoin='round';ctx.strokeText(number,cx,cy+3);ctx.restore();}ctx.fillText(number,cx,cy+3);ctx.restore()}}
+function frame(now){if(!state.last)state.last=now;const dt=Math.min((now-state.last)/1000,.05);state.last=now;state.dt=dt;if(state.playing){furTime+=dt;state.t+=dt*(+$('speed').value/100); // preserve animation speed for other effects
 bhPullTime+=dt; // fixed Black Hole capture clock: speed alters radial force, not time
 bhSpinTime+=dt*(2.4*Math.pow(+$('inst').value/100,1.6));}if(isGalleryDeath&&state.deathStart!==null&&state.t-state.deathStart>=1.55)state.deathStart=null;render('canvasA',state.A,state.t);if(!isEffectEmbed)render('canvasB',state.B,state.t);requestAnimationFrame(frame)}
 rebuild();
